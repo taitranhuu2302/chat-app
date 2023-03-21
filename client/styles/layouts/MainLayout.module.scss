@@ -1,0 +1,44 @@
+.wrapper {
+  @apply flex h-screen overflow-hidden;
+
+  .wrapperSidebar {
+    width: 75px;
+    box-shadow: 0 2px 4px rgb(15 34 58 / 12%);
+
+    height: 100%;
+    max-width: 75px;
+    min-height: 570px;
+    min-width: 75px;
+    z-index: 9;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    .sidebarItem {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+  }
+}
+
+
+@media screen and (max-width: 992px) {
+  .wrapper {
+    flex-direction: column-reverse;
+
+    .wrapperSidebar {
+      flex-direction: row;
+      height: 70px;
+      max-width: 100%;
+      width: 100%;
+      min-height: auto;
+    }
+  }
+}
