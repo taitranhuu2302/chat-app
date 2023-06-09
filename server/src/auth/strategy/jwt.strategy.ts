@@ -19,7 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.userModel.findOne({
       _id: payload.sub,
     });
-    delete user.password;
-    return payload;
+    if (user) {
+      delete user?.password;
+      return payload;
+    }
+    return null;
   }
 }

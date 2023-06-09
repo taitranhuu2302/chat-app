@@ -14,6 +14,7 @@ async function bootstrap() {
     .setTitle('Chat application')
     .setDescription('The chat app API description')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
 

@@ -7,4 +7,10 @@ export const API = {
     REGISTER: `register`,
     GET_ME: `get-me`,
   },
+  USER: {
+    INDEX: `${PREFIX}/users`,
+    UPDATE: `update-information`,
+    CHANGE_PASSWORD: `change-password`,
+    CHANGE_AVATAR: `change-avatar`,
+  },
 };

@@ -11,7 +11,7 @@ import { API } from '../shared/constants/api.constant';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from './guard/jwt.guard';
 import { GetUser } from './decorator/get-user.decorator';
 import { plainToClass } from 'class-transformer';
@@ -38,6 +38,7 @@ export class AuthController {
 
   @UseGuards(JwtGuard)
   @Get(API.AUTH.GET_ME)
+  @ApiBearerAuth()
   async getMe(@GetUser() { sub }) {
     const user = await this.authService.findUserById(sub);
     return plainToClass(UserDto, user, {
