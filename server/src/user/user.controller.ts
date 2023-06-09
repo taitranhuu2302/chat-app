@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { API } from '../shared/constants/api.constant';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { GetUser } from '../auth/decorator/get-user.decorator';
@@ -17,6 +17,7 @@ import { plainToClass } from 'class-transformer';
 import { UserDto } from './dto/user.dto';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { localOptionsUserAvatar } from '../shared/helper/file.helper';
 
 @Controller(API.USER.INDEX)
 @ApiTags('User')
@@ -40,8 +41,6 @@ export class UserController {
   }
 
   @Post(API.USER.CHANGE_AVATAR)
-  @UseInterceptors(FileInterceptor('file'))
-  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
@@ -53,10 +52,9 @@ export class UserController {
       },
     },
   })
-  async changeAvatar(
-    @GetUser() { sub },
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    console.log(file);
+  @UseInterceptors(FileInterceptor('avatar', localOptionsUserAvatar))
+  async changeAvatar(@GetUser() { sub }, @UploadedFile() file) {
+    const user = await this.userService.changeAvatar(sub, file);
+    return plainToClass(UserDto, user, { excludeExtraneousValues: true });
   }
 }

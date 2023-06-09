@@ -1,14 +1,22 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.model';
 import { Model } from 'mongoose';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import * as argon from 'argon2';
+import * as process from 'process';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+  ) {}
 
   async updateInformation(sub: string, userDto: UserUpdateDto) {
     const user = await this.userModel.findOne({ _id: sub });
@@ -40,6 +48,16 @@ export class UserService {
     user.password = await argon.hash(dto.newPassword);
     user.save();
 
+    return user;
+  }
+
+  async changeAvatar(sub: string, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No avatar files provided');
+    }
+    const user = await this.userModel.findById(sub);
+    user.avatar = `${process.env.SERVER_URL}/uploads/user/${file.filename}`;
+    user.save();
     return user;
   }
 }

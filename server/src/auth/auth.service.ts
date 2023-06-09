@@ -42,11 +42,9 @@ export class AuthService {
       email,
     };
 
-    const secret = process.env.JWT_SECRET;
-
     const token = await this.jwt.signAsync(data, {
-      expiresIn: '15m',
-      secret: secret,
+      expiresIn: process.env.JWT_EXPIRES,
+      secret: process.env.JWT_SECRET,
     });
     return {
       accessToken: token,
