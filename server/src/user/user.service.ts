@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -14,7 +15,7 @@ import {
   UserRequestFriend,
   UserRequestFriendDocument,
 } from './user.model';
-import { Model, Promise, Schema } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import * as argon from 'argon2';
@@ -25,6 +26,9 @@ import {
 } from '../shared/helper/pagination.helper';
 import { plainToClass } from 'class-transformer';
 import { UserDto } from './dto/user.dto';
+import { SocketService } from '../socket/socket.service';
+import { SOCKET_EVENT } from '../shared/constants/socket.constant';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class UserService {
@@ -34,6 +38,8 @@ export class UserService {
     private userFriendModel: Model<UserFriendDocument>,
     @InjectModel(UserRequestFriend.name)
     private userRequestFriendModel: Model<UserRequestFriendDocument>,
+    private socketService: SocketService,
+    private redisService: RedisService,
   ) {}
 
   async index(sub: string, options: PaginationOptions) {
@@ -91,9 +97,40 @@ export class UserService {
     return friends.length >= 2;
   }
 
+  async unFriend(sub: string, friendId: string) {
+    const isFriend = await this.isFriend(sub, friendId);
+    if (!isFriend) throw new BadRequestException('You two are not friends');
+
+    const userCurrent = await this.userModel.findById(sub);
+
+    await this.userFriendModel.findOneAndDelete({
+      user: sub,
+      friend: friendId,
+    });
+
+    await this.userFriendModel.findOneAndDelete({
+      user: friendId,
+      friend: sub,
+    });
+
+    const client = await this.redisService.getSocketId(friendId);
+
+    if (client) {
+      const mapped = plainToClass(UserDto, userCurrent, {
+        excludeExtraneousValues: true,
+      });
+
+      this.socketService.socket
+        .to(client)
+        .emit(SOCKET_EVENT.USER.UN_FRIEND, mapped);
+    }
+
+    return null;
+  }
+
   async acceptFriendRequest(sub: string, dto: FriendRequestDto) {
     if (sub !== dto.receiverId)
-      throw new UnauthorizedException('You are not authorized');
+      throw new ForbiddenException('You are not authorized');
 
     const receiver = await this.userModel.findById(dto.receiverId);
     const sender = await this.userModel.findById(dto.senderId);
@@ -118,12 +155,22 @@ export class UserService {
       friend: sender._id,
     });
 
+    const client = await this.redisService.getSocketId(dto.senderId);
+    if (client) {
+      const mapped = plainToClass(UserDto, receiver, {
+        excludeExtraneousValues: true,
+      });
+      this.socketService.socket
+        .to(client)
+        .emit(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST, mapped);
+    }
+
     return null;
   }
 
   async rejectFriendRequest(sub: string, dto: FriendRequestDto) {
     if (sub !== dto.receiverId && sub !== dto.senderId)
-      throw new UnauthorizedException('You are not authorized');
+      throw new ForbiddenException('You are not authorized');
 
     const receiver = await this.userModel.findById(dto.receiverId);
     const sender = await this.userModel.findById(dto.senderId);
@@ -135,6 +182,17 @@ export class UserService {
       receiver: receiver._id,
       deletedAt: null,
     });
+
+    const client = await this.redisService.getSocketId(dto.senderId);
+
+    if (client) {
+      const mapped = plainToClass(UserDto, receiver, {
+        excludeExtraneousValues: true,
+      });
+      this.socketService.socket
+        .to(client)
+        .emit(SOCKET_EVENT.USER.REJECT_FRIEND_REQUEST, mapped);
+    }
 
     return null;
   }
@@ -216,6 +274,16 @@ export class UserService {
 
     if (await this.isFriend(dto.receiverId, dto.senderId))
       throw new BadRequestException('You two are already friends');
+
+    const client = await this.redisService.getSocketId(dto.receiverId);
+    if (client) {
+      const mapped = plainToClass(UserDto, sender, {
+        excludeExtraneousValues: true,
+      });
+      this.socketService.socket
+        .to(client)
+        .emit(SOCKET_EVENT.USER.SEND_REQUEST_FRIEND, mapped);
+    }
 
     return await this.userRequestFriendModel.create({
       sender: sender._id,

@@ -29,7 +29,6 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post(API.AUTH.REGISTER)
   @ApiBody({ type: RegisterDto })
   signup(@Body() dto: RegisterDto) {
