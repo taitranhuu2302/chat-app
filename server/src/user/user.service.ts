@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
@@ -13,11 +14,15 @@ import {
   UserRequestFriend,
   UserRequestFriendDocument,
 } from './user.model';
-import { Model } from 'mongoose';
+import { Model, Promise, Schema } from 'mongoose';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import * as argon from 'argon2';
 import { FriendRequestDto } from './dto/friend-request.dto';
+import {
+  paginate,
+  PaginationOptions,
+} from '../shared/helper/pagination.helper';
 import { plainToClass } from 'class-transformer';
 import { UserDto } from './dto/user.dto';
 
@@ -31,32 +36,172 @@ export class UserService {
     private userRequestFriendModel: Model<UserRequestFriendDocument>,
   ) {}
 
-  async test() {
-    return this.userRequestFriendModel
-      .find()
-      .populate('sender')
-      .populate('receiver');
+  async index(sub: string, options: PaginationOptions) {
+    return await paginate(this.userModel.find(), options, async (data) => {
+      const formattedData = [];
+      for (const u of data) {
+        const userDto = plainToClass(UserDto, u, {
+          excludeExtraneousValues: true,
+        });
+        const currentUser = await this.getCurrentUser(sub, userDto._id);
+        const formattedUser = {
+          ...userDto,
+          ...currentUser,
+        };
+        formattedData.push(formattedUser);
+      }
+      return formattedData;
+    });
   }
 
-  async rejectFriendRequest(dto: FriendRequestDto) {}
+  async getCurrentUser(
+    sub: string | Schema.Types.ObjectId,
+    userId: string | Schema.Types.ObjectId,
+  ) {
+    const isFriend = await this.isFriend(sub, userId);
+    const isRequestSent = await this.isRequestFriend(sub, userId);
+    const isRequestReceived = await this.isRequestFriend(userId, sub);
 
-  async getFriendRequest(sub: string) {
-    const friendRequests = await this.userRequestFriendModel
-      .find({
-        receiver: sub,
+    return {
+      currentUser: {
+        isFriend,
+        isRequestSent,
+        isRequestReceived,
+      },
+    };
+  }
+
+  async isFriend(
+    userId: string | Schema.Types.ObjectId,
+    friendId: string | Schema.Types.ObjectId,
+  ) {
+    const friends = await this.userFriendModel.find({
+      $or: [
+        {
+          user: userId,
+          friend: friendId,
+        },
+        {
+          user: friendId,
+          friend: userId,
+        },
+      ],
+    });
+
+    return friends.length >= 2;
+  }
+
+  async acceptFriendRequest(sub: string, dto: FriendRequestDto) {
+    if (sub !== dto.receiverId)
+      throw new UnauthorizedException('You are not authorized');
+
+    const receiver = await this.userModel.findById(dto.receiverId);
+    const sender = await this.userModel.findById(dto.senderId);
+
+    if (!sender || !receiver) throw new BadRequestException('User not found');
+
+    if (await this.isFriend(dto.receiverId, dto.senderId))
+      throw new BadRequestException('You two are already friends');
+
+    await this.userRequestFriendModel.findOneAndDelete({
+      sender: sender._id,
+      receiver: receiver._id,
+      deletedAt: null,
+    });
+
+    await this.userFriendModel.create({
+      user: sender._id,
+      friend: receiver._id,
+    });
+    await this.userFriendModel.create({
+      user: receiver._id,
+      friend: sender._id,
+    });
+
+    return null;
+  }
+
+  async rejectFriendRequest(sub: string, dto: FriendRequestDto) {
+    if (sub !== dto.receiverId && sub !== dto.senderId)
+      throw new UnauthorizedException('You are not authorized');
+
+    const receiver = await this.userModel.findById(dto.receiverId);
+    const sender = await this.userModel.findById(dto.senderId);
+
+    if (!sender || !receiver) throw new BadRequestException('User not found');
+
+    await this.userRequestFriendModel.findOneAndDelete({
+      sender: sender._id,
+      receiver: receiver._id,
+      deletedAt: null,
+    });
+
+    return null;
+  }
+
+  async getFriends(sub: string, options: PaginationOptions) {
+    return await paginate(
+      this.userFriendModel
+        .find({
+          user: sub,
+          deletedAt: null,
+        })
+        .populate('friend'),
+      options,
+      async (data) => {
+        const formattedData = [];
+        for (const u of data) {
+          const userDto = plainToClass(UserDto, u.friend, {
+            excludeExtraneousValues: true,
+          });
+          formattedData.push({
+            ...u.toObject(),
+            friend: userDto,
+          });
+        }
+        return formattedData;
+      },
+    );
+  }
+
+  async getFriendRequest(sub: string, options: PaginationOptions) {
+    return await paginate(
+      this.userRequestFriendModel
+        .find({
+          receiver: sub,
+          deletedAt: null,
+        })
+        .populate('sender'),
+      options,
+      async (data) => {
+        const formattedData = [];
+        for (const friendRequest of data) {
+          const userDto = plainToClass(UserDto, friendRequest.sender, {
+            excludeExtraneousValues: true,
+          });
+          formattedData.push({
+            ...friendRequest.toObject(),
+            sender: userDto,
+          });
+        }
+        return formattedData;
+      },
+    );
+  }
+
+  async isRequestFriend(
+    senderId: string | Schema.Types.ObjectId,
+    receiverId: string | Schema.Types.ObjectId,
+  ) {
+    const check = await this.userRequestFriendModel
+      .findOne({
+        sender: senderId,
+        receiver: receiverId,
         deletedAt: null,
       })
-      .populate('sender');
+      .exec();
 
-    return friendRequests.map((friendRequest) => {
-      const userDto = plainToClass(UserDto, friendRequest.sender, {
-        excludeExtraneousValues: true,
-      });
-      return {
-        ...friendRequest.toObject(),
-        sender: userDto,
-      };
-    });
+    return !!check;
   }
 
   async sendFriendRequest(dto: FriendRequestDto) {
@@ -65,6 +210,12 @@ export class UserService {
     const receiver = await this.userModel.findById(receiverId);
 
     if (!sender || !receiver) throw new BadRequestException('User not found');
+
+    if (await this.isRequestFriend(senderId, receiverId))
+      throw new BadRequestException('You have sent a friend request');
+
+    if (await this.isFriend(dto.receiverId, dto.senderId))
+      throw new BadRequestException('You two are already friends');
 
     return await this.userRequestFriendModel.create({
       sender: sender._id,
@@ -115,15 +266,23 @@ export class UserService {
     return user;
   }
 
-  async getUserById(id: string) {
+  async getUserById(sub: string, id: string) {
     const user = await this.userModel.findById(id);
     if (!user) throw new BadRequestException('User not found');
-    return user;
+
+    return {
+      ...plainToClass(UserDto, user, { excludeExtraneousValues: true }),
+      ...(await this.getCurrentUser(sub, user._id.toString())),
+    };
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmail(sub: string, email: string) {
     const user = await this.userModel.findOne({ email });
     if (!user) throw new BadRequestException('User not found');
-    return user;
+
+    return {
+      ...plainToClass(UserDto, user, { excludeExtraneousValues: true }),
+      ...(await this.getCurrentUser(sub, user._id.toString())),
+    };
   }
 }

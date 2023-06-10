@@ -53,7 +53,7 @@ export class UserFriend extends BaseEntity {
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
   friend: Schema.Types.ObjectId;
   @Prop()
-  isBlock: boolean
+  isBlock: boolean;
 }
 
 @SchemaDecorator({
@@ -69,7 +69,8 @@ export class UserRequestFriend extends BaseEntity {
   receiver: Schema.Types.ObjectId;
 }
 
-export const UserFriendSchema = SchemaFactory.createForClass(UserFriend);
-export const UserRequestFriendSchema =
-  SchemaFactory.createForClass(UserRequestFriend);
-export const UserSchema = SchemaFactory.createForClass(User);
+const UserFriendSchema = SchemaFactory.createForClass(UserFriend);
+const UserRequestFriendSchema = SchemaFactory.createForClass(UserRequestFriend);
+const UserSchema = SchemaFactory.createForClass(User);
+
+export { UserFriendSchema, UserRequestFriendSchema, UserSchema };
