@@ -7,10 +7,6 @@ export class BaseMapEntity {
 
   @Expose()
   @Transform(({ value }) => value || null)
-  deletedAt: Date;
-
-  @Expose()
-  @Transform(({ value }) => value || null)
   updatedAt: Date;
   @Expose()
   @Transform(({ value }) => value || null)

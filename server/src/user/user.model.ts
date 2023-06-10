@@ -49,15 +49,11 @@ export class User extends BaseEntity {
 })
 export class UserFriend extends BaseEntity {
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
-  userId: string;
+  user: Schema.Types.ObjectId;
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
-  friendId: string;
-}
-
-export enum RequestFriendEnum {
-  PENDING = 'PENDING',
-  ACCEPTED = 'ACCEPTED',
-  REJECTED = 'REJECTED',
+  friend: Schema.Types.ObjectId;
+  @Prop()
+  isBlock: boolean
 }
 
 @SchemaDecorator({
@@ -68,11 +64,9 @@ export enum RequestFriendEnum {
 })
 export class UserRequestFriend extends BaseEntity {
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
-  senderId: string;
+  sender: Schema.Types.ObjectId;
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
-  receiverId: string;
-  @Prop({ default: RequestFriendEnum.PENDING })
-  status: RequestFriendEnum;
+  receiver: Schema.Types.ObjectId;
 }
 
 export const UserFriendSchema = SchemaFactory.createForClass(UserFriend);

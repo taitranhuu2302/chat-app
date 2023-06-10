@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   HttpException,
   HttpStatus,
@@ -19,7 +20,10 @@ export class AuthService {
   ) {}
 
   async findUserById(id: string) {
-    return this.userModel.findOne({ _id: id });
+    const user = await this.userModel.findById(id);
+    if (!user) throw new BadRequestException('User not found');
+    console.log(user.requestFriend);
+    return user;
   }
 
   async login(dto: LoginDto) {

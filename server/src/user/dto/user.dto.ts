@@ -1,5 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import { BaseMapEntity } from '../../shared/base/base-map.entity';
+import {UserFriend, UserRequestFriend} from '../user.model';
 
 export class UserDto extends BaseMapEntity {
   @Expose()

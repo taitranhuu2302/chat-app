@@ -5,18 +5,72 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './user.model';
+import {
+  User,
+  UserDocument,
+  UserFriend,
+  UserFriendDocument,
+  UserRequestFriend,
+  UserRequestFriendDocument,
+} from './user.model';
 import { Model } from 'mongoose';
 import { UserUpdateDto } from './dto/user-update.dto';
 import { UserChangePasswordDto } from './dto/user-change-password.dto';
 import * as argon from 'argon2';
-import * as process from 'process';
+import { FriendRequestDto } from './dto/friend-request.dto';
+import { plainToClass } from 'class-transformer';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(UserFriend.name)
+    private userFriendModel: Model<UserFriendDocument>,
+    @InjectModel(UserRequestFriend.name)
+    private userRequestFriendModel: Model<UserRequestFriendDocument>,
   ) {}
+
+  async test() {
+    return this.userRequestFriendModel
+      .find()
+      .populate('sender')
+      .populate('receiver');
+  }
+
+  async rejectFriendRequest(dto: FriendRequestDto) {}
+
+  async getFriendRequest(sub: string) {
+    const friendRequests = await this.userRequestFriendModel
+      .find({
+        receiver: sub,
+        deletedAt: null,
+      })
+      .populate('sender');
+
+    return friendRequests.map((friendRequest) => {
+      const userDto = plainToClass(UserDto, friendRequest.sender, {
+        excludeExtraneousValues: true,
+      });
+      return {
+        ...friendRequest.toObject(),
+        sender: userDto,
+      };
+    });
+  }
+
+  async sendFriendRequest(dto: FriendRequestDto) {
+    const { senderId, receiverId } = dto;
+    const sender = await this.userModel.findById(senderId);
+    const receiver = await this.userModel.findById(receiverId);
+
+    if (!sender || !receiver) throw new BadRequestException('User not found');
+
+    return await this.userRequestFriendModel.create({
+      sender: sender._id,
+      receiver: receiver._id,
+    });
+  }
 
   async updateInformation(sub: string, userDto: UserUpdateDto) {
     const user = await this.userModel.findOne({ _id: sub });
@@ -58,6 +112,18 @@ export class UserService {
     const user = await this.userModel.findById(sub);
     user.avatar = `${process.env.SERVER_URL}/uploads/user/${file.filename}`;
     user.save();
+    return user;
+  }
+
+  async getUserById(id: string) {
+    const user = await this.userModel.findById(id);
+    if (!user) throw new BadRequestException('User not found');
+    return user;
+  }
+
+  async getUserByEmail(email: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) throw new BadRequestException('User not found');
     return user;
   }
 }
