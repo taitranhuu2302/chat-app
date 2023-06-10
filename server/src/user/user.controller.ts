@@ -24,6 +24,9 @@ import { localOptionsUserAvatar } from '../shared/helper/file.helper';
 import { FriendRequestDto } from './dto/friend-request.dto';
 import { PaginationOptions } from '../shared/helper/pagination.helper';
 import { PaginateQuery } from '../shared/decorator/pagination-query.decorator';
+import { SocketService } from '../socket/socket.service';
+import { RedisService } from '../redis/redis.service';
+import { UnFriendDto } from './dto/un-friend.dto';
 
 @Controller(API.USER.INDEX)
 @ApiTags('User')
@@ -46,6 +49,11 @@ export class UserController {
     @PaginateQuery() paginate: PaginationOptions,
   ) {
     return this.userService.getFriendRequest(params.id, paginate);
+  }
+
+  @Delete(API.USER.UN_FRIEND)
+  async unFriend(@GetUser() { sub }, @Body() dto: UnFriendDto) {
+    return this.userService.unFriend(sub, dto.friendId);
   }
 
   @Get(API.USER.GET_FRIEND)
@@ -71,7 +79,7 @@ export class UserController {
   @Post(API.USER.SEND_REQUEST_FRIEND)
   @ApiBody({ type: FriendRequestDto })
   async sendFriendRequest(@Body() dto: FriendRequestDto) {
-    return this.userService.sendFriendRequest(dto);
+    return await this.userService.sendFriendRequest(dto);
   }
 
   @Get(API.USER.GET_BY_EMAIL)

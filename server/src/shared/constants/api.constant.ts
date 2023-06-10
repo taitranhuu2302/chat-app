@@ -15,6 +15,7 @@ export const API = {
     GET_BY_ID: 'get-user-by-id/:id',
     GET_BY_EMAIL: 'get-user-by-email/:email',
     SEND_REQUEST_FRIEND: 'send-request-friend',
+    UN_FRIEND: 'un-friend',
     GET_REQUEST_FRIEND: 'get-request-friend/:id',
     GET_FRIEND: 'get-friend/:id',
     REJECT_REQUEST_FRIEND: 'reject-request-friend',

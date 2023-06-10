@@ -9,6 +9,10 @@ async function bootstrap() {
   const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalPipes(new ValidationPipe());
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Chat application')
