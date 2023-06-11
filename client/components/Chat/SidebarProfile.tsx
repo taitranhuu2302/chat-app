@@ -1,9 +1,9 @@
 import React from 'react';
-import { IoClose } from 'react-icons/io5';
+import {IoClose} from 'react-icons/io5';
 import AvatarCustom from '@/components/AvatarCustom';
 import Divider from '@/components/Divider';
 import UserInfo from '../UserInfo';
-import { motion } from 'framer-motion';
+import {motion} from 'framer-motion';
 
 interface ISidebarProfile {
   onClose: () => void;

@@ -1,0 +1,3 @@
+type TokenType = {
+  accessToken: string;
+};

@@ -11,6 +11,12 @@ import * as argon from 'argon2';
 import { User } from '../user/user.model';
 import { Model } from 'mongoose';
 import { LoginDto } from './dto/login.dto';
+import { google } from 'googleapis';
+
+const googleClient = new google.auth.OAuth2({
+  clientId: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+});
 
 @Injectable()
 export class AuthService {
@@ -19,10 +25,40 @@ export class AuthService {
     private jwt: JwtService,
   ) {}
 
+  async googleLogin(tokens) {
+    googleClient.setCredentials(tokens);
+
+    const { data } = await google
+      .people({
+        version: 'v1',
+        auth: googleClient,
+      })
+      .people.get({
+        resourceName: 'people/me',
+        personFields: 'names,emailAddresses,photos',
+      });
+
+    const { photos, names, emailAddresses } = data;
+    const email = emailAddresses?.[0]?.value;
+
+    const userCheck = await this.userModel.findOne({ email });
+
+    if (userCheck) {
+      return this.signToken(userCheck._id.toString(), userCheck.email);
+    }
+
+    const user = await this.userModel.create({
+      email: emailAddresses?.[0]?.value,
+      firstName: names?.[0]?.givenName,
+      lastName: names?.[0]?.familyName,
+      avatar: photos?.[0]?.url,
+    });
+    return this.signToken(user._id.toString(), user.email);
+  }
+
   async findUserById(id: string) {
     const user = await this.userModel.findById(id);
     if (!user) throw new BadRequestException('User not found');
-    console.log(user.requestFriend);
     return user;
   }
 
@@ -37,10 +73,10 @@ export class AuthService {
     if (!pwMatches) throw new ForbiddenException('Credentials incorrect');
 
     delete user.password;
-    return this.signToken(user.id, user.email);
+    return this.signToken(user._id.toString(), user.email);
   }
 
-  async signToken(userId: number, email: string) {
+  async signToken(userId: string, email: string) {
     const data = {
       sub: userId,
       email,
@@ -71,7 +107,7 @@ export class AuthService {
         password: hash,
       });
 
-      return this.signToken(user.id, user.email);
+      return this.signToken(user._id.toString(), user.email);
     } catch (error) {
       if (error) {
         throw error;

@@ -22,6 +22,11 @@ import { UserDto } from '../user/dto/user.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Post(API.AUTH.GOOGLE_LOGIN)
+  async googleLogin(@Body('tokens') tokens) {
+    return this.authService.googleLogin(tokens);
+  }
+
   @HttpCode(HttpStatus.OK)
   @Post(API.AUTH.LOGIN)
   @ApiBody({ type: LoginDto })

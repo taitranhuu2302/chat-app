@@ -112,8 +112,10 @@ const language = {
     confirmPassword: {
       label: 'Nhập lại mật khẩu',
       hint: 'Nhập lại mật khẩu'
-    }
-  }
+    },
+    or: "Hoặc",
+    loginGoogle: "Đăng nhập với google"
+  },
 }
 
 export default language;

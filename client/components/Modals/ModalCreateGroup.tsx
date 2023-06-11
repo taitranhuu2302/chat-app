@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
-import { AiOutlineUsergroupAdd } from 'react-icons/ai';
-import { IoClose } from 'react-icons/io5';
+import React, {useContext} from 'react';
+import {AiOutlineUsergroupAdd} from 'react-icons/ai';
+import {IoClose} from 'react-icons/io5';
 import Divider from '@/components/Divider';
-import Select, { StylesConfig } from 'react-select';
-import { DarkModeContext } from '../../contexts/DarkModeProvider';
+import Select, {StylesConfig} from 'react-select';
+import {DarkModeContext} from '../../contexts/DarkModeProvider';
 import useTranslate from '@/hooks/useTranslate';
 
 interface IModalCreateGroup {

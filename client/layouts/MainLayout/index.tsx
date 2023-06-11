@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '@/styles/layouts/MainLayout.module.scss';
+import styles from '@/styles/layouts/main-layout.module.scss';
 import Sidebar from '@/layouts/MainLayout/Sidebar';
 import Tabs from './Tabs';
 

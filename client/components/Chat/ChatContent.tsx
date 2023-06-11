@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
 import styles from '@/styles/components/chat.module.scss';
 import Message from '@/components/Chat/Message';
 

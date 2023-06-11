@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import TabProfile from '@/components/Tabs/TabProfile';
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
 import TabChat from '@/components/Tabs/TabChat';
 import TabGroup from '@/components/Tabs/TabGroup';
 import TabContact from '@/components/Tabs/TabContact';

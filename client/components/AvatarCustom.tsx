@@ -1,6 +1,6 @@
 import React from 'react';
 import Avatar from 'react-avatar';
-import { RxDotFilled } from 'react-icons/rx';
+import {RxDotFilled} from 'react-icons/rx';
 
 interface IAvatarCustom {
     

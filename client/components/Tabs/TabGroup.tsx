@@ -1,8 +1,7 @@
 import React from 'react';
 import TabContainer from '@/components/Tabs/TabContainer';
-import { AiOutlineUsergroupAdd } from 'react-icons/ai';
 import Input from '@/components/Input';
-import { IoSearchOutline } from 'react-icons/io5';
+import {IoSearchOutline} from 'react-icons/io5';
 import Avatar from 'react-avatar';
 import ModalCreateGroup from '@/components/Modals/ModalCreateGroup';
 import useTranslate from '@/hooks/useTranslate';

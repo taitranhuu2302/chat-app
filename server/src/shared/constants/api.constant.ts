@@ -6,6 +6,7 @@ export const API = {
     LOGIN: `login`,
     REGISTER: `register`,
     GET_ME: `get-me`,
+    GOOGLE_LOGIN: `google-login`,
   },
   USER: {
     INDEX: `${PREFIX}/users`,

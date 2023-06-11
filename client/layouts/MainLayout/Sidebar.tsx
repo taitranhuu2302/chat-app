@@ -1,17 +1,17 @@
-import React, { useContext } from 'react';
-import styles from '@/styles/layouts/MainLayout.module.scss';
+import React, {useContext} from 'react';
+import styles from '@/styles/layouts/main-layout.module.scss';
 import Link from 'next/link';
 import Image from 'next/image';
-import { AiOutlineUser } from 'react-icons/ai';
-import { TbMessageCircle2 } from 'react-icons/tb';
-import { FiSettings, FiUsers } from 'react-icons/fi';
-import { RiContactsLine } from 'react-icons/ri';
-import { useRouter } from 'next/router';
-import { twMerge } from 'tailwind-merge';
-import { MdLanguage, MdOutlineDarkMode } from 'react-icons/md';
+import {AiOutlineUser} from 'react-icons/ai';
+import {TbMessageCircle2} from 'react-icons/tb';
+import {FiSettings, FiUsers} from 'react-icons/fi';
+import {RiContactsLine} from 'react-icons/ri';
+import {useRouter} from 'next/router';
+import {twMerge} from 'tailwind-merge';
+import {MdLanguage, MdOutlineDarkMode} from 'react-icons/md';
 import Avatar from 'react-avatar';
-import { DarkModeContext } from '../../contexts/DarkModeProvider';
-import { KEY_LANGUAGE } from '../../constants';
+import {DarkModeContext} from '../../contexts/DarkModeProvider';
+import {KEY_LANGUAGE} from '../../constants';
 import useTranslate from '@/hooks/useTranslate';
 import Divider from '@/components/Divider';
 
