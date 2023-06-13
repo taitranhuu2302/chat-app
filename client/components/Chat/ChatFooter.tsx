@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styles from '@/styles/components/chat.module.scss';
-import { IoIosAttach } from 'react-icons/io';
-import { BiImage } from 'react-icons/bi';
-import { HiOutlineEmojiHappy } from 'react-icons/hi';
-import { MdSend } from 'react-icons/md';
+import {IoIosAttach} from 'react-icons/io';
+import {BiImage} from 'react-icons/bi';
+import {HiOutlineEmojiHappy} from 'react-icons/hi';
+import {MdSend} from 'react-icons/md';
 import useTranslate from '@/hooks/useTranslate';
 
 interface IChatFooter {

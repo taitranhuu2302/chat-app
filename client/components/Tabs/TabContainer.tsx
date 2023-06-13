@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from '@/styles/layouts/Tabs.module.scss';
-import { motion } from 'framer-motion';
+import styles from '@/styles/layouts/tabs.module.scss';
+import {motion} from 'framer-motion';
 
 interface ITabContainer {
   children: React.ReactNode;

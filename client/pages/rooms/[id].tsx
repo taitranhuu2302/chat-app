@@ -1,6 +1,6 @@
 import React from 'react';
 import MainLayout from '@/layouts/MainLayout';
-import { useRouter } from 'next/router';
+import {useRouter} from 'next/router';
 import Chat from '@/components/Chat';
 
 interface IRoomDetail {

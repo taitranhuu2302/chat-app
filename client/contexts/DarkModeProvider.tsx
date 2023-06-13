@@ -1,6 +1,6 @@
-import React, { createContext } from 'react';
-import { useTheme } from 'next-themes';
-import { useEffectOnce } from 'usehooks-ts';
+import React, {createContext} from 'react';
+import {useTheme} from 'next-themes';
+import {useEffectOnce} from 'usehooks-ts';
 
 export interface IDarkModeContext {
   onSetTheme: (type: string | null) => void;

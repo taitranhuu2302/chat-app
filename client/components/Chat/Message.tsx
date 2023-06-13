@@ -1,7 +1,7 @@
 import React from 'react';
 import Avatar from 'react-avatar';
-import { BsThreeDotsVertical } from 'react-icons/bs';
-import { MdContentCopy, MdOutlineDelete } from 'react-icons/md';
+import {BsThreeDotsVertical} from 'react-icons/bs';
+import {MdContentCopy, MdOutlineDelete} from 'react-icons/md';
 
 interface IMessage {
   isOwner?: boolean;

@@ -1,13 +1,13 @@
 import React from 'react';
 import styles from '@/styles/components/chat.module.scss';
 import Avatar from 'react-avatar';
-import { BsThreeDots } from 'react-icons/bs';
-import { AiOutlineUser } from 'react-icons/ai';
+import {BsThreeDots} from 'react-icons/bs';
+import {AiOutlineUser} from 'react-icons/ai';
 import ModalCallAudio from '../Modals/ModalCallAudio';
 import ModalCallVideo from '@/components/Modals/ModalCallVideo';
 import useTranslate from '@/hooks/useTranslate';
-import { IoIosArrowBack } from 'react-icons/io';
-import { useRouter } from 'next/router';
+import {IoIosArrowBack} from 'react-icons/io';
+import {useRouter} from 'next/router';
 
 interface IChatHeader {
   onToggleSidebar: () => void;

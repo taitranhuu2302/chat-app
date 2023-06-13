@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React, {useContext} from 'react';
 import Avatar from 'react-avatar';
-import { BiPhone } from 'react-icons/bi';
-import { BsTelephoneFill } from 'react-icons/bs';
-import { IoClose } from 'react-icons/io5';
-import { DarkModeContext } from '../../contexts/DarkModeProvider';
+import {BiPhone} from 'react-icons/bi';
+import {BsTelephoneFill} from 'react-icons/bs';
+import {IoClose} from 'react-icons/io5';
+import {DarkModeContext} from '../../contexts/DarkModeProvider';
 import useTranslate from '@/hooks/useTranslate';
 
 interface IModalCallAudio {

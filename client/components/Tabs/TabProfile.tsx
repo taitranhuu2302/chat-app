@@ -1,9 +1,6 @@
 import React from 'react';
-import { BsThreeDotsVertical } from 'react-icons/bs';
+import {BsThreeDotsVertical} from 'react-icons/bs';
 import TabContainer from '@/components/Tabs/TabContainer';
-import Avatar from 'react-avatar';
-import Collapse from '@/components/Collapse';
-import { RxDotFilled } from 'react-icons/rx';
 import AvatarCustom from '@/components/AvatarCustom';
 import UserInfo from '@/components/UserInfo';
 import Divider from '@/components/Divider';

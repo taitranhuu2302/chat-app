@@ -1,0 +1,7 @@
+.card-custom {
+  @apply rounded-lg shadow p-4 flex flex-col gap-2.5;
+}
+
+.input-setting {
+  @apply border outline-none rounded bg-transparent;
+}

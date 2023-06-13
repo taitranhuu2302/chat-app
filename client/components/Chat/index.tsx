@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styles from '@/styles/components/chat.module.scss';
 
 import ChatHeader from '@/components/Chat/ChatHeader';
 import ChatContent from '@/components/Chat/ChatContent';
 import ChatFooter from '@/components/Chat/ChatFooter';
 import SidebarProfile from '@/components/Chat/SidebarProfile';
-import { AnimatePresence, motion } from 'framer-motion';
+import {AnimatePresence, motion} from 'framer-motion';
 
 interface IChat {
 

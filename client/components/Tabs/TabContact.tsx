@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, {useState} from 'react';
 import TabContainer from '@/components/Tabs/TabContainer';
 import Input from '@/components/Input';
-import { IoSearchOutline } from 'react-icons/io5';
-import { BsThreeDotsVertical } from 'react-icons/bs';
-import { FakeUser } from '@/components/Tabs/FakeUser';
+import {IoSearchOutline} from 'react-icons/io5';
+import {BsThreeDotsVertical} from 'react-icons/bs';
+import {FakeUser} from '@/components/Tabs/FakeUser';
 import _ from 'lodash';
-import { useEffectOnce } from 'usehooks-ts';
-import { groupByFirstLetter } from '../../utils/ArrayUtils';
+import {useEffectOnce} from 'usehooks-ts';
+import {groupByFirstLetter} from '../../utils/ArrayUtils';
 import useTranslate from '@/hooks/useTranslate';
 
 interface ITabContact {

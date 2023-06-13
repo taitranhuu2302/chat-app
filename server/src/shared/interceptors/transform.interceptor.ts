@@ -25,7 +25,7 @@ export class TransformInterceptor<T>
 
     return next.handle().pipe(
       map((data) => ({
-        data,
+        data: data ? data : null,
         statusCode,
         isSuccess: statusCode >= 200 && statusCode < 300,
       })),

@@ -1,4 +1,5 @@
 module.exports = {
-  locales: ['en', 'vi'],
   defaultLocale: 'en',
+  locales: ['en', 'vi'],
+  localeDetection: false,
 };

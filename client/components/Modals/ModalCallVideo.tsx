@@ -1,7 +1,7 @@
 import React from 'react';
 import Avatar from 'react-avatar';
-import { IoClose } from 'react-icons/io5';
-import { BsCameraVideo, BsCameraVideoFill } from 'react-icons/bs';
+import {IoClose} from 'react-icons/io5';
+import {BsCameraVideo, BsCameraVideoFill} from 'react-icons/bs';
 import useTranslate from '@/hooks/useTranslate';
 
 interface IModalCallVideo {
