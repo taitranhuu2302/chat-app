@@ -3,6 +3,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Match } from '../../shared/decorator/matches.decorator';
 
 export class RegisterDto {
+  @ApiProperty({type: String, default: "John"})
+  @IsString()
+  @IsNotEmpty()
+  firstName: string;
+
+  @ApiProperty({type: String, default: "Witch"})
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
+
   @ApiProperty({
     type: String,
     default: 'example@gmail.com',
