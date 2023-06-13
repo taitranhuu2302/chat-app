@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '@/styles/components/chat.module.scss';
 import Avatar from 'react-avatar';
-import {BsThreeDots} from 'react-icons/bs';
+import {BsCameraVideo, BsThreeDots} from 'react-icons/bs';
 import {AiOutlineUser} from 'react-icons/ai';
 import ModalCallAudio from '../Modals/ModalCallAudio';
 import ModalCallVideo from '@/components/Modals/ModalCallVideo';
@@ -29,8 +29,7 @@ const ChatHeader: React.FC<IChatHeader> = ({ onToggleSidebar }) => {
       <p className={'text-md font-semibold'}>Tran Huu Tai</p>
     </div>
     <div className={styles.chatHeaderRight}>
-      <ModalCallAudio />
-      <ModalCallVideo />
+      <label data-tip={t.home.room.header.videoCall.label} className={'tooltip tooltip-bottom cursor-pointer'} htmlFor={'modal-call-video'}><BsCameraVideo size={22} /></label>
       <button data-tip={t.home.room.header.profile} className={'tooltip tooltip-bottom'} onClick={onToggleSidebar}>
         <AiOutlineUser size={22} /></button>
       <div className={'dropdown dropdown-left'}>
