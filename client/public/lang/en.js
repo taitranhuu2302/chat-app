@@ -116,6 +116,8 @@ const language = {
         or: "or",
         loginGoogle: "Login with google"
     },
+    settings: "Settings",
+    saveChanges: "Save Changes"
 };
 
 export default language;

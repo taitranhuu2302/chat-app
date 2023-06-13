@@ -196,7 +196,7 @@ const SidebarItemLink = ({
       data-tip={tooltip}
       onClick={() =>
         router.replace({
-          pathname: path ? path : router.pathname,
+          pathname: path ? path : router.pathname === '/settings' ? '/' : router.pathname,
           query: { ...router.query, tab: tabText },
         })
       }

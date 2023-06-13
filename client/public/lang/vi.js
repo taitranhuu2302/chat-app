@@ -116,6 +116,8 @@ const language = {
     or: "Hoặc",
     loginGoogle: "Đăng nhập với google"
   },
+  settings: "Cài đặt",
+  saveChanges: "Lưu thay đổi"
 }
 
 export default language;
