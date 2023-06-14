@@ -14,6 +14,7 @@ import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import { KEY_LANGUAGE } from '../../constants';
 import useTranslate from '@/hooks/useTranslate';
 import Divider from '@/components/Divider';
+import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
 
 interface ISidebar {}
 
@@ -24,6 +25,7 @@ const Sidebar: React.FC<ISidebar> = () => {
   } = router;
   const { onSetTheme, theme } = useContext(DarkModeContext);
   const t = useTranslate();
+  const { removeAuth } = useContext(AuthContext) as AuthContextType;
 
   const onChangeLang = async (lang: string) => {
     await router.push(router.asPath, router.asPath, {
@@ -33,6 +35,7 @@ const Sidebar: React.FC<ISidebar> = () => {
   };
 
   const handleLogout = async () => {
+    removeAuth();
     await router.push('/auth');
   };
 
@@ -196,7 +199,11 @@ const SidebarItemLink = ({
       data-tip={tooltip}
       onClick={() =>
         router.replace({
-          pathname: path ? path : router.pathname === '/settings' ? '/' : router.pathname,
+          pathname: path
+            ? path
+            : router.pathname === '/settings'
+            ? '/'
+            : router.pathname,
           query: { ...router.query, tab: tabText },
         })
       }

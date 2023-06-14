@@ -9,6 +9,7 @@ import Head from 'next/head';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import AuthProvider from '../contexts/AuthContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,9 +29,11 @@ export default function App({ Component, pageProps }: AppProps) {
         <QueryClientProvider client={queryClient}>
           <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ''}>
             <Provider store={store}>
-              <DarkModeProvider>
-                <Component {...pageProps} />
-              </DarkModeProvider>
+              <AuthProvider>
+                <DarkModeProvider>
+                  <Component {...pageProps} />
+                </DarkModeProvider>
+              </AuthProvider>
             </Provider>
             <Toaster
               gutter={8}

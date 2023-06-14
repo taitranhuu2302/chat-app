@@ -2,8 +2,10 @@ import MainLayout from '@/layouts/MainLayout';
 import Image from 'next/image';
 import useTranslate from '@/hooks/useTranslate';
 import React from 'react';
+import withAuth from '@/HOC/withAuth';
+import LoadingPage from '@/components/Loading';
 
-export default function Home() {
+function Home() {
   const t = useTranslate();
 
   return (
@@ -18,3 +20,5 @@ export default function Home() {
     </MainLayout>
   );
 }
+
+export default withAuth(Home);
