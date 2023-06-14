@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -8,6 +8,8 @@ import LoginSocial from '@/components/LoginSocial';
 import * as yup from 'yup';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { setToken, useLoginApi } from '@/service/AuthService';
+import {getErrorResponse} from "@/utils/ErrorUtils";
 
 interface ILoginPage {}
 
@@ -24,6 +26,7 @@ const schema = yup.object().shape({
 
 const LoginPage: React.FC<ILoginPage> = () => {
   const router = useRouter();
+  const { mutateAsync } = useLoginApi();
   const t: any = useTranslate();
   const {
     register,
@@ -32,8 +35,15 @@ const LoginPage: React.FC<ILoginPage> = () => {
   } = useForm<LoginType>({
     resolver: yupResolver<any>(schema),
   });
-  const onSubmit: SubmitHandler<LoginType> = (data) => {
-    console.log(data);
+  const [errorsResponse, setErrorsResponse] = useState<string[]>([]);
+  const onSubmit: SubmitHandler<LoginType> = async (data) => {
+    try {
+      const response = await mutateAsync(data);
+      setToken(response.data);
+      await router.push('/');
+    } catch (error: any) {
+        setErrorsResponse([...getErrorResponse(error.message)]);
+    }
   };
 
   return (
@@ -96,6 +106,13 @@ const LoginPage: React.FC<ILoginPage> = () => {
                 {errors.password.message}
               </li>
             )}
+            {errorsResponse.map((item, index) => {
+              return (
+                <li key={index} className={'text-red-500 text-[15px]'}>
+                  {item}
+                </li>
+              );
+            })}
           </ul>
           <button
             type={'submit'}

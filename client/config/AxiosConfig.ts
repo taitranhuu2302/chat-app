@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { getToken } from '../service/AuthService';
+import { getToken } from '@/service/AuthService';
 import { camelizeKeys } from 'humps';
 
 const instance = axios.create({
   baseURL: process.env.API_URL,
   headers: {
     'Content-Type': 'application/json',
+    Accept: 'application/json',
   },
 });
 
@@ -33,7 +34,7 @@ instance.interceptors.response.use(
     }
     return response.data ? response.data : response;
   },
-  async (error) => Promise.reject(error)
+  async (error) => Promise.reject(error.response ? error.response.data : error)
 );
 
 export default instance;

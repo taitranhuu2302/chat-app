@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import useTranslate from '@/hooks/useTranslate';
@@ -7,6 +7,10 @@ import withPageLoading from '../../HOC/withPageLoading';
 import * as yup from 'yup';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { setToken, useRegisterApi } from '@/service/AuthService';
+import { useRouter } from 'next/router';
+import IconLoading from '@/components/Loading/IconLoading';
+import { getErrorResponse } from '@/utils/ErrorUtils';
 
 interface IRegister {}
 
@@ -35,9 +39,18 @@ const RegisterPage: React.FC<IRegister> = () => {
   } = useForm<RegisterType>({
     resolver: yupResolver<any>(schema),
   });
+  const { mutateAsync, isLoading } = useRegisterApi();
+  const router = useRouter();
+  const [errorsResponse, setErrorsResponse] = useState<string[]>([]);
 
-  const onSubmit: SubmitHandler<RegisterType> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<RegisterType> = async (data) => {
+    try {
+      const response = await mutateAsync(data);
+      setToken(response.data);
+      await router.push('/');
+    } catch (e: any) {
+      setErrorsResponse([...getErrorResponse(e.message)]);
+    }
   };
 
   return (
@@ -150,11 +163,22 @@ const RegisterPage: React.FC<IRegister> = () => {
                 {errors.confirmPassword.message}
               </li>
             )}
+            {errorsResponse.map((item, index) => {
+              return (
+                <li key={index} className={'text-red-500 text-[15px]'}>
+                  {item}
+                </li>
+              );
+            })}
           </ul>
           <button
-            className={'bg-primary text-light w-full py-2 rounded-md mt-5'}>
-            {t.auth.signUp.label}
+            disabled={isLoading}
+            className={
+              'bg-primary text-light flex-center w-full py-2 rounded-md mt-5'
+            }>
+            {isLoading ? <IconLoading size={'25px'} /> : t.auth.signUp.label}
           </button>
+
           <LoginSocial />
           <p className={'text-sm mt-10 text-center'}>
             {t.auth.signUp.subDescription}{' '}
