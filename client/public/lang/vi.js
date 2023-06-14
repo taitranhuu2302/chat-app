@@ -114,7 +114,15 @@ const language = {
       hint: 'Nhập lại mật khẩu'
     },
     or: "Hoặc",
-    loginGoogle: "Đăng nhập với google"
+    loginGoogle: "Đăng nhập với google",
+    firstName: {
+      label: 'Họ',
+      hint: 'Họ'
+    },
+    lastName: {
+      label: 'Tên',
+      hint: 'Tên'
+    },
   },
   settings: "Cài đặt",
   saveChanges: "Lưu thay đổi"

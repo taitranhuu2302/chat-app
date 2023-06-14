@@ -114,7 +114,15 @@ const language = {
             hint: 'Enter Confirm Password'
         },
         or: "or",
-        loginGoogle: "Login with google"
+        loginGoogle: "Login with google",
+        firstName: {
+            label: 'First Name',
+            hint: 'First Name'
+        },
+        lastName: {
+            label: 'Last Name',
+            hint: 'Last Name'
+        },
     },
     settings: "Settings",
     saveChanges: "Save Changes"
