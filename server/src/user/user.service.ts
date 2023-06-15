@@ -307,6 +307,36 @@ export class UserService {
     return !!check;
   }
 
+  async cancelFriendRequest(dto: FriendRequestDto) {
+    const { senderId, receiverId } = dto;
+    const sender = await this.userModel.findById(senderId);
+    const receiver = await this.userModel.findById(receiverId);
+
+    if (!sender || !receiver) throw new BadRequestException('User not found');
+
+    if (!(await this.isRequestFriend(senderId, receiverId)))
+      throw new BadRequestException('You haven\'t sent a friend request yet');
+
+    await this.userRequestFriendModel.findOneAndDelete({
+      sender: sender._id,
+      receiver: receiver._id,
+      deletedAt: null,
+    });
+
+    const client = await this.redisService.getSocketId(dto.senderId);
+
+    if (client) {
+      const mapped = plainToClass(UserDto, receiver, {
+        excludeExtraneousValues: true,
+      });
+      this.socketService.socket
+          .to(client)
+          .emit(SOCKET_EVENT.USER.CANCEL_FRIEND_REQUEST, mapped);
+    }
+
+    return null;
+  }
+
   async sendFriendRequest(dto: FriendRequestDto) {
     const { senderId, receiverId } = dto;
     const sender = await this.userModel.findById(senderId);

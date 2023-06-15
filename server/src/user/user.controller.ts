@@ -97,6 +97,12 @@ export class UserController {
     return await this.userService.sendFriendRequest(dto);
   }
 
+  @Post(API.USER.CANCEL_REQUEST_FRIEND)
+  @ApiBody({ type: FriendRequestDto })
+  async cancelFriendRequest(@Body() dto: FriendRequestDto) {
+    return await this.userService.cancelFriendRequest(dto);
+  }
+
   @Get(API.USER.GET_BY_EMAIL)
   @ApiParam({ name: 'email' })
   async getByEmail(@GetUser() { sub }, @Param() params: any) {

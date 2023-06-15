@@ -12,3 +12,8 @@ export const useSendRequestFriendApi = (options?: any) => {
     return useMutation([API.USER.SEND_REQUEST_FRIEND], (data: RequestFriendType): Promise<any> => 
         axiosConfig.post(API.USER.SEND_REQUEST_FRIEND, data), options)
 }
+
+export const useCancelRequestFriendApi = (options?: any) => {
+    return useMutation([API.USER.CANCEL_REQUEST_FRIEND], (data: RequestFriendType): Promise<any> =>
+        axiosConfig.post(API.USER.CANCEL_REQUEST_FRIEND, data), options)
+}

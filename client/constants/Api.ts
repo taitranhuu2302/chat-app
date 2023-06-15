@@ -16,6 +16,7 @@ export const API = {
     GET_BY_ID: `/users/get-user-by-id/:id`,
     GET_BY_EMAIL: `/users/get-user-by-email/:email`,
     SEND_REQUEST_FRIEND: `/users/send-request-friend`,
+    CANCEL_REQUEST_FRIEND: `/users/cancel-request-friend`,
     UN_FRIEND: `/users/un-friend`,
     GET_REQUEST_FRIEND: `/users/get-request-friend/:id`,
     GET_FRIEND: `/users/get-friend/:id`,
