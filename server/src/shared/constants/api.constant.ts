@@ -10,6 +10,7 @@ export const API = {
   },
   USER: {
     INDEX: `${PREFIX}/users`,
+    SEARCH: `search`,
     UPDATE: `update-information`,
     CHANGE_PASSWORD: `change-password`,
     CHANGE_AVATAR: `change-avatar`,

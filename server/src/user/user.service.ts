@@ -62,6 +62,37 @@ export class UserService {
     });
   }
 
+  async searchUser(sub: string, options: PaginationOptions, keywords: string) {
+    delete options.search;
+
+    const regex = new RegExp(keywords, 'i');
+    return await paginate(
+      this.userModel.find({
+        $or: [
+          { email: { $regex: regex } },
+          { firstName: { $regex: regex } },
+          { lastName: { $regex: regex } },
+        ],
+      }),
+      options,
+      async (data) => {
+        const formattedData = [];
+        for (const u of data) {
+          const userDto = plainToClass(UserDto, u, {
+            excludeExtraneousValues: true,
+          });
+          const currentUser = await this.getCurrentUser(sub, userDto._id);
+          const formattedUser = {
+            ...userDto,
+            ...currentUser,
+          };
+          formattedData.push(formattedUser);
+        }
+        return formattedData;
+      },
+    );
+  }
+
   async getCurrentUser(
     sub: string | Schema.Types.ObjectId,
     userId: string | Schema.Types.ObjectId,
@@ -170,8 +201,8 @@ export class UserService {
     await this.notifyService.createNotify({
       owner: sender._id.toString(),
       title: `${receiver.firstName} ${receiver.lastName} accepted the friend request`,
-      type: NotifyEnum.DEFAULT
-    })
+      type: NotifyEnum.DEFAULT,
+    });
 
     return null;
   }
@@ -205,8 +236,8 @@ export class UserService {
     await this.notifyService.createNotify({
       owner: sender._id.toString(),
       title: `${receiver.firstName} ${receiver.lastName} declined the friend request`,
-      type: NotifyEnum.DEFAULT
-    })
+      type: NotifyEnum.DEFAULT,
+    });
 
     return null;
   }

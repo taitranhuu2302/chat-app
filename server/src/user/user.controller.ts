@@ -6,12 +6,19 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { JwtGuard } from '../auth/guard/jwt.guard';
@@ -39,6 +46,16 @@ export class UserController {
     @PaginateQuery() paginate: PaginationOptions,
   ) {
     return this.userService.index(sub, paginate);
+  }
+
+  @Get(API.USER.SEARCH)
+  @ApiQuery({ name: 'keywords', type: String })
+  async search(
+    @GetUser() { sub },
+    @PaginateQuery() paginate: PaginationOptions,
+    @Query('keywords') keywords,
+  ) {
+    return this.userService.searchUser(sub, paginate, keywords);
   }
 
   @Get(API.USER.GET_REQUEST_FRIEND)

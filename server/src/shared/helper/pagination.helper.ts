@@ -21,7 +21,7 @@ export const paginate = async <T, TResult>(
   formatResults?: (data: T[]) => Promise<TResult[]>,
 ) => {
   const { limit = 10, page = 1, search, sort } = options;
-  let _query = clone(query);
+  let _query: Query<any, T> = clone(query);
 
   if (search) {
     for (const key in search) {
