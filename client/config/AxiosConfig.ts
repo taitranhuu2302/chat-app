@@ -34,7 +34,16 @@ instance.interceptors.response.use(
     }
     return response.data ? response.data : response;
   },
-  async (error) => Promise.reject(error.response ? error.response.data : error)
+  async (error) => {
+    if (!error.response) return Promise.reject(error);
+
+    if (error.response.statusCode === 401) {
+      window.location.href = '/auth';
+      return Promise.reject(error.response.data);
+    }
+
+    return Promise.reject(error.response.data);
+  }
 );
 
 export default instance;

@@ -11,6 +11,8 @@ import { setToken, useRegisterApi } from '@/service/AuthService';
 import { useRouter } from 'next/router';
 import IconLoading from '@/components/Loading/IconLoading';
 import { getErrorResponse } from '@/utils/ErrorUtils';
+import { API } from '@/constants/Api';
+import { useQueryClient } from 'react-query';
 
 interface IRegister {}
 
@@ -42,11 +44,13 @@ const RegisterPage: React.FC<IRegister> = () => {
   const { mutateAsync, isLoading } = useRegisterApi();
   const router = useRouter();
   const [errorsResponse, setErrorsResponse] = useState<string[]>([]);
+  const queryClient = useQueryClient();
 
   const onSubmit: SubmitHandler<RegisterType> = async (data) => {
     try {
       const response = await mutateAsync(data);
       setToken(response.data);
+      await queryClient.refetchQueries([API.AUTH.GET_ME]);
       await router.push('/');
     } catch (e: any) {
       setErrorsResponse([...getErrorResponse(e.message)]);

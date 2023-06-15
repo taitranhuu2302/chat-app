@@ -1,4 +1,4 @@
-import { TOKEN_KEY } from '../constants/Auth';
+import { TOKEN_KEY } from '@/constants/Auth';
 import { TokenResponse } from '@react-oauth/google';
 import { useMutation, useQuery } from 'react-query';
 import axiosConfig from '../config/AxiosConfig';

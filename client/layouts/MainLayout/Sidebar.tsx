@@ -25,7 +25,7 @@ const Sidebar: React.FC<ISidebar> = () => {
   } = router;
   const { onSetTheme, theme } = useContext(DarkModeContext);
   const t = useTranslate();
-  const { removeAuth } = useContext(AuthContext) as AuthContextType;
+  const { removeAuth, auth } = useContext(AuthContext) as AuthContextType;
 
   const onChangeLang = async (lang: string) => {
     await router.push(router.asPath, router.asPath, {
@@ -154,7 +154,12 @@ const Sidebar: React.FC<ISidebar> = () => {
           </li>
           <li className={'dropdown dropdown-top'}>
             <label tabIndex={0} className={`${styles.sidebarItem}`}>
-              <Avatar name={'Tran Huu Tai'} size={'40px'} round />
+              <Avatar
+                name={`${auth?.firstName} ${auth?.lastName}`}
+                src={auth?.avatar}
+                size={'40px'}
+                round
+              />
             </label>
             <ul
               tabIndex={0}

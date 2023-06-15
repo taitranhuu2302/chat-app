@@ -1,8 +1,7 @@
 import { ComponentType, FC, useContext, useEffect } from 'react';
-import { useAppSelector } from '@/redux/hooks';
-import LoadingPage from '@/components/Loading';
 import { AuthContext, AuthContextType } from '../contexts/AuthContext';
 import { useRouter } from 'next/router';
+import LoadingPage from '@/components/Loading';
 
 interface HOCProps {}
 
@@ -14,14 +13,14 @@ function withHOC<T extends object>(
     const router = useRouter();
 
     useEffect(() => {
-      if (!authLoading && !auth) {
-        router.push('/auth').then((r) => {});
+      if (!authLoading && auth) {
+        router.push('/').then((r) => {});
       }
     }, [auth, authLoading]);
 
     return (
       <>
-        {authLoading && !auth ? (
+        {authLoading ? (
           <LoadingPage floating={false} />
         ) : (
           <WrappedComponent {...props} />

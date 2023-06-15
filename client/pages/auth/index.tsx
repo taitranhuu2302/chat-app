@@ -10,6 +10,8 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { setToken, useLoginApi } from '@/service/AuthService';
 import {getErrorResponse} from "@/utils/ErrorUtils";
+import {API} from "@/constants/Api";
+import {useQueryClient} from "react-query";
 
 interface ILoginPage {}
 
@@ -36,10 +38,12 @@ const LoginPage: React.FC<ILoginPage> = () => {
     resolver: yupResolver<any>(schema),
   });
   const [errorsResponse, setErrorsResponse] = useState<string[]>([]);
+  const queryClient = useQueryClient()
   const onSubmit: SubmitHandler<LoginType> = async (data) => {
     try {
       const response = await mutateAsync(data);
       setToken(response.data);
+      await queryClient.refetchQueries([API.AUTH.GET_ME]);
       await router.push('/');
     } catch (error: any) {
         setErrorsResponse([...getErrorResponse(error.message)]);

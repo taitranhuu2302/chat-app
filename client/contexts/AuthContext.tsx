@@ -17,6 +17,7 @@ interface IAuthProvider {
 const AuthProvider: React.FC<IAuthProvider> = ({ children }) => {
   const [auth, setAuth] = useState<UserType | null>(null);
   const { isLoading: authLoading } = useGetMeApi({
+    retry: 1,
     onSuccess: ({ data }: { data: UserType }) => {
       setAuth(data);
     },
