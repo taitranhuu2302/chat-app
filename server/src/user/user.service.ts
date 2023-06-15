@@ -4,9 +4,22 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as argon from 'argon2';
+import { plainToClass } from 'class-transformer';
+import { Model, Schema } from 'mongoose';
+import { RedisService } from '../redis/redis.service';
+import { SOCKET_EVENT } from '../shared/constants/socket.constant';
+import {
+  PaginationOptions,
+  paginate,
+} from '../shared/helper/pagination.helper';
+import { SocketService } from '../socket/socket.service';
+import { FriendRequestDto } from './dto/friend-request.dto';
+import { UserChangePasswordDto } from './dto/user-change-password.dto';
+import { UserUpdateDto } from './dto/user-update.dto';
+import { UserDto } from './dto/user.dto';
 import {
   User,
   UserDocument,
@@ -15,20 +28,8 @@ import {
   UserRequestFriend,
   UserRequestFriendDocument,
 } from './user.model';
-import { Model, Schema } from 'mongoose';
-import { UserUpdateDto } from './dto/user-update.dto';
-import { UserChangePasswordDto } from './dto/user-change-password.dto';
-import * as argon from 'argon2';
-import { FriendRequestDto } from './dto/friend-request.dto';
-import {
-  paginate,
-  PaginationOptions,
-} from '../shared/helper/pagination.helper';
-import { plainToClass } from 'class-transformer';
-import { UserDto } from './dto/user.dto';
-import { SocketService } from '../socket/socket.service';
-import { SOCKET_EVENT } from '../shared/constants/socket.constant';
-import { RedisService } from '../redis/redis.service';
+import { NotifyService } from 'src/notify/notify.service';
+import { NotifyEnum } from 'src/notify/notify.model';
 
 @Injectable()
 export class UserService {
@@ -40,6 +41,7 @@ export class UserService {
     private userRequestFriendModel: Model<UserRequestFriendDocument>,
     private socketService: SocketService,
     private redisService: RedisService,
+    private notifyService: NotifyService,
   ) {}
 
   async index(sub: string, options: PaginationOptions) {
@@ -165,6 +167,12 @@ export class UserService {
         .emit(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST, mapped);
     }
 
+    await this.notifyService.createNotify({
+      owner: sender._id.toString(),
+      title: `${receiver.firstName} ${receiver.lastName} accepted the friend request`,
+      type: NotifyEnum.DEFAULT
+    })
+
     return null;
   }
 
@@ -193,6 +201,12 @@ export class UserService {
         .to(client)
         .emit(SOCKET_EVENT.USER.REJECT_FRIEND_REQUEST, mapped);
     }
+
+    await this.notifyService.createNotify({
+      owner: sender._id.toString(),
+      title: `${receiver.firstName} ${receiver.lastName} declined the friend request`,
+      type: NotifyEnum.DEFAULT
+    })
 
     return null;
   }
@@ -284,11 +298,12 @@ export class UserService {
         .to(client)
         .emit(SOCKET_EVENT.USER.SEND_REQUEST_FRIEND, mapped);
     }
-
-    return await this.userRequestFriendModel.create({
+    const userRequestFriend = await this.userRequestFriendModel.create({
       sender: sender._id,
       receiver: receiver._id,
     });
+
+    return userRequestFriend;
   }
 
   async updateInformation(sub: string, userDto: UserUpdateDto) {

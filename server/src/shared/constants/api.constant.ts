@@ -22,4 +22,7 @@ export const API = {
     REJECT_REQUEST_FRIEND: 'reject-request-friend',
     ACCEPT_REQUEST_FRIEND: 'accept-request-friend',
   },
+  NOTIFY: {
+    INDEX: `${PREFIX}/notify`,
+  }
 };

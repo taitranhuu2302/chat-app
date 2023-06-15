@@ -10,23 +10,21 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { API } from '../shared/constants/api.constant';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { UserUpdateDto } from './dto/user-update.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { plainToClass } from 'class-transformer';
-import { UserDto } from './dto/user.dto';
-import { UserChangePasswordDto } from './dto/user-change-password.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { localOptionsUserAvatar } from '../shared/helper/file.helper';
-import { FriendRequestDto } from './dto/friend-request.dto';
-import { PaginationOptions } from '../shared/helper/pagination.helper';
+import { API } from '../shared/constants/api.constant';
 import { PaginateQuery } from '../shared/decorator/pagination-query.decorator';
-import { SocketService } from '../socket/socket.service';
-import { RedisService } from '../redis/redis.service';
+import { localOptionsUserAvatar } from '../shared/helper/file.helper';
+import { PaginationOptions } from '../shared/helper/pagination.helper';
+import { FriendRequestDto } from './dto/friend-request.dto';
 import { UnFriendDto } from './dto/un-friend.dto';
+import { UserChangePasswordDto } from './dto/user-change-password.dto';
+import { UserUpdateDto } from './dto/user-update.dto';
+import { UserDto } from './dto/user.dto';
+import { UserService } from './user.service';
 
 @Controller(API.USER.INDEX)
 @ApiTags('User')
