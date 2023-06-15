@@ -1,9 +1,12 @@
-import React, { ChangeEvent, useState, useTransition } from 'react'
-import Input from '../Input'
 import useTranslate from '@/hooks/useTranslate'
-import { IoSearchOutline } from 'react-icons/io5'
+import { useGetUserApi, useSendRequestFriendApi } from '@/service/UserService'
+import { AuthContext, AuthContextType } from 'contexts/AuthContext'
+import React, { useCallback, useContext, useState } from 'react'
 import Avatar from 'react-avatar'
-import { useGetUserApi } from '@/service/UserService'
+import { IoSearchOutline } from 'react-icons/io5'
+import { useDebounce } from 'usehooks-ts'
+import Input from '../Input'
+import IconLoading from '../Loading/IconLoading'
 
 interface Props {
 
@@ -11,26 +14,58 @@ interface Props {
 
 const ModalSearchUser: React.FC<Props> = () => {
     const t = useTranslate()
-    const [email, setEmail] = useState<string>("")
-    const [isPending, startTransition] = useTransition()
+    const [keywords, setKeywords] = useState<string>("")
+    const debounceSearchQuery = useDebounce(keywords, 500)
+    const [users, setUsers] = useState<UserType[]>([])
+    const { auth } = useContext(AuthContext) as AuthContextType;
+    const { mutateAsync: sendFriendRequest, isLoading: sendFriendRequestLoading } = useSendRequestFriendApi({
+        onSuccess: () => {
+            refetch();
+        }
+    })
 
-    useGetUserApi({
+    const { isLoading, refetch } = useGetUserApi({
         options: {
-            enabled: !!email,
-            onSuccess: ({ results }: { results: UserType[] }) => {
-                console.log(results);
+            enabled: !!debounceSearchQuery,
+            onSuccess: ({ data }: { data: Paginate<UserType> }) => {
+                setUsers(data.results.filter(u => u._id !== auth?._id))
             }
         },
         query: {
-            email
+            keywords: debounceSearchQuery
         }
     })
 
     const handleChangeSearch = (value: string) => {
-        // startTransition(() => {
-        //     setEmail(value)
-        // })
+        if (!value) {
+            setUsers([])
+        }
+
+        setKeywords(value)
     }
+
+    const renderButtonAction = useCallback((currentUser: CurrentUser, userId: string) => {
+        if (currentUser.isFriend) {
+            return <button className='btn btn-sm btn-outline btn-error'>Cancel Friend</button>
+        }
+
+        if (currentUser.isRequestSent) {
+            return <button className='btn btn-sm btn-outline btn-error'>Cancel Request Friend</button>
+        }
+
+        if (currentUser.isRequestReceived) {
+            return <button className='btn btn-sm btn-outline btn-success'>Accept Request Friend</button>
+        }
+
+        const request: RequestFriendType = {
+            senderId: auth?._id!,
+            receiverId: userId
+        }
+
+        return <button disabled={sendFriendRequestLoading} onClick={() => sendFriendRequest(request)} className='btn btn-sm btn-outline btn-info'>
+            {sendFriendRequestLoading ? <IconLoading color='#007BFF' size="20px" /> : 'Add Friend'}
+        </button>
+    }, [sendFriendRequestLoading, auth?._id])
 
 
     return (
@@ -38,17 +73,36 @@ const ModalSearchUser: React.FC<Props> = () => {
             <input type="checkbox" id="modal-search-user" className='modal-toggle' />
             <div className='modal'>
                 <div className="modal-box max-w-[900px]">
-                    <Input placeholder={t.home.tab.contact.searchHint} value={email} onChange={handleChangeSearch} iconStart={<IoSearchOutline size={20} />} />
-                    <ul className='flex flex-col gap-2.5 mt-5'>
-                        <li className='flex items-center justify-between'>
-                            <div className='flex gap-2.5 items-center'>
-                                <Avatar size={"40px"} round name="tran Huu tai" />
-                                <p>Tran Huu Tai</p>
-                            </div>
-                            <div>
-                                <button className='btn btn-sm btn-outline btn-info'>Add</button>
-                            </div>
-                        </li>
+                    <Input placeholder={t.home.tab.contact.searchHint} value={keywords} onChange={handleChangeSearch} iconStart={<IoSearchOutline size={20} />} />
+                    <ul className='flex flex-col gap-3 mt-5'>
+                        {
+                            !isLoading && !users.length && (
+                                <li className='flex-center font-semibold text-lg'>
+                                    {`Let's look for someone`}
+                                </li>
+                            )
+                        }
+                        {
+                            isLoading && (
+                                <li className='flex-center'>
+                                    <IconLoading color='#333' size={"35px"} />
+                                </li>
+                            )
+                        }
+                        {users.map((user: UserType) => {
+                            const fullName = `${user.firstName} ${user.lastName}`;
+                            return (
+                                <li key={`search-${user._id}`} className='flex items-center justify-between'>
+                                    <div className='flex gap-2.5 items-center'>
+                                        <Avatar size={"40px"} round src={user.avatar} name={fullName} />
+                                        <p>{fullName}</p>
+                                    </div>
+                                    <div>
+                                        {renderButtonAction(user.currentUser!, user._id)}
+                                    </div>
+                                </li>
+                            )
+                        })}
                     </ul>
                 </div>
                 <label className="modal-backdrop" htmlFor="modal-search-user">Close</label>

@@ -9,6 +9,7 @@ export const API = {
   },
   USER: {
     INDEX: `/users`,
+    SEARCH: `/users/search`,
     UPDATE: `/users/update-information`,
     CHANGE_PASSWORD: `/users/change-password`,
     CHANGE_AVATAR: `/users/change-avatar`,
