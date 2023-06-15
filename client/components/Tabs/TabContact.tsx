@@ -8,6 +8,7 @@ import _ from 'lodash';
 import {useEffectOnce} from 'usehooks-ts';
 import {groupByFirstLetter} from '../../utils/ArrayUtils';
 import useTranslate from '@/hooks/useTranslate';
+import { AiOutlineUserAdd } from 'react-icons/ai';
 
 interface ITabContact {
 
@@ -22,7 +23,11 @@ const TabContact: React.FC<ITabContact> = () => {
   })
   
   return <>
-    <TabContainer title={t.home.tab.contact.title}>
+    <TabContainer title={t.home.tab.contact.title} headerActions={
+      <label htmlFor='modal-search-user' className='block cursor-pointer'>
+        <AiOutlineUserAdd size={22}/>
+      </label>
+    }>
       <Input className={'mt-5'} placeholder={t.home.tab.contact.searchHint} iconStart={<IoSearchOutline size={20} />} />
       <div className={'flex px-2.5 flex-col h-0 flex-grow overflow-y-auto scrollbar mt-5'}>
         {
