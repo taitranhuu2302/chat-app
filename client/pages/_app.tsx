@@ -1,8 +1,9 @@
 import '@/styles/globals.scss';
 import '@/styles/commons.scss';
+import 'react-loading-skeleton/dist/skeleton.css'
 import type { AppProps } from 'next/app';
 import { Provider } from 'react-redux';
-import { store } from '../redux/store';
+import { store } from '@/redux/store';
 import { ThemeProvider } from 'next-themes';
 import DarkModeProvider from '../contexts/DarkModeProvider';
 import Head from 'next/head';
@@ -10,6 +11,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import AuthProvider from '../contexts/AuthContext';
+import SocketProvider from "../contexts/SocketContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,7 +33,9 @@ export default function App({ Component, pageProps }: AppProps) {
             <Provider store={store}>
               <AuthProvider>
                 <DarkModeProvider>
-                  <Component {...pageProps} />
+                  <SocketProvider>
+                    <Component {...pageProps} />
+                  </SocketProvider>
                 </DarkModeProvider>
               </AuthProvider>
             </Provider>

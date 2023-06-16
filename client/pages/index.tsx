@@ -3,7 +3,7 @@ import Image from 'next/image';
 import useTranslate from '@/hooks/useTranslate';
 import React from 'react';
 import withAuth from '@/HOC/withAuth';
-import LoadingPage from '@/components/Loading';
+import withPageLoading from '@/HOC/withPageLoading';
 
 function Home() {
   const t = useTranslate();
@@ -21,4 +21,4 @@ function Home() {
   );
 }
 
-export default withAuth(Home);
+export default withAuth(withPageLoading(Home));

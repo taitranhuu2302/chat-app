@@ -12,6 +12,7 @@ import { setToken, useLoginApi } from '@/service/AuthService';
 import {getErrorResponse} from "@/utils/ErrorUtils";
 import {API} from "@/constants/Api";
 import {useQueryClient} from "react-query";
+import withLogged from "@/HOC/withLogged";
 
 interface ILoginPage {}
 
@@ -136,4 +137,4 @@ const LoginPage: React.FC<ILoginPage> = () => {
   );
 };
 
-export default withPageLoading(LoginPage);
+export default withLogged(withPageLoading(LoginPage));

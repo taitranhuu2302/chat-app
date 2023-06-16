@@ -11,12 +11,20 @@ type UserType = {
 };
 
 type CurrentUser = {
-  isFriend: boolean,
-  isRequestSent: boolean,
-  isRequestReceived: boolean,
-}
+  isFriend: boolean;
+  isRequestSent: boolean;
+  isRequestReceived: boolean;
+};
 
 type RequestFriendType = {
   senderId: string;
   receiverId: string;
-}
+};
+
+type UserRequestFriendType = {
+  _id: string;
+  sender: UserType;
+  receiver: string;
+  createdAt: string;
+  updatedAt: string;
+};

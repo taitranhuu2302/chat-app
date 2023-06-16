@@ -13,6 +13,7 @@ import IconLoading from '@/components/Loading/IconLoading';
 import { getErrorResponse } from '@/utils/ErrorUtils';
 import { API } from '@/constants/Api';
 import { useQueryClient } from 'react-query';
+import withLogged from "@/HOC/withLogged";
 
 interface IRegister {}
 
@@ -196,4 +197,4 @@ const RegisterPage: React.FC<IRegister> = () => {
   );
 };
 
-export default withPageLoading(RegisterPage);
+export default withLogged(withPageLoading(RegisterPage));

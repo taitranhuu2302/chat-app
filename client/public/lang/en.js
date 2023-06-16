@@ -125,7 +125,16 @@ const language = {
         },
     },
     settings: "Settings",
-    saveChanges: "Save Changes"
+    saveChanges: "Save Changes",
+    accept: "Accept",
+    reject: "Reject",
+    confirm: "Confirm",
+    close: "Close",
+    requestFriend: 'Request Friend',
+    messageRejectRequestFriend: 'Want to decline a friend request ?',
+    messageAcceptRequestSuccess: "Friend request accepted successfully",
+    friend: "Friend",
+    messageCancelFriend: "You want to unfriend?",
 };
 
 export default language;

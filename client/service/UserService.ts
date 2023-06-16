@@ -1,14 +1,17 @@
 import { API } from '@/constants/Api';
-import { useMutation, useQuery } from 'react-query';
+import { useInfiniteQuery, useMutation, useQuery } from 'react-query';
 import axiosConfig from '@/config/AxiosConfig';
 import queryString from 'query-string';
 
 export const useGetUserApi = ({ options, query }: any) => {
-  return useQuery(
+  return useInfiniteQuery(
     [API.USER.SEARCH, query],
     (): Promise<ResponseSuccess<Paginate<UserType>>> =>
       axiosConfig.get(`${API.USER.SEARCH}?${queryString.stringify(query)}`),
-    options
+    {
+      getNextPageParam: ({ data }) => data.meta.nextPage,
+      ...options,
+    }
   );
 };
 
@@ -54,5 +57,37 @@ export const useRejectRequestFriendApi = (options?: any) => {
     (data: RequestFriendType) =>
       axiosConfig.post(API.USER.REJECT_REQUEST_FRIEND, data),
     options
+  );
+};
+
+export const useGetFriendByUser = ({ options, id }: any) => {
+  return useInfiniteQuery(
+    [API.USER.GET_FRIEND, id],
+    ({ pageParam = 1 }) =>
+      axiosConfig.get(`${API.USER.GET_FRIEND}/${id}?page=${pageParam}`),
+    {
+      enabled: !!id,
+      getNextPageParam: ({ data }) => data.meta.nextPage,
+      ...options,
+    }
+  );
+};
+
+export const useGetFriendRequestByUser = ({
+  options,
+  id,
+}: {
+  id?: string;
+  options?: any;
+}) => {
+  return useInfiniteQuery(
+    [API.USER.GET_REQUEST_FRIEND, id],
+    ({ pageParam = 1 }) =>
+      axiosConfig.get(`${API.USER.GET_REQUEST_FRIEND}/${id}?page=${pageParam}`),
+    {
+      enabled: !!id,
+      getNextPageParam: ({ data }) => data.meta.nextPage,
+      ...options,
+    }
   );
 };

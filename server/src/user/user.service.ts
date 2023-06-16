@@ -193,6 +193,8 @@ export class UserService {
       const mapped = plainToClass(UserDto, receiver, {
         excludeExtraneousValues: true,
       });
+      console.log(sender)
+      console.log(receiver)
       this.socketService.socket
         .to(client)
         .emit(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST, mapped);
@@ -323,10 +325,10 @@ export class UserService {
       deletedAt: null,
     });
 
-    const client = await this.redisService.getSocketId(dto.senderId);
+    const client = await this.redisService.getSocketId(dto.receiverId);
 
     if (client) {
-      const mapped = plainToClass(UserDto, receiver, {
+      const mapped = plainToClass(UserDto, sender, {
         excludeExtraneousValues: true,
       });
       this.socketService.socket

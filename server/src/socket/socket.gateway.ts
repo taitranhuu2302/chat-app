@@ -50,7 +50,6 @@ export class SocketGateway
   async getUser(socket: Socket): Promise<UserDocument | null> {
     const token = socket.handshake.headers.authorization;
     const bearerToken = token?.split(' ')[1];
-
     if (!bearerToken) return null;
     const decoded = this.jwtService.decode(bearerToken);
     const user = await this.userModel.findById(decoded.sub);

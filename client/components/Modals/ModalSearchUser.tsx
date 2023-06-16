@@ -14,6 +14,7 @@ import { IoSearchOutline } from 'react-icons/io5';
 import { useDebounce } from 'usehooks-ts';
 import Input from '../Input';
 import IconLoading from '../Loading/IconLoading';
+import {flatMapObjectInfinite} from "@/utils/ArrayUtils";
 
 interface Props {}
 
@@ -26,8 +27,8 @@ const ModalSearchUser: React.FC<Props> = () => {
   const { isLoading, refetch } = useGetUserApi({
     options: {
       enabled: !!debounceSearchQuery,
-      onSuccess: ({ data }: { data: Paginate<UserType> }) => {
-        setUsers(data.results.filter((u) => u._id !== auth?._id));
+      onSuccess: (data: any) => {
+        setUsers(flatMapObjectInfinite(data).filter((u) => u._id !== auth?._id));
       },
     },
     query: {
@@ -188,7 +189,12 @@ const ModalSearchUser: React.FC<Props> = () => {
 
   return (
     <>
-      <input type="checkbox" id="modal-search-user" className="modal-toggle" />
+      <input type="checkbox" onChange={(e) => {
+          if (!e.target.checked) {
+              setKeywords("")
+              setUsers([])
+          }
+      }} id="modal-search-user" className="modal-toggle" />
       <div className="modal">
         <div className="modal-box max-w-[900px]">
           <Input

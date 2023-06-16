@@ -11,6 +11,7 @@ const nextConfig = {
   i18n,
   env: {
     API_URL: process.env.API_URL,
+    SERVER_URL: process.env.SERVER_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   }
 }
