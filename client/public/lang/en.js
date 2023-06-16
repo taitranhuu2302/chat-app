@@ -21,8 +21,8 @@ const language = {
                 recent: 'Recent',
             },
             group: {
-                title: 'Groups',
-                searchHint: 'Search groups...',
+                title: 'Friend Request',
+                searchHint: 'Search friend request...',
                 createGroup: {
                     title: 'Create New Group',
                     groupName: {
@@ -54,7 +54,7 @@ const language = {
         sidebar: {
             profile: 'Profile',
             chat: 'Chats',
-            group: 'Groups',
+            pending: 'Friend Pending',
             contact: 'Contacts',
             setting: 'Settings',
             darkMode: 'Dark / Light Mode',

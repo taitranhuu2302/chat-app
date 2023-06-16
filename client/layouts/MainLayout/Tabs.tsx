@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import TabProfile from '@/components/Tabs/TabProfile';
 import {useRouter} from 'next/router';
 import TabChat from '@/components/Tabs/TabChat';
-import TabGroup from '@/components/Tabs/TabGroup';
+import TabFriendPending from '@/components/Tabs/TabFriendPending';
 import TabContact from '@/components/Tabs/TabContact';
 
 interface ITabs {
@@ -22,7 +22,7 @@ const Tabs: React.FC<ITabs> = () => {
       case 'chat':
         setTabActive(2);
         break;
-      case 'group':
+      case 'pending':
         setTabActive(3);
         break;
       case 'contact':
@@ -38,7 +38,7 @@ const Tabs: React.FC<ITabs> = () => {
   return < >
     {tabActive === 1 && <TabProfile />}
     {tabActive === 2 && <TabChat />}
-    {tabActive === 3 && <TabGroup />}
+    {tabActive === 3 && <TabFriendPending />}
     {tabActive === 4 && <TabContact />}
   </>;
 };

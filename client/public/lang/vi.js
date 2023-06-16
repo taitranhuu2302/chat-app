@@ -21,8 +21,8 @@ const language = {
         recent: "Gần đây"
       },
       group: {
-        title: 'Nhóm',
-        searchHint: "Tìm kiếm nhóm...",
+        title: 'Yêu cầu kết bạn',
+        searchHint: "Tìm kiếm...",
         createGroup: {
           title: "Tạo nhóm mới",
           groupName: {
@@ -54,7 +54,7 @@ const language = {
     sidebar: {
       profile: 'Thông tin',
       chat: 'Trò chuyện',
-      group: 'Nhóm',
+      pending: 'Yêu cầu kết bạn',
       contact: 'Liên lạc',
       setting: 'Cài đặt',
       darkMode: 'Chế độ sáng tối',

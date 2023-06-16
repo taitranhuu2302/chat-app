@@ -6,25 +6,21 @@ import Avatar from 'react-avatar';
 import ModalCreateGroup from '@/components/Modals/ModalCreateGroup';
 import useTranslate from '@/hooks/useTranslate';
 
-interface ITabGroup {
+interface Props {
 
 }
 
-const TabGroup: React.FC<ITabGroup> = () => {
+const TabFriendPending: React.FC<Props> = () => {
   const t = useTranslate()
   
   return <>
-    <TabContainer title={t.home.tab.group.title} headerActions={
-      <>
-        <ModalCreateGroup />
-      </>
-    }>
+    <TabContainer title={t.home.tab.group.title}>
       <Input className={'mt-5'} placeholder={t.home.tab.group.searchHint} iconStart={<IoSearchOutline size={20} />} />
       <div className={'py-5 flex flex-col flex-grow'}>
         <div className={'flex flex-col h-0 flex-grow overflow-y-auto scrollbar'}>
           {Array(20).fill(0).map((_, index) => {
             return (
-              <TabGroupItem key={index}/>
+              <TabFriendPendingItem key={index}/>
             )
           })}
         </div>
@@ -33,11 +29,11 @@ const TabGroup: React.FC<ITabGroup> = () => {
   </>;
 };
 
-type TabGroupItemType = {
+type PendingItemType = {
 
 }
 
-const TabGroupItem = ({}: TabGroupItemType) => {
+const TabFriendPendingItem = ({}: PendingItemType) => {
   return (
     <div className={'flex items-center gap-2.5 dark:hover:bg-via-300 hover:bg-via-500 cursor-pointer p-3 rounded'}>
       <Avatar name={'Tran Huu Tai'} size={'40px'} round/>
@@ -51,4 +47,4 @@ const TabGroupItem = ({}: TabGroupItemType) => {
   )
 }
 
-export default TabGroup;
+export default TabFriendPending;

@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, HttpCode, HttpStatus,
   Param,
   Post,
   Put,
@@ -41,6 +41,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('')
+  @HttpCode(HttpStatus.OK)
   async index(
     @GetUser() { sub },
     @PaginateQuery() paginate: PaginationOptions,
@@ -59,6 +60,7 @@ export class UserController {
   }
 
   @Get(API.USER.GET_REQUEST_FRIEND)
+  @HttpCode(HttpStatus.OK)
   async getFriendRequest(
     @Param() params,
     @PaginateQuery() paginate: PaginationOptions,
@@ -66,7 +68,8 @@ export class UserController {
     return this.userService.getFriendRequest(params.id, paginate);
   }
 
-  @Delete(API.USER.UN_FRIEND)
+  @Post(API.USER.UN_FRIEND)
+  @HttpCode(HttpStatus.OK)
   async unFriend(@GetUser() { sub }, @Body() dto: UnFriendDto) {
     return this.userService.unFriend(sub, dto.friendId);
   }
@@ -81,29 +84,34 @@ export class UserController {
 
   @Post(API.USER.ACCEPT_REQUEST_FRIEND)
   @ApiBody({ type: FriendRequestDto })
+  @HttpCode(HttpStatus.OK)
   async acceptFriendRequest(@GetUser() { sub }, @Body() dto: FriendRequestDto) {
     return this.userService.acceptFriendRequest(sub, dto);
   }
 
-  @Delete(API.USER.REJECT_REQUEST_FRIEND)
+  @Post(API.USER.REJECT_REQUEST_FRIEND)
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: FriendRequestDto })
   async rejectFriendRequest(@GetUser() { sub }, @Body() dto: FriendRequestDto) {
     return this.userService.rejectFriendRequest(sub, dto);
   }
 
   @Post(API.USER.SEND_REQUEST_FRIEND)
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: FriendRequestDto })
   async sendFriendRequest(@Body() dto: FriendRequestDto) {
     return await this.userService.sendFriendRequest(dto);
   }
 
   @Post(API.USER.CANCEL_REQUEST_FRIEND)
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: FriendRequestDto })
   async cancelFriendRequest(@Body() dto: FriendRequestDto) {
     return await this.userService.cancelFriendRequest(dto);
   }
 
   @Get(API.USER.GET_BY_EMAIL)
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'email' })
   async getByEmail(@GetUser() { sub }, @Param() params: any) {
     const { email } = params;
@@ -131,6 +139,7 @@ export class UserController {
   }
 
   @Post(API.USER.CHANGE_AVATAR)
+  @HttpCode(HttpStatus.OK)
   @ApiBody({
     schema: {
       type: 'object',

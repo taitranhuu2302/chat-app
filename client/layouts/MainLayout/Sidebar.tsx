@@ -77,12 +77,12 @@ const Sidebar: React.FC<ISidebar> = () => {
             }
           />
           <SidebarItemLink
-            tabText={'group'}
-            isActive={tab === 'group'}
-            tooltip={t.home.sidebar.group}
+            tabText={'pending'}
+            isActive={tab === 'pending'}
+            tooltip={t.home.sidebar.pending}
             icon={
               <FiUsers
-                className={tab === 'group' ? 'text-primary' : ''}
+                className={tab === 'pending' ? 'text-primary' : ''}
                 size={24}
               />
             }

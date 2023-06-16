@@ -1,7 +1,10 @@
 import useTranslate from '@/hooks/useTranslate';
 import {
+  useAcceptRequestFriendApi,
+  useCancelFriendApi,
   useCancelRequestFriendApi,
   useGetUserApi,
+  useRejectRequestFriendApi,
   useSendRequestFriendApi,
 } from '@/service/UserService';
 import { AuthContext, AuthContextType } from 'contexts/AuthContext';
@@ -20,23 +23,6 @@ const ModalSearchUser: React.FC<Props> = () => {
   const debounceSearchQuery = useDebounce(keywords, 500);
   const [users, setUsers] = useState<UserType[]>([]);
   const { auth } = useContext(AuthContext) as AuthContextType;
-  const {
-    mutateAsync: sendFriendRequest,
-    isLoading: sendFriendRequestLoading,
-  } = useSendRequestFriendApi({
-    onSuccess: () => {
-      refetch();
-    },
-  });
-  const {
-    mutateAsync: cancelFriendRequest,
-    isLoading: cancelFriendRequestLoading,
-  } = useCancelRequestFriendApi({
-    onSuccess: () => {
-      refetch();
-    },
-  });
-
   const { isLoading, refetch } = useGetUserApi({
     options: {
       enabled: !!debounceSearchQuery,
@@ -46,6 +32,44 @@ const ModalSearchUser: React.FC<Props> = () => {
     },
     query: {
       keywords: debounceSearchQuery,
+    },
+  });
+  const {
+    mutateAsync: rejectRequestFriend,
+    isLoading: rejectRequestFriendLoading,
+  } = useRejectRequestFriendApi({
+    onSuccess: () => {
+      return refetch();
+    },
+  });
+  const { mutateAsync: cancelFriend, isLoading: cancelFriendLoading } =
+    useCancelFriendApi({
+      onSuccess: () => {
+        return refetch();
+      },
+    });
+  const {
+    mutateAsync: acceptRequestFriend,
+    isLoading: acceptRequestFriendLoading,
+  } = useAcceptRequestFriendApi({
+    onSuccess: () => {
+      return refetch();
+    },
+  });
+  const {
+    mutateAsync: sendFriendRequest,
+    isLoading: sendFriendRequestLoading,
+  } = useSendRequestFriendApi({
+    onSuccess: () => {
+      return refetch();
+    },
+  });
+  const {
+    mutateAsync: cancelFriendRequest,
+    isLoading: cancelFriendRequestLoading,
+  } = useCancelRequestFriendApi({
+    onSuccess: () => {
+      return refetch();
     },
   });
 
@@ -61,8 +85,19 @@ const ModalSearchUser: React.FC<Props> = () => {
     (currentUser: CurrentUser, userId: string) => {
       if (currentUser.isFriend) {
         return (
-          <button className="btn btn-sm btn-outline btn-error">
-            Cancel Friend
+          <button
+            onClick={() =>
+              cancelFriend({
+                friendId: userId,
+              })
+            }
+            disabled={cancelFriendLoading}
+            className="btn btn-sm btn-outline btn-error">
+            {cancelFriendLoading ? (
+              <IconLoading color="#DC3545" size="20px" />
+            ) : (
+              'Cancel Friend'
+            )}
           </button>
         );
       }
@@ -89,9 +124,37 @@ const ModalSearchUser: React.FC<Props> = () => {
 
       if (currentUser.isRequestReceived) {
         return (
-          <button className="btn btn-sm btn-outline btn-success">
-            Accept Request Friend
-          </button>
+          <div className={'flex items-center gap-2.5'}>
+            <button
+              disabled={rejectRequestFriendLoading}
+              onClick={() =>
+                rejectRequestFriend({
+                  senderId: userId,
+                  receiverId: auth?._id!,
+                })
+              }
+              className="btn btn-sm btn-outline btn-error">
+              {rejectRequestFriendLoading ? (
+                <IconLoading color="#DC3545" size="20px" />
+              ) : (
+                'Reject'
+              )}
+            </button>
+            <button
+              onClick={() =>
+                acceptRequestFriend({
+                  senderId: userId,
+                  receiverId: auth?._id!,
+                })
+              }
+              className="btn btn-sm btn-outline btn-success">
+              {acceptRequestFriendLoading ? (
+                <IconLoading color="#28A745" size="20px" />
+              ) : (
+                'Accept'
+              )}
+            </button>
+          </div>
         );
       }
 
@@ -113,7 +176,14 @@ const ModalSearchUser: React.FC<Props> = () => {
         </button>
       );
     },
-    [sendFriendRequestLoading, auth?._id, cancelFriendRequestLoading]
+    [
+      sendFriendRequestLoading,
+      auth?._id,
+      cancelFriendRequestLoading,
+      acceptRequestFriendLoading,
+      cancelFriendLoading,
+      rejectRequestFriendLoading,
+    ]
   );
 
   return (
