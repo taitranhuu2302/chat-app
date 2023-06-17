@@ -1,6 +1,10 @@
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { getToken } from '@/service/AuthService';
+import {useGetCountRequestFriendApi} from "@/service/UserService";
+import {useAppDispatch} from "@/redux/hooks";
+import {setCountRequestFriend} from "@/redux/features/NotifySlice";
+import {SOCKET_EVENT} from "@/constants/Socket";
 
 export type SocketContextType = {
   socket: Socket | null;
@@ -10,7 +14,12 @@ export const SocketContext = createContext<SocketContextType | null>(null);
 
 const SocketProvider = ({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-
+  const dispatch = useAppDispatch()
+  useGetCountRequestFriendApi({
+    onSuccess: ({data}: any) => {
+      dispatch(setCountRequestFriend(data))
+    }
+  })
   useEffect(() => {
     const url = process.env.SERVER_URL;
     if (!url) return;
@@ -20,7 +29,9 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
         Authorization: `Bearer ${accessToken}`,
       }
     });
-    setSocket(newSocket);
+    newSocket.on(SOCKET_EVENT.USER.COUNT_FRIEND_REQUEST, (data: number) => {
+      dispatch(setCountRequestFriend(data))
+    })
     return () => {
       newSocket.disconnect();
     };

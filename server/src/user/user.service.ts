@@ -189,12 +189,11 @@ export class UserService {
     });
 
     const client = await this.redisService.getSocketId(dto.senderId);
+
     if (client) {
       const mapped = plainToClass(UserDto, receiver, {
         excludeExtraneousValues: true,
       });
-      console.log(sender)
-      console.log(receiver)
       this.socketService.socket
         .to(client)
         .emit(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST, mapped);
@@ -270,12 +269,13 @@ export class UserService {
   }
 
   async getFriendRequest(sub: string, options: PaginationOptions) {
-    return await paginate(
+    const friendRequests = await paginate(
       this.userRequestFriendModel
         .find({
           receiver: sub,
           deletedAt: null,
         })
+        .sort({ createdAt: -1 })
         .populate('sender'),
       options,
       async (data) => {
@@ -292,6 +292,22 @@ export class UserService {
         return formattedData;
       },
     );
+
+    const requestIds = friendRequests.results.map((request) => request._id);
+
+    await this.userRequestFriendModel.updateMany(
+      { _id: { $in: requestIds } },
+      { isRead: true },
+    );
+
+    return friendRequests;
+  }
+
+  async countRequestFriend(sub: string) {
+    return this.userRequestFriendModel.countDocuments({
+      isRead: false,
+      receiver: sub,
+    });
   }
 
   async isRequestFriend(
@@ -317,7 +333,7 @@ export class UserService {
     if (!sender || !receiver) throw new BadRequestException('User not found');
 
     if (!(await this.isRequestFriend(senderId, receiverId)))
-      throw new BadRequestException('You haven\'t sent a friend request yet');
+      throw new BadRequestException("You haven't sent a friend request yet");
 
     await this.userRequestFriendModel.findOneAndDelete({
       sender: sender._id,
@@ -332,8 +348,8 @@ export class UserService {
         excludeExtraneousValues: true,
       });
       this.socketService.socket
-          .to(client)
-          .emit(SOCKET_EVENT.USER.CANCEL_FRIEND_REQUEST, mapped);
+        .to(client)
+        .emit(SOCKET_EVENT.USER.CANCEL_FRIEND_REQUEST, mapped);
     }
 
     return null;
@@ -352,7 +368,13 @@ export class UserService {
     if (await this.isFriend(dto.receiverId, dto.senderId))
       throw new BadRequestException('You two are already friends');
 
+    const userRequestFriend = await this.userRequestFriendModel.create({
+      sender: sender._id,
+      receiver: receiver._id,
+    });
+
     const client = await this.redisService.getSocketId(dto.receiverId);
+
     if (client) {
       const mapped = plainToClass(UserDto, sender, {
         excludeExtraneousValues: true,
@@ -360,11 +382,11 @@ export class UserService {
       this.socketService.socket
         .to(client)
         .emit(SOCKET_EVENT.USER.SEND_REQUEST_FRIEND, mapped);
+      const count = await this.countRequestFriend(dto.receiverId);
+      this.socketService.socket
+        .to(client)
+        .emit(SOCKET_EVENT.USER.COUNT_FRIEND_REQUEST, count);
     }
-    const userRequestFriend = await this.userRequestFriendModel.create({
-      sender: sender._id,
-      receiver: receiver._id,
-    });
 
     return userRequestFriend;
   }

@@ -73,6 +73,14 @@ export const useGetFriendByUser = ({ options, id }: any) => {
   );
 };
 
+export const useGetCountRequestFriendApi = (options: any) => {
+  return useQuery(
+    [API.USER.COUNT_REQUEST_FRIEND],
+    () => axiosConfig.get(API.USER.COUNT_REQUEST_FRIEND),
+    options
+  );
+};
+
 export const useGetFriendRequestByUser = ({
   options,
   id,

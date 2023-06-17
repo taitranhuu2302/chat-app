@@ -22,5 +22,6 @@ export const API = {
     GET_FRIEND: `/users/get-friend`, // /users/get-friend/:id
     REJECT_REQUEST_FRIEND: `/users/reject-request-friend`,
     ACCEPT_REQUEST_FRIEND: `/users/accept-request-friend`,
+    COUNT_REQUEST_FRIEND: '/users/count-request-friend',
   },
 };

@@ -67,6 +67,8 @@ export class UserRequestFriend extends BaseEntity {
   sender: User;
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
   receiver: User;
+  @Prop({ type: Boolean, default: false })
+  isRead: boolean;
 }
 
 const UserFriendSchema = SchemaFactory.createForClass(UserFriend);

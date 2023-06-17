@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Delete,
-  Get, HttpCode, HttpStatus,
+  Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -136,6 +138,11 @@ export class UserController {
   async changePassword(@GetUser() { sub }, @Body() dto: UserChangePasswordDto) {
     const user = await this.userService.changePassword(sub, dto);
     return plainToClass(UserDto, user, { excludeExtraneousValues: true });
+  }
+
+  @Get(API.USER.COUNT_REQUEST_FRIEND)
+  async countRequestFriend(@GetUser() { sub }) {
+    return this.userService.countRequestFriend(sub);
   }
 
   @Post(API.USER.CHANGE_AVATAR)

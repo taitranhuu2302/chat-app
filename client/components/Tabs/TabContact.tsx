@@ -3,7 +3,7 @@ import TabContainer from '@/components/Tabs/TabContainer';
 import Input from '@/components/Input';
 import { IoSearchOutline } from 'react-icons/io5';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import _ from 'lodash';
+import _, { flatMap } from 'lodash';
 import { useEffectOnce } from 'usehooks-ts';
 import { flatMapObjectInfinite, groupByFirstLetter } from '@/utils/ArrayUtils';
 import useTranslate from '@/hooks/useTranslate';
@@ -27,20 +27,43 @@ const TabContact: React.FC<ITabContact> = () => {
   const t = useTranslate();
   const [contacts, setContacts] = useState<any>([]);
   const { auth } = useContext(AuthContext) as AuthContextType;
+  const { socket } = useContext(SocketContext) as SocketContextType;
   const { isLoading } = useGetFriendByUser({
     id: auth?._id,
     options: {
       onSuccess: (data: any) => {
         const arr = flatMapObjectInfinite(data).map((item: any) => item.friend);
         setContacts([
-          ...groupByFirstLetter(
-            _.sortBy(arr, (value) => value.firstName),
-            (item) => item.firstName[0]
-          ),
+          ...groupContacts(arr),
         ]);
       },
     },
   });
+
+  const groupContacts = (data: any[]) => {
+    return groupByFirstLetter(
+        _.sortBy(data, (value) => value.firstName),
+        (item) => item.firstName[0]
+    );
+  }
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST, (data: UserType) => {
+      setContacts((c: any) => [
+        ...c,
+        ...groupContacts([data]),
+      ]);
+    });
+    socket.on(SOCKET_EVENT.USER.UN_FRIEND, (data: UserType) => {
+      const arr = contacts.flatMap((c: any) => c.list).filter((item: UserType) => item._id !== data._id);
+      setContacts([...groupContacts(arr)])
+    });
+    return () => {
+      socket.off(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST);
+      socket.off(SOCKET_EVENT.USER.UN_FRIEND);
+    };
+  }, [socket]);
 
   return (
     <>
@@ -108,22 +131,10 @@ const TabContactItem = ({ user, isLastItem }: TabContactItemType) => {
   const [openDelete, setOpenDelete] = useState(false);
   const queryClient = useQueryClient();
   const { auth } = useContext(AuthContext) as AuthContextType;
-  const { socket } = useContext(SocketContext) as SocketContextType;
 
   useEffect(() => {
     dispatch(onPageLoading(cancelFriendLoading));
   }, [cancelFriendLoading]);
-
-  useEffect(() => {
-    if (!socket) return;
-    console.log(socket.id)
-    socket.on(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST, (data: UserType) => {
-      console.log(data);
-    });
-    return () => {
-      socket.off(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST);
-    };
-  }, [socket]);
 
   const handleCancelFriend = async () => {
     try {

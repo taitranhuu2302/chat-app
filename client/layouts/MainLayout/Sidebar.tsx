@@ -15,6 +15,7 @@ import { KEY_LANGUAGE } from '../../constants';
 import useTranslate from '@/hooks/useTranslate';
 import Divider from '@/components/Divider';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
+import {useAppSelector} from "@/redux/hooks";
 
 interface ISidebar {}
 
@@ -23,9 +24,10 @@ const Sidebar: React.FC<ISidebar> = () => {
   const {
     query: { tab },
   } = router;
-  const { onSetTheme, theme } = useContext(DarkModeContext);
+  const { onSetTheme } = useContext(DarkModeContext);
   const t = useTranslate();
   const { removeAuth, auth } = useContext(AuthContext) as AuthContextType;
+  const {countRequestFriend} = useAppSelector(state => state.notify)
 
   const onChangeLang = async (lang: string) => {
     await router.push(router.asPath, router.asPath, {
@@ -80,6 +82,7 @@ const Sidebar: React.FC<ISidebar> = () => {
             tabText={'pending'}
             isActive={tab === 'pending'}
             tooltip={t.home.sidebar.pending}
+            indicatorCount={countRequestFriend}
             icon={
               <FiUsers
                 className={tab === 'pending' ? 'text-primary' : ''}
@@ -188,6 +191,7 @@ type SidebarItemLinkType = {
   isActive?: boolean;
   tabText?: string;
   path?: string;
+  indicatorCount?: number;
 };
 
 const SidebarItemLink = ({
@@ -196,6 +200,7 @@ const SidebarItemLink = ({
   isActive,
   tabText,
   path,
+  indicatorCount,
 }: SidebarItemLinkType) => {
   const router = useRouter();
 
@@ -213,9 +218,14 @@ const SidebarItemLink = ({
         })
       }
       className={twMerge(
-        `tooltip lg:tooltip-right tooltip-top ${styles.sidebarItem} hover:bg-slate-200 dark:hover:bg-slate-700`,
+        `tooltip lg:tooltip-right tooltip-top indicator ${styles.sidebarItem} hover:bg-slate-200 dark:hover:bg-slate-700`,
         isActive ? 'bg-slate-200 dark:bg-slate-700' : ''
       )}>
+      {!!indicatorCount && (
+        <span className="indicator-item badge badge-primary">
+          {indicatorCount > 99 ? '99+' : indicatorCount}
+        </span>
+      )}
       {icon}
     </li>
   );

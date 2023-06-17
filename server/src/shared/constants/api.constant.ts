@@ -23,6 +23,7 @@ export const API = {
     GET_FRIEND: 'get-friend/:id',
     REJECT_REQUEST_FRIEND: 'reject-request-friend',
     ACCEPT_REQUEST_FRIEND: 'accept-request-friend',
+    COUNT_REQUEST_FRIEND: 'count-request-friend',
   },
   NOTIFY: {
     INDEX: `${PREFIX}/notify`,

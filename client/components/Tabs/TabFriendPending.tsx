@@ -23,6 +23,7 @@ import { flatMapObjectInfinite } from '@/utils/ArrayUtils';
 import Skeleton from 'react-loading-skeleton';
 import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
+import {useEffectOnce} from "usehooks-ts";
 
 interface Props {}
 
@@ -115,6 +116,12 @@ const TabFriendPendingItem = ({ friend, isLastItem }: PendingItemType) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
 
+  useEffectOnce(() => {
+    (async () => {
+      await queryClient.refetchQueries([API.USER.COUNT_REQUEST_FRIEND])
+    })()
+  })
+
   useEffect(() => {
     dispatch(onPageLoading(rejectRequestLoading || acceptRequestLoading));
   }, [rejectRequestLoading, acceptRequestLoading]);
@@ -129,6 +136,7 @@ const TabFriendPendingItem = ({ friend, isLastItem }: PendingItemType) => {
         API.USER.GET_REQUEST_FRIEND,
         auth?._id!,
       ]);
+      await queryClient.refetchQueries([API.USER.GET_FRIEND, auth?._id])
       setIsOpen(false);
     } catch (e: any) {
       const errors = getErrorResponse(e.message);
@@ -146,6 +154,7 @@ const TabFriendPendingItem = ({ friend, isLastItem }: PendingItemType) => {
         API.USER.GET_REQUEST_FRIEND,
         auth?._id!,
       ]);
+      await queryClient.refetchQueries([API.USER.GET_FRIEND, auth?._id])
       setIsOpen(false);
       toast.success(t.messageAcceptRequestSuccess);
     } catch (e: any) {
