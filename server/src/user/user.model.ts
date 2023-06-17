@@ -49,9 +49,9 @@ export class User extends BaseEntity {
 })
 export class UserFriend extends BaseEntity {
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
-  user: Schema.Types.ObjectId;
+  user: User;
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
-  friend: Schema.Types.ObjectId;
+  friend: User;
   @Prop()
   isBlock: boolean;
 }
@@ -64,9 +64,11 @@ export class UserFriend extends BaseEntity {
 })
 export class UserRequestFriend extends BaseEntity {
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
-  sender: Schema.Types.ObjectId;
+  sender: User;
   @Prop({ type: Schema.Types.ObjectId, ref: User.name })
-  receiver: Schema.Types.ObjectId;
+  receiver: User;
+  @Prop({ type: Boolean, default: false })
+  isRead: boolean;
 }
 
 const UserFriendSchema = SchemaFactory.createForClass(UserFriend);

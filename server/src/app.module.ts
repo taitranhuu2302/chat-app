@@ -8,6 +8,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { SocketModule } from './socket/socket.module';
 import { RedisModule } from './redis/redis.module';
+import { NotifyModule } from './notify/notify.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { RedisModule } from './redis/redis.module';
     AuthModule,
     SocketModule,
     RedisModule,
+    NotifyModule,
   ],
 })
 export class AppModule {}

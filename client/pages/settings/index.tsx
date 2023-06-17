@@ -13,10 +13,10 @@ const Settings: React.FC<IProps> = () => {
   return (
     <>
       <MainLayout isShowTab={false}>
-        <div className={'bg-via-400 dark:bg-via-200 w-full py-5 px-5'}>
+        <div className={'bg-via-400 dark:bg-via-200 w-full py-5 px-5 h-full overflow-y-auto'}>
           <div className="container mx-auto">
             <h3 className={'text-xl font-bold mb-5'}>{t.settings}</h3>
-            <div className={'grid grid-cols-1 md:grid-cols-2 gap-5'}>
+            <div className={'grid grid-cols-1 lg:grid-cols-2 gap-5'}>
               <form
                 className={`${styles['card-custom']} bg-base-100 dark:bg-via-300 h-fit`}>
                 <Input

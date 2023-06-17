@@ -12,6 +12,7 @@ import {
 } from './user.model';
 import { SocketModule } from '../socket/socket.module';
 import { RedisModule } from '../redis/redis.module';
+import { NotifyModule } from 'src/notify/notify.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RedisModule } from '../redis/redis.module';
     ]),
     SocketModule,
     RedisModule,
+    NotifyModule
   ],
   providers: [UserService],
   controllers: [UserController],

@@ -3,30 +3,37 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { API } from '../shared/constants/api.constant';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { UserUpdateDto } from './dto/user-update.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { JwtGuard } from '../auth/guard/jwt.guard';
-import { plainToClass } from 'class-transformer';
-import { UserDto } from './dto/user.dto';
-import { UserChangePasswordDto } from './dto/user-change-password.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { localOptionsUserAvatar } from '../shared/helper/file.helper';
-import { FriendRequestDto } from './dto/friend-request.dto';
-import { PaginationOptions } from '../shared/helper/pagination.helper';
+import { API } from '../shared/constants/api.constant';
 import { PaginateQuery } from '../shared/decorator/pagination-query.decorator';
-import { SocketService } from '../socket/socket.service';
-import { RedisService } from '../redis/redis.service';
+import { localOptionsUserAvatar } from '../shared/helper/file.helper';
+import { PaginationOptions } from '../shared/helper/pagination.helper';
+import { FriendRequestDto } from './dto/friend-request.dto';
 import { UnFriendDto } from './dto/un-friend.dto';
+import { UserChangePasswordDto } from './dto/user-change-password.dto';
+import { UserUpdateDto } from './dto/user-update.dto';
+import { UserDto } from './dto/user.dto';
+import { UserService } from './user.service';
 
 @Controller(API.USER.INDEX)
 @ApiTags('User')
@@ -36,6 +43,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('')
+  @HttpCode(HttpStatus.OK)
   async index(
     @GetUser() { sub },
     @PaginateQuery() paginate: PaginationOptions,
@@ -43,7 +51,18 @@ export class UserController {
     return this.userService.index(sub, paginate);
   }
 
+  @Get(API.USER.SEARCH)
+  @ApiQuery({ name: 'keywords', type: String })
+  async search(
+    @GetUser() { sub },
+    @PaginateQuery() paginate: PaginationOptions,
+    @Query('keywords') keywords,
+  ) {
+    return this.userService.searchUser(sub, paginate, keywords);
+  }
+
   @Get(API.USER.GET_REQUEST_FRIEND)
+  @HttpCode(HttpStatus.OK)
   async getFriendRequest(
     @Param() params,
     @PaginateQuery() paginate: PaginationOptions,
@@ -51,7 +70,8 @@ export class UserController {
     return this.userService.getFriendRequest(params.id, paginate);
   }
 
-  @Delete(API.USER.UN_FRIEND)
+  @Post(API.USER.UN_FRIEND)
+  @HttpCode(HttpStatus.OK)
   async unFriend(@GetUser() { sub }, @Body() dto: UnFriendDto) {
     return this.userService.unFriend(sub, dto.friendId);
   }
@@ -66,23 +86,34 @@ export class UserController {
 
   @Post(API.USER.ACCEPT_REQUEST_FRIEND)
   @ApiBody({ type: FriendRequestDto })
+  @HttpCode(HttpStatus.OK)
   async acceptFriendRequest(@GetUser() { sub }, @Body() dto: FriendRequestDto) {
     return this.userService.acceptFriendRequest(sub, dto);
   }
 
-  @Delete(API.USER.REJECT_REQUEST_FRIEND)
+  @Post(API.USER.REJECT_REQUEST_FRIEND)
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: FriendRequestDto })
   async rejectFriendRequest(@GetUser() { sub }, @Body() dto: FriendRequestDto) {
     return this.userService.rejectFriendRequest(sub, dto);
   }
 
   @Post(API.USER.SEND_REQUEST_FRIEND)
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: FriendRequestDto })
   async sendFriendRequest(@Body() dto: FriendRequestDto) {
     return await this.userService.sendFriendRequest(dto);
   }
 
+  @Post(API.USER.CANCEL_REQUEST_FRIEND)
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: FriendRequestDto })
+  async cancelFriendRequest(@Body() dto: FriendRequestDto) {
+    return await this.userService.cancelFriendRequest(dto);
+  }
+
   @Get(API.USER.GET_BY_EMAIL)
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'email' })
   async getByEmail(@GetUser() { sub }, @Param() params: any) {
     const { email } = params;
@@ -109,7 +140,13 @@ export class UserController {
     return plainToClass(UserDto, user, { excludeExtraneousValues: true });
   }
 
+  @Get(API.USER.COUNT_REQUEST_FRIEND)
+  async countRequestFriend(@GetUser() { sub }) {
+    return this.userService.countRequestFriend(sub);
+  }
+
   @Post(API.USER.CHANGE_AVATAR)
+  @HttpCode(HttpStatus.OK)
   @ApiBody({
     schema: {
       type: 'object',

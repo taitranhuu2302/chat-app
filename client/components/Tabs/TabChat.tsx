@@ -5,6 +5,7 @@ import {IoSearchOutline} from 'react-icons/io5';
 import Avatar from 'react-avatar';
 import {useRouter} from 'next/router';
 import useTranslate from '@/hooks/useTranslate';
+import ModalCreateGroup from "@/components/Modals/ModalCreateGroup";
 
 interface ITabChat {
 
@@ -14,7 +15,11 @@ const TabChat: React.FC<ITabChat> = () => {
   const t = useTranslate();
   
   return <>
-    <TabContainer title={t.home.tab.chat.title}>
+    <TabContainer title={t.home.tab.chat.title} headerActions={
+      <>
+        <ModalCreateGroup />
+      </>
+    }>
       <Input className={'mt-5'} placeholder={t.home.tab.chat.searchHint} iconStart={<IoSearchOutline size={20} />} />
       <div className={'py-5 flex flex-col flex-grow'}>
         <p className={'py-2.5 text-lg flex-shrink font-semibold'}>{t.home.tab.chat.recent}</p>

@@ -1,20 +1,54 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import useTranslate from '@/hooks/useTranslate';
-import { FcGoogle } from 'react-icons/fc';
 import withPageLoading from '../../HOC/withPageLoading';
 import LoginSocial from '@/components/LoginSocial';
+import * as yup from 'yup';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { setToken, useLoginApi } from '@/service/AuthService';
+import {getErrorResponse} from "@/utils/ErrorUtils";
+import {API} from "@/constants/Api";
+import {useQueryClient} from "react-query";
+import withLogged from "@/HOC/withLogged";
 
 interface ILoginPage {}
 
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .matches(/^(?!.*@[^,]*,)/, 'Email is not in the correct format')
+    .required('Email is required'),
+  password: yup
+    .string()
+    .min(6, 'Password must be longer than 6 characters')
+    .required('Password is required'),
+});
+
 const LoginPage: React.FC<ILoginPage> = () => {
   const router = useRouter();
+  const { mutateAsync } = useLoginApi();
   const t: any = useTranslate();
-  const handleSubmit = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    await router.push('/');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginType>({
+    resolver: yupResolver<any>(schema),
+  });
+  const [errorsResponse, setErrorsResponse] = useState<string[]>([]);
+  const queryClient = useQueryClient()
+  const onSubmit: SubmitHandler<LoginType> = async (data) => {
+    try {
+      const response = await mutateAsync(data);
+      setToken(response.data);
+      await queryClient.refetchQueries([API.AUTH.GET_ME]);
+      await router.push('/');
+    } catch (error: any) {
+        setErrorsResponse([...getErrorResponse(error.message)]);
+    }
   };
 
   return (
@@ -27,7 +61,7 @@ const LoginPage: React.FC<ILoginPage> = () => {
         <p className={'mt-10 text-lg font-semibold'}>{t.auth.signIn.label}</p>
         <p className={'text-sm mt-1'}>{t.auth.signIn.description}</p>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           className={'bg-white dark:bg-via-200 w-[450px] mt-5 rounded-md p-5'}>
           <div className={'flex flex-col'}>
             <label htmlFor="Email" className={'text-sm ml-[1px]'}>
@@ -36,6 +70,7 @@ const LoginPage: React.FC<ILoginPage> = () => {
             <input
               id="Email"
               type="text"
+              {...register('email')}
               className={
                 'border dark:border-night-400 bg-transparent rounded-md mt-1 py-2 text-sm px-2.5 outline-none'
               }
@@ -49,6 +84,7 @@ const LoginPage: React.FC<ILoginPage> = () => {
             <input
               id="Password"
               type="password"
+              {...register('password')}
               className={
                 'border dark:border-night-400 bg-transparent rounded-md mt-1 py-2 text-sm px-2.5 outline-none'
               }
@@ -64,6 +100,25 @@ const LoginPage: React.FC<ILoginPage> = () => {
               {t.auth.rememberMe}
             </span>
           </label>
+          <ul>
+            {errors.email && (
+              <li className={'text-red-500 text-[15px]'}>
+                {errors.email.message}
+              </li>
+            )}
+            {errors.password && (
+              <li className={'text-red-500 text-[15px]'}>
+                {errors.password.message}
+              </li>
+            )}
+            {errorsResponse.map((item, index) => {
+              return (
+                <li key={index} className={'text-red-500 text-[15px]'}>
+                  {item}
+                </li>
+              );
+            })}
+          </ul>
           <button
             type={'submit'}
             className={'bg-primary text-light w-full py-2 rounded-md mt-5'}>
@@ -82,4 +137,4 @@ const LoginPage: React.FC<ILoginPage> = () => {
   );
 };
 
-export default withPageLoading(LoginPage);
+export default withLogged(withPageLoading(LoginPage));

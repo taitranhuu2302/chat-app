@@ -9,16 +9,19 @@ export const API = {
   },
   USER: {
     INDEX: `/users`,
+    SEARCH: `/users/search`,
     UPDATE: `/users/update-information`,
     CHANGE_PASSWORD: `/users/change-password`,
     CHANGE_AVATAR: `/users/change-avatar`,
     GET_BY_ID: `/users/get-user-by-id/:id`,
     GET_BY_EMAIL: `/users/get-user-by-email/:email`,
     SEND_REQUEST_FRIEND: `/users/send-request-friend`,
+    CANCEL_REQUEST_FRIEND: `/users/cancel-request-friend`,
     UN_FRIEND: `/users/un-friend`,
-    GET_REQUEST_FRIEND: `/users/get-request-friend/:id`,
-    GET_FRIEND: `/users/get-friend/:id`,
+    GET_REQUEST_FRIEND: `/users/get-request-friend`, // /users/get-request-friend/:id
+    GET_FRIEND: `/users/get-friend`, // /users/get-friend/:id
     REJECT_REQUEST_FRIEND: `/users/reject-request-friend`,
     ACCEPT_REQUEST_FRIEND: `/users/accept-request-friend`,
+    COUNT_REQUEST_FRIEND: '/users/count-request-friend',
   },
 };

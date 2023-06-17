@@ -21,8 +21,8 @@ const language = {
                 recent: 'Recent',
             },
             group: {
-                title: 'Groups',
-                searchHint: 'Search groups...',
+                title: 'Friend Request',
+                searchHint: 'Search friend request...',
                 createGroup: {
                     title: 'Create New Group',
                     groupName: {
@@ -54,7 +54,7 @@ const language = {
         sidebar: {
             profile: 'Profile',
             chat: 'Chats',
-            group: 'Groups',
+            pending: 'Friend Pending',
             contact: 'Contacts',
             setting: 'Settings',
             darkMode: 'Dark / Light Mode',
@@ -114,10 +114,27 @@ const language = {
             hint: 'Enter Confirm Password'
         },
         or: "or",
-        loginGoogle: "Login with google"
+        loginGoogle: "Login with google",
+        firstName: {
+            label: 'First Name',
+            hint: 'First Name'
+        },
+        lastName: {
+            label: 'Last Name',
+            hint: 'Last Name'
+        },
     },
     settings: "Settings",
-    saveChanges: "Save Changes"
+    saveChanges: "Save Changes",
+    accept: "Accept",
+    reject: "Reject",
+    confirm: "Confirm",
+    close: "Close",
+    requestFriend: 'Request Friend',
+    messageRejectRequestFriend: 'Want to decline a friend request ?',
+    messageAcceptRequestSuccess: "Friend request accepted successfully",
+    friend: "Friend",
+    messageCancelFriend: "You want to unfriend?",
 };
 
 export default language;

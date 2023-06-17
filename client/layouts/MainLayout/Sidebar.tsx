@@ -14,6 +14,8 @@ import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import { KEY_LANGUAGE } from '../../constants';
 import useTranslate from '@/hooks/useTranslate';
 import Divider from '@/components/Divider';
+import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
+import {useAppSelector} from "@/redux/hooks";
 
 interface ISidebar {}
 
@@ -22,8 +24,10 @@ const Sidebar: React.FC<ISidebar> = () => {
   const {
     query: { tab },
   } = router;
-  const { onSetTheme, theme } = useContext(DarkModeContext);
+  const { onSetTheme } = useContext(DarkModeContext);
   const t = useTranslate();
+  const { removeAuth, auth } = useContext(AuthContext) as AuthContextType;
+  const {countRequestFriend} = useAppSelector(state => state.notify)
 
   const onChangeLang = async (lang: string) => {
     await router.push(router.asPath, router.asPath, {
@@ -33,6 +37,7 @@ const Sidebar: React.FC<ISidebar> = () => {
   };
 
   const handleLogout = async () => {
+    removeAuth();
     await router.push('/auth');
   };
 
@@ -74,12 +79,13 @@ const Sidebar: React.FC<ISidebar> = () => {
             }
           />
           <SidebarItemLink
-            tabText={'group'}
-            isActive={tab === 'group'}
-            tooltip={t.home.sidebar.group}
+            tabText={'pending'}
+            isActive={tab === 'pending'}
+            tooltip={t.home.sidebar.pending}
+            indicatorCount={countRequestFriend}
             icon={
               <FiUsers
-                className={tab === 'group' ? 'text-primary' : ''}
+                className={tab === 'pending' ? 'text-primary' : ''}
                 size={24}
               />
             }
@@ -151,7 +157,12 @@ const Sidebar: React.FC<ISidebar> = () => {
           </li>
           <li className={'dropdown dropdown-top'}>
             <label tabIndex={0} className={`${styles.sidebarItem}`}>
-              <Avatar name={'Tran Huu Tai'} size={'40px'} round />
+              <Avatar
+                name={`${auth?.firstName} ${auth?.lastName}`}
+                src={auth?.avatar}
+                size={'40px'}
+                round
+              />
             </label>
             <ul
               tabIndex={0}
@@ -180,6 +191,7 @@ type SidebarItemLinkType = {
   isActive?: boolean;
   tabText?: string;
   path?: string;
+  indicatorCount?: number;
 };
 
 const SidebarItemLink = ({
@@ -188,6 +200,7 @@ const SidebarItemLink = ({
   isActive,
   tabText,
   path,
+  indicatorCount,
 }: SidebarItemLinkType) => {
   const router = useRouter();
 
@@ -196,14 +209,23 @@ const SidebarItemLink = ({
       data-tip={tooltip}
       onClick={() =>
         router.replace({
-          pathname: path ? path : router.pathname === '/settings' ? '/' : router.pathname,
+          pathname: path
+            ? path
+            : router.pathname === '/settings'
+            ? '/'
+            : router.pathname,
           query: { ...router.query, tab: tabText },
         })
       }
       className={twMerge(
-        `tooltip lg:tooltip-right tooltip-top ${styles.sidebarItem} hover:bg-slate-200 dark:hover:bg-slate-700`,
+        `tooltip lg:tooltip-right tooltip-top indicator ${styles.sidebarItem} hover:bg-slate-200 dark:hover:bg-slate-700`,
         isActive ? 'bg-slate-200 dark:bg-slate-700' : ''
       )}>
+      {!!indicatorCount && (
+        <span className="indicator-item badge badge-primary">
+          {indicatorCount > 99 ? '99+' : indicatorCount}
+        </span>
+      )}
       {icon}
     </li>
   );

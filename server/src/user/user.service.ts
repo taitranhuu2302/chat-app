@@ -4,9 +4,22 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as argon from 'argon2';
+import { plainToClass } from 'class-transformer';
+import { Model, Schema } from 'mongoose';
+import { RedisService } from '../redis/redis.service';
+import { SOCKET_EVENT } from '../shared/constants/socket.constant';
+import {
+  PaginationOptions,
+  paginate,
+} from '../shared/helper/pagination.helper';
+import { SocketService } from '../socket/socket.service';
+import { FriendRequestDto } from './dto/friend-request.dto';
+import { UserChangePasswordDto } from './dto/user-change-password.dto';
+import { UserUpdateDto } from './dto/user-update.dto';
+import { UserDto } from './dto/user.dto';
 import {
   User,
   UserDocument,
@@ -15,20 +28,8 @@ import {
   UserRequestFriend,
   UserRequestFriendDocument,
 } from './user.model';
-import { Model, Schema } from 'mongoose';
-import { UserUpdateDto } from './dto/user-update.dto';
-import { UserChangePasswordDto } from './dto/user-change-password.dto';
-import * as argon from 'argon2';
-import { FriendRequestDto } from './dto/friend-request.dto';
-import {
-  paginate,
-  PaginationOptions,
-} from '../shared/helper/pagination.helper';
-import { plainToClass } from 'class-transformer';
-import { UserDto } from './dto/user.dto';
-import { SocketService } from '../socket/socket.service';
-import { SOCKET_EVENT } from '../shared/constants/socket.constant';
-import { RedisService } from '../redis/redis.service';
+import { NotifyService } from 'src/notify/notify.service';
+import { NotifyEnum } from 'src/notify/notify.model';
 
 @Injectable()
 export class UserService {
@@ -40,6 +41,7 @@ export class UserService {
     private userRequestFriendModel: Model<UserRequestFriendDocument>,
     private socketService: SocketService,
     private redisService: RedisService,
+    private notifyService: NotifyService,
   ) {}
 
   async index(sub: string, options: PaginationOptions) {
@@ -58,6 +60,37 @@ export class UserService {
       }
       return formattedData;
     });
+  }
+
+  async searchUser(sub: string, options: PaginationOptions, keywords: string) {
+    delete options.search;
+
+    const regex = new RegExp(keywords, 'i');
+    return await paginate(
+      this.userModel.find({
+        $or: [
+          { email: { $regex: regex } },
+          { firstName: { $regex: regex } },
+          { lastName: { $regex: regex } },
+        ],
+      }),
+      options,
+      async (data) => {
+        const formattedData = [];
+        for (const u of data) {
+          const userDto = plainToClass(UserDto, u, {
+            excludeExtraneousValues: true,
+          });
+          const currentUser = await this.getCurrentUser(sub, userDto._id);
+          const formattedUser = {
+            ...userDto,
+            ...currentUser,
+          };
+          formattedData.push(formattedUser);
+        }
+        return formattedData;
+      },
+    );
   }
 
   async getCurrentUser(
@@ -156,6 +189,7 @@ export class UserService {
     });
 
     const client = await this.redisService.getSocketId(dto.senderId);
+
     if (client) {
       const mapped = plainToClass(UserDto, receiver, {
         excludeExtraneousValues: true,
@@ -164,6 +198,12 @@ export class UserService {
         .to(client)
         .emit(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST, mapped);
     }
+
+    await this.notifyService.createNotify({
+      owner: sender._id.toString(),
+      title: `${receiver.firstName} ${receiver.lastName} accepted the friend request`,
+      type: NotifyEnum.DEFAULT,
+    });
 
     return null;
   }
@@ -194,6 +234,12 @@ export class UserService {
         .emit(SOCKET_EVENT.USER.REJECT_FRIEND_REQUEST, mapped);
     }
 
+    await this.notifyService.createNotify({
+      owner: sender._id.toString(),
+      title: `${receiver.firstName} ${receiver.lastName} declined the friend request`,
+      type: NotifyEnum.DEFAULT,
+    });
+
     return null;
   }
 
@@ -223,12 +269,13 @@ export class UserService {
   }
 
   async getFriendRequest(sub: string, options: PaginationOptions) {
-    return await paginate(
+    const friendRequests = await paginate(
       this.userRequestFriendModel
         .find({
           receiver: sub,
           deletedAt: null,
         })
+        .sort({ createdAt: -1 })
         .populate('sender'),
       options,
       async (data) => {
@@ -245,6 +292,22 @@ export class UserService {
         return formattedData;
       },
     );
+
+    const requestIds = friendRequests.results.map((request) => request._id);
+
+    await this.userRequestFriendModel.updateMany(
+      { _id: { $in: requestIds } },
+      { isRead: true },
+    );
+
+    return friendRequests;
+  }
+
+  async countRequestFriend(sub: string) {
+    return this.userRequestFriendModel.countDocuments({
+      isRead: false,
+      receiver: sub,
+    });
   }
 
   async isRequestFriend(
@@ -262,6 +325,36 @@ export class UserService {
     return !!check;
   }
 
+  async cancelFriendRequest(dto: FriendRequestDto) {
+    const { senderId, receiverId } = dto;
+    const sender = await this.userModel.findById(senderId);
+    const receiver = await this.userModel.findById(receiverId);
+
+    if (!sender || !receiver) throw new BadRequestException('User not found');
+
+    if (!(await this.isRequestFriend(senderId, receiverId)))
+      throw new BadRequestException("You haven't sent a friend request yet");
+
+    await this.userRequestFriendModel.findOneAndDelete({
+      sender: sender._id,
+      receiver: receiver._id,
+      deletedAt: null,
+    });
+
+    const client = await this.redisService.getSocketId(dto.receiverId);
+
+    if (client) {
+      const mapped = plainToClass(UserDto, sender, {
+        excludeExtraneousValues: true,
+      });
+      this.socketService.socket
+        .to(client)
+        .emit(SOCKET_EVENT.USER.CANCEL_FRIEND_REQUEST, mapped);
+    }
+
+    return null;
+  }
+
   async sendFriendRequest(dto: FriendRequestDto) {
     const { senderId, receiverId } = dto;
     const sender = await this.userModel.findById(senderId);
@@ -275,7 +368,13 @@ export class UserService {
     if (await this.isFriend(dto.receiverId, dto.senderId))
       throw new BadRequestException('You two are already friends');
 
+    const userRequestFriend = await this.userRequestFriendModel.create({
+      sender: sender._id,
+      receiver: receiver._id,
+    });
+
     const client = await this.redisService.getSocketId(dto.receiverId);
+
     if (client) {
       const mapped = plainToClass(UserDto, sender, {
         excludeExtraneousValues: true,
@@ -283,12 +382,13 @@ export class UserService {
       this.socketService.socket
         .to(client)
         .emit(SOCKET_EVENT.USER.SEND_REQUEST_FRIEND, mapped);
+      const count = await this.countRequestFriend(dto.receiverId);
+      this.socketService.socket
+        .to(client)
+        .emit(SOCKET_EVENT.USER.COUNT_FRIEND_REQUEST, count);
     }
 
-    return await this.userRequestFriendModel.create({
-      sender: sender._id,
-      receiver: receiver._id,
-    });
+    return userRequestFriend;
   }
 
   async updateInformation(sub: string, userDto: UserUpdateDto) {

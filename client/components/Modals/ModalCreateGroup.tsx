@@ -58,7 +58,6 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
       <label data-tip={t.home.tab.group.title} htmlFor='modal-create-group' className={'tooltip cursor-pointer tooltip-left'}>
         <AiOutlineUsergroupAdd size={25} />
       </label>
-      
       <input type='checkbox' id='modal-create-group' className='modal-toggle' />
       <div className='modal'>
         <div className='modal-box dark:bg-via-100 max-h-[500px] min-h-[400px]'>

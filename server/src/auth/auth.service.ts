@@ -12,6 +12,7 @@ import { User } from '../user/user.model';
 import { Model } from 'mongoose';
 import { LoginDto } from './dto/login.dto';
 import { google } from 'googleapis';
+import { RegisterDto } from './dto/register.dto';
 
 const googleClient = new google.auth.OAuth2({
   clientId: process.env.GOOGLE_CLIENT_ID,
@@ -91,7 +92,7 @@ export class AuthService {
     };
   }
 
-  async signup(dto: LoginDto) {
+  async signup(dto: RegisterDto) {
     const check = await this.userModel.findOne({
       email: dto.email,
     });
@@ -104,6 +105,8 @@ export class AuthService {
     try {
       const user = await this.userModel.create({
         email: dto.email,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
         password: hash,
       });
 
