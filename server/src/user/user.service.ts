@@ -412,14 +412,17 @@ export class UserService {
   async changePassword(sub: string, dto: UserChangePasswordDto) {
     const user = await this.userModel.findOne({ _id: sub });
 
-    const pwMatches = await argon.verify(user.password, dto.oldPassword);
+    if (!user.isNoPassword) {
+      const pwMatches = await argon.verify(user.password, dto.oldPassword);
 
-    if (!pwMatches)
-      throw new HttpException(
-        'Old password is incorrect',
-        HttpStatus.BAD_REQUEST,
-      );
+      if (!pwMatches)
+        throw new HttpException(
+          'Old password is incorrect',
+          HttpStatus.BAD_REQUEST,
+        );
+    }
 
+    user.isNoPassword = false;
     user.password = await argon.hash(dto.newPassword);
     user.save();
 

@@ -1,12 +1,15 @@
 type UserType = {
   _id: string;
   email: string;
-  bio: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  address: string;
-  avatar: string;
+  bio: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  phone: string | null;
+  address: string | null;
+  avatar: string | null;
+  isNoPassword: boolean;
+  githubLink: string | null;
+  facebookLink: string | null;
   currentUser?: CurrentUser;
 };
 
@@ -30,10 +33,12 @@ type UserRequestFriendType = {
 };
 
 type UserInformationType = {
-  firstName: string;
-  lastName: string;
-  bio: string;
-  phone: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  phone?: string;
+  facebookLink?: string;
+  githubLink?: string;
 }
 
 type UserChangePasswordType = {

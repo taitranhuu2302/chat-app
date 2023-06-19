@@ -5,7 +5,7 @@ import {
 } from '@nestjs/mongoose';
 import { BaseEntity } from '../shared/base/base.entity';
 import { HydratedDocument, Schema } from 'mongoose';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserFriendDocument = HydratedDocument<UserFriend>;
@@ -21,6 +21,7 @@ export class User extends BaseEntity {
   @Prop({ isRequired: true, unique: true })
   email: string;
   @Prop({ isRequired: true })
+  @Expose()
   password: string;
   @Prop()
   bio: string;
@@ -38,6 +39,8 @@ export class User extends BaseEntity {
   facebookLink: string;
   @Prop()
   avatar: string;
+  @Prop({type: Boolean, default: false})
+  isNoPassword: boolean;
   @Prop({ type: [{ type: Schema.Types.ObjectId, ref: 'UserFriend' }] })
   friends: UserFriend[];
   @Prop({ type: [{ type: Schema.Types.ObjectId, ref: 'UserRequestFriend' }] })

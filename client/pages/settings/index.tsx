@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useContext, useEffect, useState } from 'react';
 import MainLayout from '@/layouts/MainLayout';
 import Input from '@/components/Input';
 import styles from '@/styles/pages/settings.module.scss';
@@ -21,6 +21,8 @@ const Settings: React.FC<IProps> = () => {
   const { mutateAsync: updateInformation, isLoading: userUpdateLoading } = useUpdateUserInformationApi({})
   const { mutateAsync: changePassword, isLoading: changePasswordLoading } = useChangePasswordApi({})
   const { auth } = useContext(AuthContext) as AuthContextType;
+  const [facebookLink, setFacebookLink] = useState("")
+  const [githubLink, setGithubLink] = useState("")
   const [errorChangePassword, setErrorChangePassword] = useState<String[]>([])
   const { register: registerInformation, setValue, handleSubmit: handleSubmitInformation } = useForm<UserInformationType>({
     defaultValues: {
@@ -30,7 +32,7 @@ const Settings: React.FC<IProps> = () => {
       phone: "",
     }
   })
-  const { register: registerChangePassword, handleSubmit: handleSubmitChangePassword } = useForm<UserChangePasswordType>({
+  const { register: registerChangePassword, handleSubmit: handleSubmitChangePassword, reset: resetPassword } = useForm<UserChangePasswordType>({
     defaultValues: {
       oldPassword: "",
       newPassword: "",
@@ -41,10 +43,12 @@ const Settings: React.FC<IProps> = () => {
 
   useEffect(() => {
     if (auth) {
-      setValue("firstName", auth.firstName)
-      setValue("lastName", auth.lastName)
-      setValue("bio", auth.bio)
-      setValue("phone", auth.phone)
+      setValue("firstName", auth.firstName ?? "")
+      setValue("lastName", auth.lastName ?? "")
+      setValue("bio", auth.bio ?? "")
+      setValue("phone", auth.phone ?? "")
+      setGithubLink(auth?.githubLink ?? "")
+      setFacebookLink(auth?.facebookLink ?? "")
     }
   }, [auth])
 
@@ -65,8 +69,33 @@ const Settings: React.FC<IProps> = () => {
     try {
       await changePassword(data)
       toast.success("Change password success")
+      resetPassword({
+        oldPassword: "",
+        newPassword: "",
+        confirmNewPassword: ""
+      })
+      setErrorChangePassword([])
     } catch (e: any) {
       setErrorChangePassword([...getErrorResponse(e.message)])
+    }
+  }
+
+  const handleSubmitSocial = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    try {
+      await updateInformation({
+        facebookLink,
+        githubLink
+      })
+      toast.success("Update user social success")
+      resetPassword({
+        oldPassword: "",
+        newPassword: "",
+        confirmNewPassword: ""
+      })
+      setErrorChangePassword([])
+    } catch (e: any) {
+      console.error(e);
     }
   }
 
@@ -99,7 +128,6 @@ const Settings: React.FC<IProps> = () => {
                 <Input
                   className={`${styles['input-setting']} dark:border-night-500`}
                   label={'Phone'}
-                  value={auth?.phone}
                   settings={{ ...registerInformation('phone') }}
                 />
                 <div className={'flex flex-col gap-1'}>
@@ -117,12 +145,14 @@ const Settings: React.FC<IProps> = () => {
                 <form
                   onSubmit={handleSubmitChangePassword(onSubmitChangePassword)}
                   className={`${styles['card-custom']}  bg-base-100 dark:bg-via-300`}>
-                  <Input
-                    className={`${styles['input-setting']} dark:border-night-500`}
-                    label={'Current Password'}
-                    settings={{ ...registerChangePassword('oldPassword') }}
-                    type={'password'}
-                  />
+                  {!auth?.isNoPassword && (
+                    <Input
+                      className={`${styles['input-setting']} dark:border-night-500`}
+                      label={'Current Password'}
+                      settings={{ ...registerChangePassword('oldPassword') }}
+                      type={'password'}
+                    />
+                  )}
                   <Input
                     className={`${styles['input-setting']} dark:border-night-500`}
                     label={'New Password'}
@@ -149,6 +179,7 @@ const Settings: React.FC<IProps> = () => {
                   <button className="btn-custom">{t.saveChanges}</button>
                 </form>
                 <form
+                  onSubmit={handleSubmitSocial}
                   className={`${styles['card-custom']}  bg-base-100 dark:bg-via-300`}>
                   <Input
                     iconStart={
@@ -157,6 +188,8 @@ const Settings: React.FC<IProps> = () => {
                         className={'text-blue-600 dark:text-white'}
                       />
                     }
+                    value={facebookLink}
+                    onChange={(value) => setFacebookLink(value)}
                     className={`${styles['input-setting']} dark:border-night-500`}
                     label={'Facebook'}
                     placeholder={'Facebook Account'}
@@ -165,6 +198,8 @@ const Settings: React.FC<IProps> = () => {
                     iconStart={<AiFillGithub size={25} />}
                     className={`${styles['input-setting']} dark:border-night-500`}
                     label={'Github'}
+                    value={githubLink}
+                    onChange={(value) => setGithubLink(value)}
                     placeholder={'Github Account'}
                   />
                   <button className="btn-custom">{t.saveChanges}</button>
