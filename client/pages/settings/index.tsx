@@ -30,6 +30,7 @@ const Settings: React.FC<IProps> = () => {
       lastName: "",
       bio: "",
       phone: "",
+      address: "",
     }
   })
   const { register: registerChangePassword, handleSubmit: handleSubmitChangePassword, reset: resetPassword } = useForm<UserChangePasswordType>({
@@ -47,6 +48,7 @@ const Settings: React.FC<IProps> = () => {
       setValue("lastName", auth.lastName ?? "")
       setValue("bio", auth.bio ?? "")
       setValue("phone", auth.phone ?? "")
+      setValue("address", auth.address ?? "")
       setGithubLink(auth?.githubLink ?? "")
       setFacebookLink(auth?.facebookLink ?? "")
     }
@@ -129,6 +131,11 @@ const Settings: React.FC<IProps> = () => {
                   className={`${styles['input-setting']} dark:border-night-500`}
                   label={'Phone'}
                   settings={{ ...registerInformation('phone') }}
+                />
+                <Input
+                  className={`${styles['input-setting']} dark:border-night-500`}
+                  label={'Address'}
+                  settings={{ ...registerInformation('address') }}
                 />
                 <div className={'flex flex-col gap-1'}>
                   <label className={'text-[15px]'}>Bio</label>

@@ -37,6 +37,7 @@ type UserInformationType = {
   lastName?: string;
   bio?: string;
   phone?: string;
+  address?: string;
   facebookLink?: string;
   githubLink?: string;
 }
