@@ -35,11 +35,11 @@ const TabProfile: React.FC<ITabProfile> = () => {
         </>
       }>
       <AvatarCustom
-        src={auth?.avatar}
+        src={auth?.avatar ?? ""}
         name={`${auth?.firstName} ${auth?.lastName}`}
       />
       <Divider />
-      <UserInfo />
+      <UserInfo user={auth}/>
     </TabContainer>
   );
 };
