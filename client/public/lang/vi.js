@@ -1,4 +1,5 @@
 const language = {
+  notify: "Thông báo",
   home: {
     tab: {
       profile: {

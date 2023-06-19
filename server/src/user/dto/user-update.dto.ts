@@ -22,4 +22,12 @@ export class UserUpdateDto {
   @Transform(({ value }) => value || null)
   @ApiProperty({default: "Viet Nam"})
   address: string;
+  @Expose()
+  @Transform(({ value }) => value || null)
+  @ApiProperty({default: "github.com"})
+  githubLink: string;
+  @Expose()
+  @Transform(({ value }) => value || null)
+  @ApiProperty({default: "facebook.com"})
+  facebookLink: string;
 }

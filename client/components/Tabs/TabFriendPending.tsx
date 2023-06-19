@@ -24,6 +24,7 @@ import Skeleton from 'react-loading-skeleton';
 import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
 import {useEffectOnce} from "usehooks-ts";
+import { setCountRequestFriend } from '@/redux/features/NotifySlice';
 
 interface Props {}
 
@@ -40,8 +41,10 @@ const TabFriendPending: React.FC<Props> = () => {
       },
     },
   });
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(setCountRequestFriend(0))
     if (!socket) return;
     socket.on(SOCKET_EVENT.USER.SEND_REQUEST_FRIEND, (data: UserType) => {
       setFriends([data, ...friends]);

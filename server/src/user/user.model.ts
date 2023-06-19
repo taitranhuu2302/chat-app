@@ -21,7 +21,6 @@ export class User extends BaseEntity {
   @Prop({ isRequired: true, unique: true })
   email: string;
   @Prop({ isRequired: true })
-  @Exclude()
   password: string;
   @Prop()
   bio: string;
@@ -33,6 +32,10 @@ export class User extends BaseEntity {
   phone: string;
   @Prop()
   address: string;
+  @Prop()
+  githubLink: string;
+  @Prop()
+  facebookLink: string;
   @Prop()
   avatar: string;
   @Prop({ type: [{ type: Schema.Types.ObjectId, ref: 'UserFriend' }] })

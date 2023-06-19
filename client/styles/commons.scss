@@ -96,3 +96,22 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #D1D6DB;
 }
+
+.dropdown-custom {
+  position: relative;
+
+  .dropdown-list {
+    background: white;
+    padding: 10px;
+    width: 500%;
+    max-width: 400px;
+    position: absolute;
+    bottom: 0;
+    left: 100%;
+    @apply shadow-lg rounded-lg;
+
+    li {
+      @apply flex items-center gap-2.5;
+    }
+  }
+}

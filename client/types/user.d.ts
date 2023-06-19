@@ -28,3 +28,16 @@ type UserRequestFriendType = {
   createdAt: string;
   updatedAt: string;
 };
+
+type UserInformationType = {
+  firstName: string;
+  lastName: string;
+  bio: string;
+  phone: string;
+}
+
+type UserChangePasswordType = {
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string
+}
