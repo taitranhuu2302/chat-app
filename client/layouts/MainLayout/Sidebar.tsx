@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { AiOutlineUser } from 'react-icons/ai';
 import { TbMessageCircle2 } from 'react-icons/tb';
 import { FiSettings, FiUsers } from 'react-icons/fi';
-import { RiContactsLine } from 'react-icons/ri';
+import { RiContactsLine, RiNotification3Line } from 'react-icons/ri';
 import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
 import { MdLanguage, MdOutlineDarkMode } from 'react-icons/md';
@@ -15,9 +15,9 @@ import { KEY_LANGUAGE } from '../../constants';
 import useTranslate from '@/hooks/useTranslate';
 import Divider from '@/components/Divider';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
-import {useAppSelector} from "@/redux/hooks";
+import { useAppSelector } from "@/redux/hooks";
 
-interface ISidebar {}
+interface ISidebar { }
 
 const Sidebar: React.FC<ISidebar> = () => {
   const router = useRouter();
@@ -27,7 +27,7 @@ const Sidebar: React.FC<ISidebar> = () => {
   const { onSetTheme } = useContext(DarkModeContext);
   const t = useTranslate();
   const { removeAuth, auth } = useContext(AuthContext) as AuthContextType;
-  const {countRequestFriend} = useAppSelector(state => state.notify)
+  const { countRequestFriend } = useAppSelector(state => state.notify)
 
   const onChangeLang = async (lang: string) => {
     await router.push(router.asPath, router.asPath, {
@@ -212,8 +212,8 @@ const SidebarItemLink = ({
           pathname: path
             ? path
             : router.pathname === '/settings'
-            ? '/'
-            : router.pathname,
+              ? '/'
+              : router.pathname,
           query: { ...router.query, tab: tabText },
         })
       }

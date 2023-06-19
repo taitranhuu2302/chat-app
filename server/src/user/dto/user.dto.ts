@@ -1,6 +1,5 @@
 import { Expose, Transform } from 'class-transformer';
 import { BaseMapEntity } from '../../shared/base/base-map.entity';
-import {UserFriend, UserRequestFriend} from '../user.model';
 
 export class UserDto extends BaseMapEntity {
   @Expose()
@@ -24,4 +23,13 @@ export class UserDto extends BaseMapEntity {
   @Expose()
   @Transform(({ value }) => value || null)
   avatar: string;
+  @Expose()
+  @Transform(({ value }) => value)
+  isNoPassword: boolean;
+  @Expose()
+  @Transform(({ value }) => value || null)
+  githubLink: string;
+  @Expose()
+  @Transform(({ value }) => value || null)
+  facebookLink: string;
 }

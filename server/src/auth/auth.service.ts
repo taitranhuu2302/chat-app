@@ -53,6 +53,7 @@ export class AuthService {
       firstName: names?.[0]?.givenName,
       lastName: names?.[0]?.familyName,
       avatar: photos?.[0]?.url,
+      isNoPassword: true
     });
     return this.signToken(user._id.toString(), user.email);
   }

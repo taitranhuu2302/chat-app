@@ -8,6 +8,9 @@ interface IInput {
   iconStart?: React.ReactNode;
   className?: string;
   label?: string;
+  readOnly?: boolean;
+  settings?: any
+  type?: string;
 }
 
 const Input: React.FC<IInput> = ({
@@ -17,6 +20,9 @@ const Input: React.FC<IInput> = ({
   iconStart,
   className,
   label,
+  readOnly = false,
+  settings,
+  type = "text"
 }) => {
   const id = useId();
   return (
@@ -36,14 +42,16 @@ const Input: React.FC<IInput> = ({
           )}>
           {iconStart && <div>{iconStart}</div>}
           <input
-            type="text"
+            type={type}
             value={value}
             id={id}
+            readOnly={readOnly}
             onChange={(e) => onChange && onChange(e.target.value)}
             className={twMerge(
               `bg-transparent ${iconStart ? 'pl-4' : ''} outline-none w-full`
             )}
             placeholder={placeholder}
+            {...settings}
           />
         </div>
       </div>

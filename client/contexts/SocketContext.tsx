@@ -32,6 +32,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
     newSocket.on(SOCKET_EVENT.USER.COUNT_FRIEND_REQUEST, (data: number) => {
       dispatch(setCountRequestFriend(data))
     })
+    setSocket(newSocket)
     return () => {
       newSocket.disconnect();
     };
