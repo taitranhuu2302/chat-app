@@ -13,6 +13,7 @@ const language = {
             name: 'Họ và tên',
             email: 'E-mail',
             location: 'Nơi ở',
+            phone: "Số điện thoại",
           },
         },
       },
