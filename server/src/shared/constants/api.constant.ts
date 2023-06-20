@@ -27,5 +27,14 @@ export const API = {
   },
   NOTIFY: {
     INDEX: `${PREFIX}/notify`,
+  },
+  CONVERSATION: {
+    INDEX: `${PREFIX}/conversation`,
+    FIND_ALL_BY_USER: `find-all-by-user`,
+    CREATE: `create`,
+    UPDATE: `update`,
+    FIND_BY_ID: `get/:id`,
+    CHANGE_AVATAR: `change-avatar`,
+    ADD_MEMBER: `add-member`,
   }
 };

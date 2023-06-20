@@ -9,6 +9,7 @@ import { join } from 'path';
 import { SocketModule } from './socket/socket.module';
 import { RedisModule } from './redis/redis.module';
 import { NotifyModule } from './notify/notify.module';
+import { ConversationModule } from './conversation/conversation.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { NotifyModule } from './notify/notify.module';
     SocketModule,
     RedisModule,
     NotifyModule,
+    ConversationModule,
   ],
 })
 export class AppModule {}

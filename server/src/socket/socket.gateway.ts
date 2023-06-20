@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../user/user.model';
 import { Model } from 'mongoose';
+import { SOCKET_EVENT } from 'src/shared/constants/socket.constant';
 
 @WebSocketGateway({ cors: true })
 export class SocketGateway
@@ -32,12 +33,14 @@ export class SocketGateway
     this.socketService.socket = server;
   }
 
-  async handleConnection(socket: Socket, ...args: any[]): Promise<any> {
+  async handleConnection(socket: Socket): Promise<any> {
     this.logger.log(`Client connected: ${socket.id}`);
 
     const user = await this.getUser(socket);
     if (!user) return;
     await this.redisService.setSocketId(user._id.toString(), socket.id);
+    
+    this.socketService.socket.emit(SOCKET_EVENT.USER_CONNECTED, await this.redisService.getAllSocket());
   }
 
   async handleDisconnect(socket: Socket): Promise<any> {
