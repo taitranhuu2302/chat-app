@@ -1,12 +1,28 @@
-import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ConversationService } from './conversation.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { API } from 'src/shared/constants/api.constant';
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
 import { PaginateQuery } from 'src/shared/decorator/pagination-query.decorator';
 import { PaginationOptions } from 'src/shared/helper/pagination.helper';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import { ConversationCreateDto } from './dto/conversation-create.dto';
+import { ConversationUpdateDto } from './dto/conversation-update.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  localOptionsConversationAvatar,
+} from '../shared/helper/file.helper';
+import { ConversationAddMemberDto } from './dto/conversation-add-member.dto';
 
 @Controller(API.CONVERSATION.INDEX)
 @ApiTags('Conversation')
@@ -29,22 +45,38 @@ export class ConversationController {
   }
 
   @Put(API.CONVERSATION.UPDATE)
-  async update() {
-    return null;
+  async update(
+    @GetUser() { sub },
+    @Param('id') id: string,
+    @Body() dto: ConversationUpdateDto,
+  ) {
+    return this.conversationService.update(sub, id, dto);
   }
 
   @Get(API.CONVERSATION.FIND_BY_ID)
-  async findById() {
-    return null;
+  async findById(@GetUser() { sub }, @Param('id') id: string) {
+    return this.conversationService.findById(sub, id);
   }
 
+  @UseInterceptors(FileInterceptor('avatar', localOptionsConversationAvatar))
   @Post(API.CONVERSATION.CHANGE_AVATAR)
-  async changeAvatar() {
-    return null;
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async changeAvatar(@Param('id') id: string, @UploadedFile() file) {
+    return this.conversationService.changeAvatar(id, file);
   }
 
   @Post(API.CONVERSATION.ADD_MEMBER)
-  async addMembers() {
-    return null;
+  async addMembers(@GetUser() { sub }, @Body() dto: ConversationAddMemberDto) {
+    return this.conversationService.addMembers(sub, dto);
   }
 }

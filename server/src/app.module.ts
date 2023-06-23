@@ -10,6 +10,7 @@ import { SocketModule } from './socket/socket.module';
 import { RedisModule } from './redis/redis.module';
 import { NotifyModule } from './notify/notify.module';
 import { ConversationModule } from './conversation/conversation.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ConversationModule } from './conversation/conversation.module';
     RedisModule,
     NotifyModule,
     ConversationModule,
+    MessageModule,
   ],
 })
 export class AppModule {}

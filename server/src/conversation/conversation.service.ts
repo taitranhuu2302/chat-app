@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Conversation,
@@ -14,6 +18,10 @@ import { plainToClass } from 'class-transformer';
 import { ConversationDto } from './dto/conversation.dto';
 import { ConversationCreateDto } from './dto/conversation-create.dto';
 import { User, UserDocument } from 'src/user/user.model';
+import { ConversationUpdateDto } from './dto/conversation-update.dto';
+import { ConversationAddMemberDto } from './dto/conversation-add-member.dto';
+import { Message, MessageDocument } from '../message/message.model';
+import { MessageDto } from '../message/dto/message.dto';
 
 @Injectable()
 export class ConversationService {
@@ -22,6 +30,8 @@ export class ConversationService {
     private conversationModel: Model<ConversationDocument>,
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    @InjectModel(Message.name)
+    private messageModel: Model<MessageDocument>,
   ) {}
 
   async findAll(sub: string, options: PaginationOptions) {
@@ -37,21 +47,30 @@ export class ConversationService {
           const conversation = plainToClass(ConversationDto, item, {
             excludeExtraneousValues: true,
           });
+          const latestMessage = plainToClass(
+            MessageDto,
+            await this.messageModel.findOne(
+              { conversation: conversation._id },
+              {},
+              {
+                sort: { createdAt: -1 },
+              },
+            ),
+            { excludeExtraneousValues: true },
+          );
+
           if (item.conversationType === ConversationType.PRIVATE) {
             const userOther = conversation.members.find((m) => m._id !== sub);
-            const name =
-              conversation.conversationType === ConversationType.GROUP
-                ? conversation.conversationName
-                : `${userOther.firstName} ${userOther.lastName}`;
+            const name = `${userOther.firstName} ${userOther.lastName}`;
 
             formattedData.push({
               ...conversation,
               conversationName: name,
+              latestMessage,
             });
             continue;
           }
-
-          formattedData.push(conversation);
+          formattedData.push({ ...conversation, latestMessage });
         }
 
         return formattedData;
@@ -67,13 +86,83 @@ export class ConversationService {
       members: [...dto.members, sub],
     });
 
-    // await this.userModel.updateMany(
-    //   { _id: { $in: dto.members } },
-    //   { $push: { conversations: newConversation._id } },
-    // );
-
     return plainToClass(ConversationDto, newConversation, {
       excludeExtraneousValues: true,
     });
+  }
+
+  async update(
+    sub: string,
+    conversationId: string,
+    dto: ConversationUpdateDto,
+  ) {
+    const conversation = await this.conversationModel.findOne({
+      _id: conversationId,
+      members: sub,
+    });
+    if (!conversation) throw new ForbiddenException('You are not authorized');
+    if (conversation.conversationType === ConversationType.PRIVATE)
+      throw new BadRequestException('Private rooms cannot be renamed');
+
+    conversation.conversationName = dto.conversationName;
+    conversation.save();
+
+    return conversation;
+  }
+
+  async findById(sub: string, id: string) {
+    const conversation = await this.conversationModel
+      .findById(id)
+      .populate(['owner', 'members']);
+    if (!conversation) throw new BadRequestException('Conversation not found');
+    const mapped = plainToClass(ConversationDto, conversation, {
+      excludeExtraneousValues: true,
+    });
+    if (mapped.conversationType === ConversationType.PRIVATE) {
+      const userOther = mapped.members.find((m) => m._id !== sub);
+      const name = `${userOther.firstName} ${userOther.lastName}`;
+
+      return {
+        ...mapped,
+        conversationName: name,
+      };
+    }
+
+    return mapped;
+  }
+
+  async changeAvatar(id: string, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No avatar files provided');
+    }
+    const conversation = await this.conversationModel.findById(id);
+    if (!conversation) throw new BadRequestException('Room not found');
+    if (conversation.conversationType === ConversationType.PRIVATE)
+      throw new BadRequestException(
+        'Conversation private cannot change avatar',
+      );
+
+    conversation.avatar = `${process.env.SERVER_URL}/uploads/conversation/${file.filename}`;
+    conversation.save();
+
+    return conversation;
+  }
+
+  async addMembers(sub: string, dto: ConversationAddMemberDto) {
+    const conversation = await this.conversationModel.findOne({
+      _id: dto.conversationId,
+      members: sub,
+    });
+    for (const memberId of dto.members) {
+      const newMember = await this.userModel.findById(memberId);
+      if (
+        !newMember ||
+        conversation.members.some((m: any) => m.toString() === memberId)
+      )
+        continue;
+      conversation.members.push(newMember);
+    }
+    conversation.save();
+    return conversation;
   }
 }

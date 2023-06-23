@@ -32,9 +32,16 @@ export const API = {
     INDEX: `${PREFIX}/conversation`,
     FIND_ALL_BY_USER: `find-all-by-user`,
     CREATE: `create`,
-    UPDATE: `update`,
+    UPDATE: `update/:id`,
     FIND_BY_ID: `get/:id`,
-    CHANGE_AVATAR: `change-avatar`,
+    CHANGE_AVATAR: `change-avatar/:id`,
     ADD_MEMBER: `add-member`,
-  }
+  },
+  MESSAGE: {
+    INDEX: `${PREFIX}/message`,
+    FIND_ALL_BY_CONVERSATION: `find-all-by-conversation/:conversationId`,
+    CREATE: `create`,
+    UPDATE: `update/:id`,
+    MESSAGE_RECALL: `message-recall/:id`,
+  },
 };
