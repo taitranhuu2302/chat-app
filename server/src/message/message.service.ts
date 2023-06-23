@@ -9,6 +9,7 @@ import { Model } from 'mongoose';
 import { plainToClass } from 'class-transformer';
 import { MessageDto } from './dto/message.dto';
 import { MessageCreateDto } from './dto/message-create.dto';
+import { MessageUpdateDto } from './dto/message-update.dto';
 
 @Injectable()
 export class MessageService {
@@ -64,11 +65,28 @@ export class MessageService {
     return plainToClass(MessageDto, message, { excludeExtraneousValues: true });
   }
 
-  async update() {
-    return null;
+  async update(sub: string, messageId: string, dto: MessageUpdateDto) {
+    const message = await this.messageModel.findOne({
+      sender: sub,
+      _id: messageId,
+    });
+    if (!message) throw new BadRequestException('Message not found');
+    message.text = dto.text ?? message.text;
+    message.save();
+
+    return message;
   }
 
-  async messageRecall() {
-    return null;
+  async messageRecall(sub: string, id: string) {
+    const message = await this.messageModel.findOneAndDelete({
+      sender: sub,
+      _id: id,
+    });
+
+    if (!message) {
+      throw new BadRequestException('Message not found');
+    }
+
+    return message;
   }
 }

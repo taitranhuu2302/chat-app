@@ -22,6 +22,10 @@ import { ConversationUpdateDto } from './dto/conversation-update.dto';
 import { ConversationAddMemberDto } from './dto/conversation-add-member.dto';
 import { Message, MessageDocument } from '../message/message.model';
 import { MessageDto } from '../message/dto/message.dto';
+import { SocketService } from '../socket/socket.service';
+import { RedisService } from '../redis/redis.service';
+import { SOCKET_EVENT } from '../shared/constants/socket.constant';
+import { ConversationRemoveMemberDto } from './dto/conversation-remove-member.dto';
 
 @Injectable()
 export class ConversationService {
@@ -32,12 +36,14 @@ export class ConversationService {
     private userModel: Model<UserDocument>,
     @InjectModel(Message.name)
     private messageModel: Model<MessageDocument>,
+    private socketService: SocketService,
+    private redisService: RedisService,
   ) {}
 
   async findAll(sub: string, options: PaginationOptions) {
     return await paginate(
       this.conversationModel
-        .find({ members: sub })
+        .find({ members: sub, deletedAt: null })
         .populate(['owner', 'members']),
       options,
       async (data) => {
@@ -85,6 +91,21 @@ export class ConversationService {
       owner: dto.conversationType === ConversationType.GROUP ? sub : null,
       members: [...dto.members, sub],
     });
+    const conversationResponse = await this.findById(
+      sub,
+      newConversation._id.toString(),
+    );
+
+    for (const member of dto.members) {
+      this.socketService.socket.socketsJoin(newConversation._id.toString());
+      const client = await this.redisService.getSocketId(member);
+      this.socketService.socket
+        .to(client)
+        .emit(
+          SOCKET_EVENT.CONVERSATION.CREATE_CONVERSATION,
+          conversationResponse,
+        );
+    }
 
     return plainToClass(ConversationDto, newConversation, {
       excludeExtraneousValues: true,
@@ -106,6 +127,10 @@ export class ConversationService {
 
     conversation.conversationName = dto.conversationName;
     conversation.save();
+
+    this.socketService.socket
+      .to(conversation._id.toString())
+      .emit(SOCKET_EVENT.CONVERSATION.UPDATE_CONVERSATION, conversation);
 
     return conversation;
   }
@@ -144,7 +169,9 @@ export class ConversationService {
 
     conversation.avatar = `${process.env.SERVER_URL}/uploads/conversation/${file.filename}`;
     conversation.save();
-
+    this.socketService.socket
+      .to(conversation._id.toString())
+      .emit(SOCKET_EVENT.CONVERSATION.UPDATE_CONVERSATION, conversation);
     return conversation;
   }
 
@@ -163,6 +190,50 @@ export class ConversationService {
       conversation.members.push(newMember);
     }
     conversation.save();
+
+    this.socketService.socket
+      .to(conversation._id.toString())
+      .emit(SOCKET_EVENT.CONVERSATION.UPDATE_CONVERSATION, conversation);
+
+    return conversation;
+  }
+
+  async removeMember(sub: string, dto: ConversationRemoveMemberDto) {
+    const conversation = await this.conversationModel
+      .findOne({
+        _id: dto.conversationId,
+        members: { $in: [sub, dto.userId] },
+      })
+      .populate(['owner']);
+    if (!conversation) throw new BadRequestException('Conversation not found');
+
+    if (dto.userId) {
+      // Remove user
+      if (conversation.owner._id.toString() !== sub)
+        throw new ForbiddenException('you are not authorized');
+
+      conversation.members = conversation.members.filter(
+        (m) => m._id.toString() !== dto.userId,
+      );
+    } else {
+      // Leave conversation
+      if (conversation.owner._id.toString() !== sub) {
+        // Leave conversation
+        conversation.members = conversation.members.filter(
+          (m) => m._id.toString() !== sub,
+        );
+      } else {
+        // Delete conversation
+        conversation.deletedAt = new Date();
+      }
+    }
+
+    conversation.save();
+
+    this.socketService.socket
+      .to(conversation._id.toString())
+      .emit(SOCKET_EVENT.CONVERSATION.UPDATE_CONVERSATION, conversation);
+
     return conversation;
   }
 }

@@ -21,6 +21,7 @@ import { PaginationOptions } from '../shared/helper/pagination.helper';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { MessageCreateDto } from './dto/message-create.dto';
 import { localOptionsMessageFiles } from '../shared/helper/file.helper';
+import { MessageUpdateDto } from './dto/message-update.dto';
 
 @Controller(API.MESSAGE.INDEX)
 @ApiTags('Message')
@@ -53,12 +54,16 @@ export class MessageController {
   }
 
   @Put(API.MESSAGE.UPDATE)
-  async update() {
-    return this.messageService.update();
+  async update(
+    @GetUser() { sub },
+    @Param('id') id: string,
+    @Body() dto: MessageUpdateDto,
+  ) {
+    return this.messageService.update(sub, id, dto);
   }
 
   @Delete(API.MESSAGE.MESSAGE_RECALL)
-  async messageRecall() {
-    return this.messageService.messageRecall();
+  async messageRecall(@GetUser() { sub }, @Param('id') id: string) {
+    return this.messageService.messageRecall(sub, id);
   }
 }

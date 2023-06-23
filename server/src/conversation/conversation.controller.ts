@@ -19,10 +19,9 @@ import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import { ConversationCreateDto } from './dto/conversation-create.dto';
 import { ConversationUpdateDto } from './dto/conversation-update.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  localOptionsConversationAvatar,
-} from '../shared/helper/file.helper';
+import { localOptionsConversationAvatar } from '../shared/helper/file.helper';
 import { ConversationAddMemberDto } from './dto/conversation-add-member.dto';
+import {ConversationRemoveMemberDto} from "./dto/conversation-remove-member.dto";
 
 @Controller(API.CONVERSATION.INDEX)
 @ApiTags('Conversation')
@@ -78,5 +77,10 @@ export class ConversationController {
   @Post(API.CONVERSATION.ADD_MEMBER)
   async addMembers(@GetUser() { sub }, @Body() dto: ConversationAddMemberDto) {
     return this.conversationService.addMembers(sub, dto);
+  }
+
+  @Post(API.CONVERSATION.REMOVE_MEMBER)
+  async removeMember(@GetUser() { sub }, @Body() dto: ConversationRemoveMemberDto) {
+    return this.conversationService.removeMember(sub, dto);
   }
 }

@@ -36,6 +36,7 @@ export const API = {
     FIND_BY_ID: `get/:id`,
     CHANGE_AVATAR: `change-avatar/:id`,
     ADD_MEMBER: `add-member`,
+    REMOVE_MEMBER: `remove-member`,
   },
   MESSAGE: {
     INDEX: `${PREFIX}/message`,
