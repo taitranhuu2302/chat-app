@@ -1,5 +1,4 @@
-type UserType = {
-  _id: string;
+type UserType = BaseType & {
   email: string;
   bio: string | null;
   firstName: string | null;
@@ -40,10 +39,10 @@ type UserInformationType = {
   address?: string;
   facebookLink?: string;
   githubLink?: string;
-}
+};
 
 type UserChangePasswordType = {
   oldPassword: string;
   newPassword: string;
-  confirmNewPassword: string
-}
+  confirmNewPassword: string;
+};

@@ -171,7 +171,7 @@ const TabFriendPendingItem = ({ friend, isLastItem }: PendingItemType) => {
       className={
         'flex items-center gap-2.5 dark:hover:bg-via-300 hover:bg-via-500 cursor-pointer p-3 rounded'
       }>
-      <Avatar name={fullName} size={'40px'} src={friend.avatar} round />
+      <Avatar name={fullName} size={'40px'} src={friend.avatar || ""} round />
       <div className={'flex-grow'}>
         <p className={'text-md font-semibold'}>{fullName}</p>
       </div>

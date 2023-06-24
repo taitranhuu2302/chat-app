@@ -5,8 +5,19 @@ type ResponseSuccess<T> = {
 };
 
 type Paginate<T> = {
-  results: T[],
-  meta: { 
-    total: number, limit: number, page: number, lastPage: number, prevPage: number, nextPage: number
-  }
-}
+  results: T[];
+  meta: {
+    total: number;
+    limit: number;
+    page: number;
+    lastPage: number;
+    prevPage: number;
+    nextPage: number;
+  };
+};
+
+type BaseType = {
+  updatedAt: string;
+  createdAt: string;
+  _id: string;
+};

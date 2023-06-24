@@ -4,17 +4,22 @@ import {
   PaginationOptions,
 } from '../shared/helper/pagination.helper';
 import { InjectModel } from '@nestjs/mongoose';
-import { Message, MessageDocument, MessageType } from './message.model';
+import { Message, MessageDocument } from './message.model';
 import { Model } from 'mongoose';
 import { plainToClass } from 'class-transformer';
 import { MessageDto } from './dto/message.dto';
 import { MessageCreateDto } from './dto/message-create.dto';
 import { MessageUpdateDto } from './dto/message-update.dto';
+import { SocketService } from '../socket/socket.service';
+import { RedisService } from '../redis/redis.service';
+import { SOCKET_EVENT } from '../shared/constants/socket.constant';
 
 @Injectable()
 export class MessageService {
   constructor(
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    private socketService: SocketService,
+    private redisService: RedisService,
   ) {}
 
   async findAllByConversation(
@@ -24,9 +29,13 @@ export class MessageService {
   ) {
     return paginate(
       this.messageModel
-        .find({
-          conversation: id,
-        })
+        .find(
+          {
+            conversation: id,
+          },
+          {},
+          { sort: { createdAt: -1 } },
+        )
         .populate(['sender', 'conversation']),
       options,
       async (data) => {
@@ -49,7 +58,6 @@ export class MessageService {
     files: Array<Express.Multer.File>,
     dto: MessageCreateDto,
   ) {
-    console.log(files);
     if ((!files || !files.length) && !dto.text)
       throw new BadRequestException('Please enter content');
 
@@ -62,7 +70,17 @@ export class MessageService {
       sender: sub,
     });
 
-    return plainToClass(MessageDto, message, { excludeExtraneousValues: true });
+    await message.populate(['sender']);
+
+    const mapped = plainToClass(MessageDto, message, {
+      excludeExtraneousValues: true,
+    });
+
+    this.socketService.socket
+      .to(dto.conversation)
+      .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, mapped);
+
+    return mapped;
   }
 
   async update(sub: string, messageId: string, dto: MessageUpdateDto) {

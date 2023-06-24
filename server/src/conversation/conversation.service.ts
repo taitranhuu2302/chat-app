@@ -9,10 +9,10 @@ import {
   ConversationDocument,
   ConversationType,
 } from './conversation.model';
-import { Model, Schema } from 'mongoose';
+import { Model } from 'mongoose';
 import {
-  PaginationOptions,
   paginate,
+  PaginationOptions,
 } from 'src/shared/helper/pagination.helper';
 import { plainToClass } from 'class-transformer';
 import { ConversationDto } from './dto/conversation.dto';
@@ -20,7 +20,11 @@ import { ConversationCreateDto } from './dto/conversation-create.dto';
 import { User, UserDocument } from 'src/user/user.model';
 import { ConversationUpdateDto } from './dto/conversation-update.dto';
 import { ConversationAddMemberDto } from './dto/conversation-add-member.dto';
-import { Message, MessageDocument } from '../message/message.model';
+import {
+  Message,
+  MessageDocument,
+  MessageType,
+} from '../message/message.model';
 import { MessageDto } from '../message/dto/message.dto';
 import { SocketService } from '../socket/socket.service';
 import { RedisService } from '../redis/redis.service';
@@ -85,6 +89,21 @@ export class ConversationService {
   }
 
   async create(sub: string, dto: ConversationCreateDto) {
+    if (dto.conversationType === ConversationType.PRIVATE) {
+      const friendId = dto.members[0];
+      const checkConversation = await this.conversationModel.findOne({
+        $or: [
+          { members: { $all: [sub, friendId] } },
+          { members: { $all: [friendId, sub] } },
+        ],
+      });
+
+      if (checkConversation) {
+        return plainToClass(ConversationDto, checkConversation, {
+          excludeExtraneousValues: true,
+        });
+      }
+    }
     const newConversation = await this.conversationModel.create({
       conversationName: dto.conversationName,
       conversationType: dto.conversationType,
@@ -180,6 +199,7 @@ export class ConversationService {
       _id: dto.conversationId,
       members: sub,
     });
+    const currentUser = await this.userModel.findById(sub);
     for (const memberId of dto.members) {
       const newMember = await this.userModel.findById(memberId);
       if (
@@ -188,6 +208,14 @@ export class ConversationService {
       )
         continue;
       conversation.members.push(newMember);
+      const message = await this.messageModel.create({
+        text: `${currentUser.lastName} added ${newMember.lastName} to the group`,
+        conversation: conversation._id,
+        messageType: MessageType.NOTIFY,
+      });
+      this.socketService.socket
+        .to(conversation._id.toString())
+        .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, message);
     }
     conversation.save();
 
@@ -206,6 +234,8 @@ export class ConversationService {
       })
       .populate(['owner']);
     if (!conversation) throw new BadRequestException('Conversation not found');
+    const user = dto.userId ? await this.userModel.findById(dto.userId) : null;
+    const currentUser = await this.userModel.findById(sub);
 
     if (dto.userId) {
       // Remove user
@@ -215,6 +245,16 @@ export class ConversationService {
       conversation.members = conversation.members.filter(
         (m) => m._id.toString() !== dto.userId,
       );
+
+      const message = this.messageModel.create({
+        text: `${currentUser.lastName} removed ${user.lastName} from the group`,
+        conversation: conversation._id,
+        messageType: MessageType.NOTIFY,
+      });
+
+      this.socketService.socket
+        .to(conversation._id.toString())
+        .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, message);
     } else {
       // Leave conversation
       if (conversation.owner._id.toString() !== sub) {
@@ -222,6 +262,16 @@ export class ConversationService {
         conversation.members = conversation.members.filter(
           (m) => m._id.toString() !== sub,
         );
+
+        const message = this.messageModel.create({
+          text: `${currentUser.lastName} has left the group`,
+          conversation: conversation._id,
+          messageType: MessageType.NOTIFY,
+        });
+
+        this.socketService.socket
+          .to(conversation._id.toString())
+          .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, message);
       } else {
         // Delete conversation
         conversation.deletedAt = new Date();

@@ -24,6 +24,7 @@
     "humps": "^2.0.1",
     "i18next": "^22.0.6",
     "lodash": "^4.17.21",
+    "moment": "^2.29.4",
     "next": "13.0.6",
     "next-themes": "^0.2.1",
     "query-string": "^8.1.0",

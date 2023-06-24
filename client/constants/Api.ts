@@ -24,4 +24,21 @@ export const API = {
     ACCEPT_REQUEST_FRIEND: `/users/accept-request-friend`,
     COUNT_REQUEST_FRIEND: '/users/count-request-friend',
   },
+  CONVERSATION: {
+    INDEX: `/conversation`,
+    FIND_ALL_BY_USER: `/conversation/find-all-by-user`,
+    CREATE: `/conversation/create`,
+    UPDATE: `/conversation/update`, // /conversation/update/:id
+    FIND_BY_ID: `/conversation/get`, // /conversation/get/:id
+    CHANGE_AVATAR: `/conversation/change-avatar`, // /conversation/change-avatar/:id
+    ADD_MEMBER: `/conversation/add-member`,
+    REMOVE_MEMBER: `/conversation/remove-member`,
+  },
+  MESSAGE: {
+    INDEX: `/message`,
+    FIND_ALL_BY_CONVERSATION: `/message/find-all-by-conversation/:conversationId`,
+    CREATE: `/message/create`,
+    UPDATE: `/message/update/:id`,
+    MESSAGE_RECALL: `/message/message-recall/:id`,
+  },
 };
