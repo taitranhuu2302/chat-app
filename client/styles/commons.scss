@@ -115,3 +115,42 @@ body {
     }
   }
 }
+
+.ck-custom {
+  @apply w-full;
+
+  .ck-rounded-corners .ck.ck-editor__main > .ck-editor__editable, .ck.ck-editor__main > .ck-editor__editable.ck-rounded-corners {
+    @apply rounded-lg;
+  }
+
+  .ck.ck-editor__main>.ck-editor__editable {
+    @apply dark:bg-via-300;
+  }
+
+  &.editor__top--active {
+
+    .ck-editor__top {
+      @apply block;
+    }
+
+    .ck-rounded-corners .ck.ck-editor__main > .ck-editor__editable, .ck.ck-editor__main > .ck-editor__editable.ck-rounded-corners {
+      @apply rounded-bl-sm rounded-br-sm rounded-tl-none rounded-tr-none;
+    }
+  }
+
+  .ck-editor__top {
+    @apply hidden;
+  }
+
+  .ck.ck-balloon-panel.ck-powered-by-balloon .ck.ck-powered-by {
+    display: none !important;
+  }
+
+  .ck-file-dialog-button {
+    display: none;
+  }
+}
+
+.ck-body-wrapper {
+  display: none;
+}

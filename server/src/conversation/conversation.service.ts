@@ -70,12 +70,15 @@ export class ConversationService {
           );
 
           if (item.conversationType === ConversationType.PRIVATE) {
-            const userOther = conversation.members.find((m) => m._id !== sub);
+            const userOther = conversation.members.find((m) => {
+              return m._id.toString() !== sub;
+            });
             const name = `${userOther.firstName} ${userOther.lastName}`;
 
             formattedData.push({
               ...conversation,
               conversationName: name,
+              avatar: userOther.avatar,
               latestMessage,
             });
             continue;
@@ -163,12 +166,13 @@ export class ConversationService {
       excludeExtraneousValues: true,
     });
     if (mapped.conversationType === ConversationType.PRIVATE) {
-      const userOther = mapped.members.find((m) => m._id !== sub);
+      const userOther = mapped.members.find((m) => m._id.toString() !== sub);
       const name = `${userOther.firstName} ${userOther.lastName}`;
 
       return {
         ...mapped,
         conversationName: name,
+        avatar: userOther.avatar,
       };
     }
 

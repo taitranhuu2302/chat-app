@@ -21,7 +21,7 @@ const Chat: React.FC<IChat> = () => {
   const {
     query: { id },
   } = router;
-  const {isLoading: isLoadingConversation} = useGetConversationById({
+  const { isLoading: isLoadingConversation } = useGetConversationById({
     conversationId: id,
     options: {
       onSuccess: ({ data }: ResponseSuccess<ConversationType>) => {
@@ -49,7 +49,11 @@ const Chat: React.FC<IChat> = () => {
         exit={{ x: '100%' }}
         transition={{ duration: 0.5, type: 'linear' }}
         className={`${styles.wrapperChat}`}>
-        <ChatHeader conversation={conversation} isLoadingConversation={isLoadingConversation} onToggleSidebar={onToggleSidebar} />
+        <ChatHeader
+          conversation={conversation}
+          isLoadingConversation={isLoadingConversation}
+          onToggleSidebar={onToggleSidebar}
+        />
         <ChatContent messages={messages} />
         <ChatFooter handleSendMessage={handleSendMessage} />
       </motion.div>
