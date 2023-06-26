@@ -50,14 +50,18 @@ export class SocketGateway
     });
     conversations.forEach((c) => socket.join(c._id.toString()));
 
-    this.socketService.socket.emit(
-      SOCKET_EVENT.USER_CONNECTED,
-      await this.redisService.getAllSocket(),
-    );
+    const sockets = await this.redisService.getAllSocket();
+
+    this.socketService.socket.emit(SOCKET_EVENT.USER_CONNECTED, sockets);
   }
 
   async handleDisconnect(socket: Socket): Promise<any> {
     this.logger.log(`Client disconnected: ${socket.id}`);
+
+    const sockets = await this.redisService.getAllSocket();
+
+    this.socketService.socket.emit(SOCKET_EVENT.USER_CONNECTED, sockets);
+
     const user = await this.getUser(socket);
     if (!user) return;
 

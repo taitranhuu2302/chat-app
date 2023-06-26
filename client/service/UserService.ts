@@ -100,10 +100,29 @@ export const useGetFriendRequestByUser = ({
   );
 };
 
-export const useUpdateUserInformationApi = ({options}: {options?: any}) => {
-  return useMutation([API.USER.UPDATE], (data: UserInformationType) => axiosConfig.put(API.USER.UPDATE, data), options)
-}
+export const useUpdateUserInformationApi = ({ options }: { options?: any }) => {
+  return useMutation(
+    [API.USER.UPDATE],
+    (data: UserInformationType) => axiosConfig.put(API.USER.UPDATE, data),
+    options
+  );
+};
 
-export const useChangePasswordApi = ({options}: {options?: any}) => {
-  return useMutation([API.USER.CHANGE_PASSWORD], (data: UserChangePasswordType) => axiosConfig.put(API.USER.CHANGE_PASSWORD, data), options)
-}
+export const useChangePasswordApi = ({ options }: { options?: any }) => {
+  return useMutation(
+    [API.USER.CHANGE_PASSWORD],
+    (data: UserChangePasswordType) =>
+      axiosConfig.put(API.USER.CHANGE_PASSWORD, data),
+    options
+  );
+};
+
+export const useChangeAvatarApi = () => {
+  return useMutation([API.USER.CHANGE_AVATAR], (data: any) =>
+    axiosConfig.post(API.USER.CHANGE_AVATAR, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  );
+};

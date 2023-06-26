@@ -62,9 +62,12 @@ export class MessageService {
       throw new BadRequestException('Please enter content');
 
     const message = await this.messageModel.create({
-      files: files.map(
-        (file) => `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
-      ),
+      files: files
+        ? files.map(
+            (file) =>
+              `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
+          )
+        : [],
       text: dto.text,
       conversation: dto.conversation,
       sender: sub,

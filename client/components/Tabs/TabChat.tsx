@@ -95,17 +95,30 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
         name={conversation.conversationName}
         size={'40px'}
       />
-      <div className={'flex flex-col flex-grow'}>
+      <div className={'flex flex-col flex-grow truncate'}>
         <p className={'text-md font-semibold'}>
           {conversation.conversationName}
         </p>
-        <p className={'text-sm font-light text-light-600 dark:text-night-600'}>
-          {conversation.latestMessage
-            ? conversation.latestMessage.text
-              ? conversation.latestMessage.text
-              : 'Sent a file'
-            : 'There are no messages yet'}
-        </p>
+        {conversation.latestMessage ? (
+          conversation.latestMessage.text ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: conversation.latestMessage.text,
+              }}></div>
+          ) : (
+            <p
+              className={
+                'text-sm font-light text-light-600 dark:text-night-600'
+              }>
+              Sent a file
+            </p>
+          )
+        ) : (
+          <p
+            className={'text-sm font-light text-light-600 dark:text-night-600'}>
+            There are no messages yet
+          </p>
+        )}
       </div>
       <div className={'flex flex-col items-center gap-1'}>
         <p className={'text-sm text-light-600 dark:text-night-600'}>

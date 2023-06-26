@@ -60,7 +60,7 @@ const Editor: React.FC<IProps> = ({
   return (
     <>
       <div
-        className={`ck-custom ${showTopEditor ? 'editor__top--active' : ''}`}>
+        className={`ck-custom un-reset ${showTopEditor ? 'editor__top--active' : ''}`}>
         {editorLoaded ? (
           <CKEditor
             name={name}

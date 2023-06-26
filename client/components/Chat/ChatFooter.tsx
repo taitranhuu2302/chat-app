@@ -7,23 +7,39 @@ import { MdSend } from 'react-icons/md';
 import useTranslate from '@/hooks/useTranslate';
 import Editor from '../Editor';
 import { IoText } from 'react-icons/io5';
+import {useRouter} from "next/router";
 
 interface IChatFooter {
-  handleSendMessage: (message: string) => void;
+  handleSendMessage: (payload: MessageCreateType) => void;
+  isLoadingSendMessage: boolean;
 }
 
-const ChatFooter: React.FC<IChatFooter> = ({ handleSendMessage }) => {
+const ChatFooter: React.FC<IChatFooter> = ({
+  handleSendMessage,
+  isLoadingSendMessage,
+}) => {
   const t = useTranslate();
   const [text, setText] = useState('');
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [format, setFormat] = useState(false);
+  const router = useRouter();
+  const {
+    query: { id },
+  } = router;
 
   useEffect(() => {
     setEditorLoaded(true);
   }, []);
 
   const handleSubmit = () => {
-    handleSendMessage(text);
+    if (isLoadingSendMessage) {
+      return;
+    }
+    handleSendMessage({
+      text,
+      conversation: id as string,
+    });
+    setText("")
   };
 
   return (
@@ -43,7 +59,7 @@ const ChatFooter: React.FC<IChatFooter> = ({ handleSendMessage }) => {
         <button
           type={'button'}
           className={'tooltip tooltip-top'}
-          onClick={() => setFormat(f => !f)}
+          onClick={() => setFormat((f) => !f)}
           data-tip={'Format'}>
           <IoText className={'text-primary'} size={20} />
         </button>

@@ -1,34 +1,65 @@
 import React from 'react';
 import Avatar from 'react-avatar';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import { MdContentCopy, MdOutlineDelete } from 'react-icons/md';
+import { MdOutlineDelete } from 'react-icons/md';
+import moment from 'moment';
+import 'moment/locale/vi';
+import { useRouter } from 'next/router';
 
 interface IMessage {
   isOwner?: boolean;
-  message: string;
+  message: MessageType;
   isFirst?: boolean;
+  isSameOwner?: boolean;
+  isLastSame?: boolean;
 }
 
-const Message: React.FC<IMessage> = ({ isOwner, message, isFirst }) => {
+const Message: React.FC<IMessage> = ({
+  isOwner,
+  message,
+  isFirst,
+  isSameOwner,
+  isLastSame,
+}) => {
   return (
     <div className={`chat ${isOwner ? 'chat-end' : 'chat-start'}`}>
       <div className="chat-image avatar">
-        <Avatar size={'40px'} round name={'Tran Huu Tai'} />
+        <Avatar
+          size={'40px'}
+          src={message.sender.avatar || ''}
+          round
+          name={`${message.sender.firstName} ${message.sender.lastName}`}
+        />
       </div>
-      <div
-        className={`chat-header mb-1 gap-2.5 flex items-center ${
-          isOwner ? 'flex-row-reverse' : ''
-        }`}>
-        <span className={'font-semibold'}>Tran Huu Tai</span>
-        <time className="text-xs opacity-50">12:45</time>
-      </div>
+      {!isSameOwner && (
+        <div
+          className={`chat-header mb-1 gap-2.5 flex items-center ${
+            isOwner ? 'flex-row-reverse' : ''
+          }`}>
+          <span
+            className={
+              'font-semibold'
+            }>{`${message.sender.firstName} ${message.sender.lastName}`}</span>
+          {/*<time className="text-xs opacity-50">*/}
+          {/*  {moment(message.updatedAt).locale('vi').format('LT')}*/}
+          {/*</time>*/}
+        </div>
+      )}
       <div
         className={`chat-bubble  ${
           isOwner
             ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
             : 'bg-primary text-light'
         } relative max-w-[50%]`}>
-        <div dangerouslySetInnerHTML={{ __html: message }} />
+        {message.text && (
+          <div
+            className={`tooltip un-reset ${
+              isOwner ? 'tooltip-left' : 'tooltip-right'
+            }`}
+            data-tip={moment(message.updatedAt).locale('vi').format('LLL')}
+            dangerouslySetInnerHTML={{ __html: message.text }}
+          />
+        )}
         <div
           className={`absolute dropdown ${
             isFirst ? 'dropdown-bottom' : 'dropdown-top'
@@ -43,15 +74,15 @@ const Message: React.FC<IMessage> = ({ isOwner, message, isFirst }) => {
           <ul
             tabIndex={0}
             className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52">
-            <li>
-              <a
-                className={
-                  'flex items-center justify-between text-light-1100 dark:text-night-1100'
-                }>
-                <span>Copy</span>
-                <MdContentCopy size={20} />
-              </a>
-            </li>
+            {/*<li>*/}
+            {/*  <a*/}
+            {/*    className={*/}
+            {/*      'flex items-center justify-between text-light-1100 dark:text-night-1100'*/}
+            {/*    }>*/}
+            {/*    <span>Copy</span>*/}
+            {/*    <MdContentCopy size={20} />*/}
+            {/*  </a>*/}
+            {/*</li>*/}
             <li>
               <a
                 className={
@@ -64,7 +95,7 @@ const Message: React.FC<IMessage> = ({ isOwner, message, isFirst }) => {
           </ul>
         </div>
       </div>
-      <div className="chat-footer opacity-50">Delivered</div>
+      {/*<div className="chat-footer opacity-50">Delivered</div>*/}
     </div>
   );
 };

@@ -17,6 +17,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      getNextPageParam: ({ data }: any) => data.meta.nextPage,
     },
   },
 });

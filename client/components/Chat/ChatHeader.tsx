@@ -80,7 +80,7 @@ const ChatHeader: React.FC<IChatHeader> = ({
           <ul
             tabIndex={0}
             className={
-              'dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52'
+              'dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52 z-10'
             }>
             <li>
               <a>{t.home.room.header.more.archive}</a>

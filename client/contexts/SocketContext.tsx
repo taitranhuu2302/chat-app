@@ -33,24 +33,35 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   });
   useEffect(() => {
     const url = process.env.SERVER_URL;
-    if (!url) return;
+    if (!url || !auth) return;
     const { accessToken } = getToken();
     const newSocket = io(url, {
       extraHeaders: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    newSocket.on(SOCKET_EVENT.USER.COUNT_FRIEND_REQUEST, (data: number) => {
-      dispatch(setCountRequestFriend(data));
-    });
-    newSocket.on(SOCKET_EVENT.USER_CONNECTED, (data) => {
-      dispatch(setUserOnline(data));
-    });
     setSocket(newSocket);
     return () => {
       newSocket.disconnect();
     };
   }, [auth]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on(SOCKET_EVENT.USER.COUNT_FRIEND_REQUEST, (data: number) => {
+      dispatch(setCountRequestFriend(data));
+    });
+
+    socket.on(SOCKET_EVENT.USER_CONNECTED, (data) => {
+      dispatch(setUserOnline(data));
+    });
+
+    return () => {
+      socket.off(SOCKET_EVENT.USER.COUNT_FRIEND_REQUEST);
+      socket.off(SOCKET_EVENT.USER_CONNECTED);
+    };
+  }, [socket]);
 
   return (
     <SocketContext.Provider value={{ socket }}>
