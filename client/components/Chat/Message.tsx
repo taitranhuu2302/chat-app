@@ -1,6 +1,6 @@
 import React from 'react';
 import Avatar from 'react-avatar';
-import { BsThreeDotsVertical } from 'react-icons/bs';
+import {BsReplyFill, BsThreeDotsVertical} from 'react-icons/bs';
 import { MdOutlineDelete } from 'react-icons/md';
 import moment from 'moment';
 import 'moment/locale/vi';
@@ -74,24 +74,28 @@ const Message: React.FC<IMessage> = ({
           <ul
             tabIndex={0}
             className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52">
-            {/*<li>*/}
-            {/*  <a*/}
-            {/*    className={*/}
-            {/*      'flex items-center justify-between text-light-1100 dark:text-night-1100'*/}
-            {/*    }>*/}
-            {/*    <span>Copy</span>*/}
-            {/*    <MdContentCopy size={20} />*/}
-            {/*  </a>*/}
-            {/*</li>*/}
             <li>
               <a
                 className={
                   'flex items-center justify-between text-light-1100 dark:text-night-1100'
                 }>
-                <span>Delete</span>
-                <MdOutlineDelete size={22} />
+                <span>Reply</span>
+                <BsReplyFill size={20}/>
               </a>
             </li>
+            {
+              isOwner && (
+                <li>
+                  <a
+                    className={
+                      'flex items-center justify-between text-light-1100 dark:text-night-1100'
+                    }>
+                    <span>Delete</span>
+                    <MdOutlineDelete size={22} />
+                  </a>
+                </li>
+              )
+            }
           </ul>
         </div>
       </div>
