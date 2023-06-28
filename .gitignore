@@ -4,3 +4,5 @@
 /.vscode
 /.devcontainer
 *.code-workspace
+# database
+/database

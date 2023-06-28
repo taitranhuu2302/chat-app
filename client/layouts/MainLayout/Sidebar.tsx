@@ -159,7 +159,7 @@ const Sidebar: React.FC<ISidebar> = () => {
             <label tabIndex={0} className={`${styles.sidebarItem}`}>
               <Avatar
                 name={`${auth?.firstName} ${auth?.lastName}`}
-                src={auth?.avatar}
+                src={auth?.avatar || ""}
                 size={'40px'}
                 round
               />

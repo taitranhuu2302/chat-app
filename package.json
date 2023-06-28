@@ -1,0 +1,19 @@
+{
+  "name": "chat-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd client && yarn dev",
+    "server": "cd server && yarn start",
+    "client:install": "cd client && yarn install && yarn dev",
+    "server:install": "cd server && yarn install && yarn start:dev",
+    "client:prod": "cd client && yarn install && yarn build && yarn start",
+    "server:prod": "cd server && yarn install && yarn build && yarn start:prod",
+    "database:up": "docker-compose up -d",
+    "start:dev": "concurrently \"yarn database:up\" \"yarn run server\" \"yarn run client\"",
+    "start:prod": "concurrently \"yarn database:up\" \"yarn run server:prod\" \"yarn run client:prod\""
+  },
+  "author": "",
+  "license": "ISC"
+}

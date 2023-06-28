@@ -27,6 +27,8 @@ import { getErrorResponse } from '@/utils/ErrorUtils';
 import Avatar from 'react-avatar';
 import { useQueryClient } from 'react-query';
 import { API } from '@/constants/Api';
+import { useRouter } from 'next/router';
+import { KEY_LANGUAGE } from '@/constants/Language';
 
 interface IProps {}
 
@@ -36,7 +38,7 @@ const Settings: React.FC<IProps> = () => {
     useUpdateUserInformationApi({});
   const { mutateAsync: changePassword, isLoading: changePasswordLoading } =
     useChangePasswordApi({});
-  const { auth } = useContext(AuthContext) as AuthContextType;
+  const { auth, removeAuth } = useContext(AuthContext) as AuthContextType;
   const [facebookLink, setFacebookLink] = useState('');
   const [githubLink, setGithubLink] = useState('');
   const [errorChangePassword, setErrorChangePassword] = useState<String[]>([]);
@@ -69,6 +71,14 @@ const Settings: React.FC<IProps> = () => {
     useChangeAvatarApi();
   const [fileAvatar, setFileAvatar] = useState<File>();
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const [language, setLanguage] = useState('en');
+
+  useEffect(() => {
+    const { locale } = router;
+    if (!locale) return;
+    setLanguage(locale);
+  }, []);
 
   useEffect(() => {
     if (auth) {
@@ -157,6 +167,22 @@ const Settings: React.FC<IProps> = () => {
       const messages = getErrorResponse(e.message);
       toast.error(messages[0]);
     }
+  };
+
+  const onChangeLanguage = async (e: ChangeEvent<HTMLSelectElement>) => {
+    setLanguage(e.target.value);
+  };
+
+  const handleChangeLanguage = async () => {
+    await router.push(router.asPath, router.asPath, {
+      locale: language,
+    });
+    localStorage.setItem(KEY_LANGUAGE, language);
+  };
+
+  const handleLogout = async () => {
+    removeAuth();
+    await router.push('/auth');
   };
 
   return (
@@ -300,6 +326,26 @@ const Settings: React.FC<IProps> = () => {
                   />
                   <button className="btn-custom">{t.saveChanges}</button>
                 </form>
+                <div
+                  className={`${styles['card-custom']} bg-base-100 dark:bg-via-300 flex flex-col`}>
+                  <div className={'flex w-full items-center gap-5'}>
+                    <select
+                      value={language}
+                      onChange={onChangeLanguage}
+                      className="select select-primary w-full flex-grow dark:bg-via-300">
+                      <option value={'en'}>English</option>
+                      <option value={'vi'}>Vietnamese</option>
+                    </select>
+                    <button
+                      onClick={handleChangeLanguage}
+                      className="btn w-fit btn-primary text-white">
+                      Save
+                    </button>
+                  </div>
+                  <button onClick={handleLogout} className="btn btn-error text-white">
+                    Logout
+                  </button>
+                </div>
               </div>
             </div>
           </div>
