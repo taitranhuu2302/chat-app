@@ -102,6 +102,7 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
         {conversation.latestMessage ? (
           conversation.latestMessage.text ? (
             <div
+              className={'un-reset'}
               dangerouslySetInnerHTML={{
                 __html: conversation.latestMessage.text,
               }}></div>
