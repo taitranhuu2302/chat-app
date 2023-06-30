@@ -3,6 +3,7 @@ import styles from '@/styles/components/chat.module.scss';
 import Message from '@/components/Chat/Message';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
 import { useInView } from 'react-intersection-observer';
+import Fancybox from "@/components/Fancybox";
 
 interface IChatContent {
   messages: MessageType[];
@@ -63,27 +64,28 @@ const ChatContent: React.FC<IChatContent> = ({
       fetchNextPage().then((r) => {});
     }
   }, [inView]);
-
   return (
-    <div ref={contentRef} className={`${styles.chatContent} scrollbar`}>
-      {hasNextPage && (
-        <div ref={loadingRef} className={'flex-center'}>
-          Loading...
-        </div>
-      )}
-      {messageGroup.map((message, index) => {
-        return (
-          <Message
-            isFirst={index === 0}
-            isLastSame={message.isLastSame}
-            isOwner={auth?._id === message.sender._id}
-            message={message}
-            key={message._id}
-            isSameOwner={message.isSame}
-          />
-        );
-      })}
-    </div>
+    <Fancybox>
+      <div ref={contentRef} className={`${styles.chatContent} scrollbar`}>
+        {hasNextPage && (
+          <div ref={loadingRef} className={'flex-center'}>
+            Loading...
+          </div>
+        )}
+        {messageGroup.map((message, index) => {
+          return (
+            <Message
+              isFirst={index === 0}
+              isLastSame={message.isLastSame}
+              isOwner={auth?._id === message.sender._id}
+              message={message}
+              key={message._id}
+              isSameOwner={message.isSame}
+            />
+          );
+        })}
+      </div>
+    </Fancybox>
   );
 };
 

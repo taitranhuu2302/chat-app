@@ -60,30 +60,41 @@ export class MessageService {
   ) {
     if ((!files || !files.length) && !dto.text)
       throw new BadRequestException('Please enter content');
+    const messages: MessageDto[] = [];
 
-    const message = await this.messageModel.create({
-      files: files
-        ? files.map(
-            (file) =>
-              `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
-          )
-        : [],
-      text: dto.text,
-      conversation: dto.conversation,
-      sender: sub,
-    });
+    if (dto.text) {
+      const message = await this.messageModel.create({
+        text: dto.text,
+        conversation: dto.conversation,
+        sender: sub,
+      });
+      await message.populate(['sender']);
+      const mapped = plainToClass(MessageDto, message, {
+        excludeExtraneousValues: true,
+      });
+      messages.push(mapped);
+    }
 
-    await message.populate(['sender']);
-
-    const mapped = plainToClass(MessageDto, message, {
-      excludeExtraneousValues: true,
-    });
+    if (!!files.length) {
+      for (const file of files) {
+        const newMessage = await this.messageModel.create({
+          file: `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
+          conversation: dto.conversation,
+          sender: sub,
+        });
+        await newMessage.populate(['sender']);
+        const messageMapped = plainToClass(MessageDto, newMessage, {
+          excludeExtraneousValues: true,
+        });
+        messages.push(messageMapped);
+      }
+    }
 
     this.socketService.socket
       .to(dto.conversation)
-      .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, mapped);
+      .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, messages);
 
-    return mapped;
+    return messages;
   }
 
   async update(sub: string, messageId: string, dto: MessageUpdateDto) {

@@ -42,7 +42,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </Provider>
             <Toaster
               gutter={8}
-              position="bottom-right"
+              position="top-right"
               reverseOrder={false}
               toastOptions={{
                 duration: 3000,

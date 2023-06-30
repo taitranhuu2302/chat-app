@@ -12,25 +12,33 @@ export const imageFileFilter = (req: any, file: any, callback: any) => {
     callback(null, true);
   }
 };
+export const ALLOWED_TYPES = [
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.mp4',
+  '.pdf',
+  '.doc',
+  '.docx',
+  '.xls',
+  '.xlsx',
+  '.ppt',
+  '.pptx',
+  '.txt',
+];
 
 export const fileFilter = (req: any, file: any, callback: any) => {
-  // Lấy phần mở rộng của tệp tin
   const fileExt = file.originalname;
-  // Kiểm tra nếu là tệp tin định dạng hình ảnh
+
   if (fileExt.match(/\.(jpg|jpeg|png|gif)$/)) {
     callback(null, true);
-  }
-  // Kiểm tra nếu là tệp tin định dạng docx hoặc excel hoặc pdf
-  else if (fileExt.match(/\.(docx|xlsx|pdf)$/)) {
+  } else if (fileExt.match(/\.(doc|docx|xlsx|pdf|txt)$/)) {
     callback(null, true);
-  }
-  // Kiểm tra nếu là tệp tin định dạng video
-  else if (fileExt.match(/\.(mp4|mov|avi)$/)) {
+  } else if (fileExt.match(/\.(mp4|mov|avi)$/)) {
     callback(null, true);
-  }
-  // Nếu không phải định dạng nào trên thì báo lỗi
-  else {
-    callback(new BadRequestException('Only image, docx, excel, pdf, and video files are allowed'), false);
+  } else {
+    callback(new BadRequestException('Only image, doc, docx, excel, pdf, txt, and video files are allowed'), false);
   }
 };
 

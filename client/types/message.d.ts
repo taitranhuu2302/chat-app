@@ -4,7 +4,7 @@ type MessageType = BaseType & {
   conversation: ConversationType;
   sender: UserType;
   messageType: 'DEFAULT' | 'NOTIFY';
-  files: string[];
+  file: string;
   isEdit?: boolean;
   dateRead?: string;
 };

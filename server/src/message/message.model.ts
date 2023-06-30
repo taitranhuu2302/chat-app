@@ -34,7 +34,7 @@ export class Message extends BaseEntity {
   @Prop({ default: MessageType.DEFAULT })
   messageType: MessageType;
   @Prop()
-  files: string[];
+  file: string;
   @Prop()
   isEdit: boolean;
   @Prop()

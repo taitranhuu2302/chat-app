@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "client": "cd client && yarn dev",
-    "server": "cd server && yarn start",
-    "client:install": "cd client && yarn install && yarn dev",
-    "server:install": "cd server && yarn install && yarn start:dev",
+    "server": "cd server && yarn start:dev",
+    "client:install": "cd client && yarn install",
+    "server:install": "cd server && yarn install",
+    "project:install": "concurrently \"yarn client:install\" \"yarn server:install\"",
     "client:prod": "cd client && yarn install && yarn build && yarn start",
     "server:prod": "cd server && yarn install && yarn build && yarn start:prod",
     "database:up": "docker-compose up -d",

@@ -16,6 +16,8 @@ import FormData from 'form-data';
 import { flatMapObjectInfinite } from '@/utils/ArrayUtils';
 import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
+import {getErrorResponse} from "@/utils/ErrorUtils";
+import toast from "react-hot-toast";
 
 interface IChat {}
 
@@ -54,9 +56,10 @@ const Chat: React.FC<IChat> = () => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType) => {
-      if (data.conversation._id === id) {
-        setMessages((e) => [data, ...e]);
+    socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
+      console.log(data)
+      if (data[0].conversation._id === id) {
+        setMessages((e) => [...data, ...e]);
       }
     });
 
@@ -90,7 +93,8 @@ const Chat: React.FC<IChat> = () => {
         // setMessages((e) => [data, ...e]);
       });
     } catch (e: any) {
-      console.error(e.message);
+      const errors = getErrorResponse(e.message)
+      toast.error(errors[0])
     }
   };
 

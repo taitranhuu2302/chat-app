@@ -34,7 +34,7 @@ const Editor: React.FC<IProps> = ({
     };
 
     return () => {
-      editorRef.current = {};
+      editorRef.current = null;
     };
   }, []);
 

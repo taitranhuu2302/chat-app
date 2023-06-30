@@ -30,7 +30,7 @@ export class MessageDto extends BaseMapEntity{
   messageType: MessageType;
   @Expose()
   @Transform(({ value }) => value || null)
-  files: string[];
+  file: string;
   @Expose()
   @Transform(({ value }) => value || null)
   isEdit: boolean;

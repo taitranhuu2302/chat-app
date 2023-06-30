@@ -11,6 +11,8 @@ import { useRouter } from 'next/router';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { useOnClickOutside } from 'usehooks-ts';
+import { BsFillFileTextFill } from 'react-icons/bs';
+import {ALLOWED_TYPES} from "@/utils/FileUtils";
 
 interface IChatFooter {
   handleSendMessage: (payload: MessageCreateType) => void;
@@ -47,8 +49,10 @@ const ChatFooter: React.FC<IChatFooter> = ({
     handleSendMessage({
       text,
       conversation: id as string,
+      files,
     });
     setText('');
+    setFiles([]);
   };
 
   const handleChangeAttachFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,26 +60,11 @@ const ChatFooter: React.FC<IChatFooter> = ({
     const fileList = target.files;
     if (!fileList) return;
 
-    const allowedTypes = [
-      '.jpg',
-      '.jpeg',
-      '.png',
-      '.gif',
-      '.mp4',
-      '.pdf',
-      '.doc',
-      '.docx',
-      '.xls',
-      '.xlsx',
-      '.ppt',
-      '.pptx',
-    ];
-
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
       if (!file) continue;
       const splitFileName = file.name.split('.');
-      if (!allowedTypes.includes(`.${splitFileName[splitFileName.length - 1]}`))
+      if (!ALLOWED_TYPES.includes(`.${splitFileName[splitFileName.length - 1]}`))
         continue;
       setFiles((f) => [...f, file]);
     }
@@ -126,9 +115,16 @@ const ChatFooter: React.FC<IChatFooter> = ({
               <div
                 key={index}
                 className={
-                  'h-[120px] flex-center rounded min-w-[200px] bg-gray-500 text-white truncate relative'
+                  'h-[120px] gap-2.5 flex-center rounded min-w-[200px] bg-gray-300 px-3 truncate relative'
                 }>
-                <p>{file.name}</p>
+                <div>
+                  <BsFillFileTextFill size={40} />
+                </div>
+                <p>
+                  {file.name.length > 20
+                    ? `${file.name.substring(0, 19)}...`
+                    : file.name}
+                </p>
                 <ButtonClose onClick={() => handleDeleteFile(index)} />
               </div>
             );
@@ -185,13 +181,6 @@ const ChatFooter: React.FC<IChatFooter> = ({
               'image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
             }
           />
-        </label>
-        <label
-          htmlFor={'attached-image'}
-          className={'cursor-pointer tooltip tooltip-top'}
-          data-tip={t.home.room.footer.attachedImage}>
-          <BiImage className={'text-primary'} size={22} />
-          <input type="file" id={'attached-image'} hidden />
         </label>
         <button
           type={'button'}
