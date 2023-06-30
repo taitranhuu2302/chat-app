@@ -53,6 +53,10 @@ body {
 }
 
 .scrollbar {
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
   /* width */
   &::-webkit-scrollbar-thumb {
     background: transparent;
