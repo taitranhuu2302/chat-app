@@ -34,7 +34,7 @@ const Editor: React.FC<IProps> = ({
     };
 
     return () => {
-      editorRef.current = null;
+      editorRef.current = {};
     };
   }, []);
 
@@ -60,8 +60,10 @@ const Editor: React.FC<IProps> = ({
   return (
     <>
       <div
-        className={`ck-custom un-reset ${showTopEditor ? 'editor__top--active' : ''}`}>
-        {editorLoaded ? (
+        className={`ck-custom un-reset ${
+          showTopEditor ? 'editor__top--active' : ''
+        }`}>
+        {editorLoaded && CKEditor && ClassicEditor ? (
           <CKEditor
             name={name}
             editor={ClassicEditor}

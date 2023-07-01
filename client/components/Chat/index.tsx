@@ -18,6 +18,8 @@ import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
 import { getErrorResponse } from '@/utils/ErrorUtils';
 import toast from 'react-hot-toast';
+import { useAppDispatch } from '@/redux/hooks';
+import { setReplyMessage } from '@/redux/features/MessageSlice';
 
 interface IChat {}
 
@@ -39,6 +41,7 @@ const Chat: React.FC<IChat> = () => {
       },
     },
   });
+  const dispatch = useAppDispatch();
   const { mutateAsync: sendMessage, isLoading: isLoadingSendMessage } =
     useSendMessageApi();
   const { socket } = useContext(SocketContext) as SocketContextType;
@@ -63,7 +66,7 @@ const Chat: React.FC<IChat> = () => {
     });
 
     socket.on(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL, (data: MessageType) => {
-      console.log(data)
+      console.log(data);
       if (data.conversation._id === id) {
         setMessages((m) => m.filter((message) => message._id !== data._id));
       }
@@ -74,6 +77,10 @@ const Chat: React.FC<IChat> = () => {
       socket.off(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL);
     };
   }, [socket, id]);
+
+  useEffect(() => {
+    dispatch(setReplyMessage(undefined));
+  }, [id]);
 
   const onToggleSidebar = () => {
     setIsOpenSidebar((e) => !e);

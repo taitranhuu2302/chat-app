@@ -1,20 +1,21 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from '@/styles/components/chat.module.scss';
 import { IoIosAttach } from 'react-icons/io';
-import { BiImage } from 'react-icons/bi';
 import { HiOutlineEmojiHappy } from 'react-icons/hi';
 import { MdSend } from 'react-icons/md';
 import useTranslate from '@/hooks/useTranslate';
 import Editor from '../Editor';
-import { IoText } from 'react-icons/io5';
+import { IoClose, IoText } from 'react-icons/io5';
 import { useRouter } from 'next/router';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { useOnClickOutside } from 'usehooks-ts';
 import { BsFillFileTextFill } from 'react-icons/bs';
-import { ALLOWED_TYPES } from '@/utils/FileUtils';
+import { ALLOWED_TYPES, getFileType } from '@/utils/FileUtils';
 import GifPicker from 'gif-picker-react';
 import { HiGif } from 'react-icons/hi2';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { setReplyMessage } from '@/redux/features/MessageSlice';
 
 interface IChatFooter {
   handleSendMessage: (payload: MessageCreateType) => void;
@@ -25,7 +26,7 @@ const ChatFooter: React.FC<IChatFooter> = ({
   handleSendMessage,
   isLoadingSendMessage,
 }) => {
-  const t = useTranslate();
+  const t: any = useTranslate();
   const [text, setText] = useState('');
   const [editorLoaded, setEditorLoaded] = useState(false);
   const [format, setFormat] = useState(false);
@@ -35,6 +36,8 @@ const ChatFooter: React.FC<IChatFooter> = ({
   const [files, setFiles] = useState<File[]>([]);
   const [gifs, setGifs] = useState<string[]>([]);
   const fileAttachRef = useRef<any>(null);
+  const { reply } = useAppSelector((state) => state.message);
+  const dispatch = useAppDispatch();
   const gifRef = useRef<any>(null);
   const {
     query: { id },
@@ -59,10 +62,12 @@ const ChatFooter: React.FC<IChatFooter> = ({
       conversation: id as string,
       files,
       gifs,
+      reply: reply ? reply._id : undefined,
     });
     setText('');
     setFiles([]);
     setGifs([]);
+    dispatch(setReplyMessage(undefined));
   };
 
   const handleChangeAttachFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,82 +160,102 @@ const ChatFooter: React.FC<IChatFooter> = ({
           })}
         </div>
       )}
-      <Editor
-        editorLoaded={editorLoaded}
-        onChange={setText}
-        handleSubmit={handleSubmit}
-        value={text}
-        showTopEditor={format}
-      />
-      <div className={'flex items-center gap-5'}>
-        <button
-          type={'button'}
-          className={'tooltip tooltip-top'}
-          onClick={() => setFormat((f) => !f)}
-          data-tip={'Format'}>
-          <IoText className={'text-primary'} size={20} />
-        </button>
-        <div className={'relative flex-center'} ref={buttonEmojiRef}>
-          <button
-            type={'button'}
-            onClick={() => setOpenEmoji((e) => !e)}
-            className={'tooltip tooltip-top'}
-            data-tip={t.home.room.footer.emoji}>
-            <HiOutlineEmojiHappy className={'text-primary'} size={22} />
-          </button>
-          {openEmoji && (
-            <div className={'absolute bottom-full right-0'}>
-              <Picker
-                data={data}
-                onEmojiSelect={(emoji: any) => {
-                  setText((t) => `${t}${emoji.native}`);
-                }}
-              />
-            </div>
+      {reply && (
+        <div className={'relative'}>
+          <p className={'text-md font-medium'}>
+            {t.answering} {reply.sender.firstName} {reply.sender.lastName}
+          </p>
+          {reply.text && (
+            <div
+              className={'text-sm un-reset line-clamp-1'}
+              dangerouslySetInnerHTML={{ __html: reply.text }}></div>
           )}
+          {reply.file && <p className={'text-xs'}>{getFileType(reply.file)}</p>}
+          <button
+            onClick={() => dispatch(setReplyMessage(undefined))}
+            className={'absolute top-0 right-0'}>
+            <IoClose size={20} />
+          </button>
         </div>
-        <div className={'relative flex-center'} ref={gifRef}>
+      )}
+      <div className={'flex gap-5 w-full'}>
+        <Editor
+          editorLoaded={editorLoaded}
+          onChange={setText}
+          handleSubmit={handleSubmit}
+          value={text}
+          showTopEditor={format}
+        />
+        <div className={'flex items-center gap-5'}>
           <button
             type={'button'}
             className={'tooltip tooltip-top'}
-            onClick={() => setOpenGif((g) => !g)}
-            data-tip={'Gif'}>
-            <HiGif className={'text-primary'} size={20} />
+            onClick={() => setFormat((f) => !f)}
+            data-tip={'Format'}>
+            <IoText className={'text-primary'} size={20} />
           </button>
-          <div className={'absolute bottom-full right-0'}>
-            {openGif && (
-              <GifPicker
-                onGifClick={(gif) => {
-                  setGifs((g) => [...g, gif.url]);
-                }}
-                tenorApiKey={process.env.GOOGLE_API_KEY || ''}
-              />
+          <div className={'relative flex-center'} ref={buttonEmojiRef}>
+            <button
+              type={'button'}
+              onClick={() => setOpenEmoji((e) => !e)}
+              className={'tooltip tooltip-top'}
+              data-tip={t.home.room.footer.emoji}>
+              <HiOutlineEmojiHappy className={'text-primary'} size={22} />
+            </button>
+            {openEmoji && (
+              <div className={'absolute bottom-full right-0'}>
+                <Picker
+                  data={data}
+                  onEmojiSelect={(emoji: any) => {
+                    setText((t) => `${t}${emoji.native}`);
+                  }}
+                />
+              </div>
             )}
           </div>
+          <div className={'relative flex-center'} ref={gifRef}>
+            <button
+              type={'button'}
+              className={'tooltip tooltip-top'}
+              onClick={() => setOpenGif((g) => !g)}
+              data-tip={'Gif'}>
+              <HiGif className={'text-primary'} size={20} />
+            </button>
+            <div className={'absolute bottom-full right-0'}>
+              {openGif && (
+                <GifPicker
+                  onGifClick={(gif) => {
+                    setGifs((g) => [...g, gif.url]);
+                  }}
+                  tenorApiKey={process.env.GOOGLE_API_KEY || ''}
+                />
+              )}
+            </div>
+          </div>
+          <label
+            htmlFor={'attached-file'}
+            className={'cursor-pointer tooltip tooltip-top'}
+            data-tip={t.home.room.footer.attachedFile}>
+            <IoIosAttach className={'text-primary'} size={20} />
+            <input
+              type="file"
+              id={'attached-file'}
+              hidden
+              multiple
+              ref={fileAttachRef}
+              onChange={handleChangeAttachFile}
+              formEncType={
+                'image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
+              }
+            />
+          </label>
+          <button
+            type={'button'}
+            onClick={handleSubmit}
+            className={'p-2.5 bg-primary flex-center rounded'}>
+            <MdSend size={22} color={'white'} />
+          </button>
         </div>
-        <label
-          htmlFor={'attached-file'}
-          className={'cursor-pointer tooltip tooltip-top'}
-          data-tip={t.home.room.footer.attachedFile}>
-          <IoIosAttach className={'text-primary'} size={20} />
-          <input
-            type="file"
-            id={'attached-file'}
-            hidden
-            multiple
-            ref={fileAttachRef}
-            onChange={handleChangeAttachFile}
-            formEncType={
-              'image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
-            }
-          />
-        </label>
-        <button
-          type={'button'}
-          onClick={handleSubmit}
-          className={'p-2.5 bg-primary flex-center rounded'}>
-          <MdSend size={22} color={'white'} />
-        </button>
       </div>
     </div>
   );

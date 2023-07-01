@@ -140,6 +140,7 @@ const language = {
   confirmDelete: 'Confirm Delete',
   descDeleteMessage: 'Are you sure you want to delete this message?',
   delete: 'Delete',
+  answering: "Answering",
 };
 
 export default language;

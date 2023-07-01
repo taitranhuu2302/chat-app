@@ -13,7 +13,6 @@ import { MessageUpdateDto } from './dto/message-update.dto';
 import { SocketService } from '../socket/socket.service';
 import { RedisService } from '../redis/redis.service';
 import { SOCKET_EVENT } from '../shared/constants/socket.constant';
-import { Conversation } from '../conversation/conversation.model';
 import { ConversationDto } from '../conversation/dto/conversation.dto';
 
 @Injectable()
@@ -38,7 +37,7 @@ export class MessageService {
           {},
           { sort: { createdAt: -1 } },
         )
-        .populate(['sender', 'conversation']),
+        .populate(['sender', 'conversation', 'reply']),
       options,
       async (data) => {
         const formattedData = [];
@@ -73,8 +72,9 @@ export class MessageService {
         text: dto.text,
         conversation: dto.conversation,
         sender: sub,
+        reply: dto.reply ?? null,
       });
-      await message.populate(['sender']);
+      await message.populate(['sender', 'reply']);
       const mapped = plainToClass(MessageDto, message, {
         excludeExtraneousValues: true,
       });
@@ -87,8 +87,9 @@ export class MessageService {
           file: `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
           conversation: dto.conversation,
           sender: sub,
+          reply: dto.reply ?? null,
         });
-        await newMessage.populate(['sender']);
+        await newMessage.populate(['sender', 'reply']);
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });
@@ -102,8 +103,9 @@ export class MessageService {
           file: gif,
           conversation: dto.conversation,
           sender: sub,
+          reply: dto.reply ?? null,
         });
-        await newMessage.populate(['sender']);
+        await newMessage.populate(['sender', 'reply']);
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });

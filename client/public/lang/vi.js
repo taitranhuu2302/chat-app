@@ -139,7 +139,8 @@ const language = {
   messageCancelFriend: "Bạn muốn huỷ kết bạn ?",
   confirmDelete: "Xác nhận Xóa",
   descDeleteMessage: "Bạn có chắc chắn muốn xóa tin nhắn này?",
-  delete: "Xóa"
+  delete: "Xóa",
+  answering: "Đang trả lời"
 };
 
 export default language;

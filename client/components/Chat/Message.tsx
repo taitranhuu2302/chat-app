@@ -28,6 +28,7 @@ import { getErrorResponse } from '@/utils/ErrorUtils';
 import toast from 'react-hot-toast';
 import { useQueryClient } from 'react-query';
 import { API } from '@/constants/Api';
+import { setReplyMessage } from '@/redux/features/MessageSlice';
 
 interface IMessage {
   isOwner?: boolean;
@@ -49,7 +50,6 @@ const Message: React.FC<IMessage> = ({
     useDeleteMessageApi();
   const [openDelete, setOpenDelete] = useState(false);
   const dispatch = useAppDispatch();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     dispatch(onPageLoading(deleteMessageLoading));
@@ -124,7 +124,11 @@ const Message: React.FC<IMessage> = ({
 
   return (
     <>
-      <div className={`chat ${isOwner ? 'chat-end' : 'chat-start'}`}>
+      <div
+        className={twMerge(
+          `chat ${isOwner ? 'chat-end' : 'chat-start'}`,
+          message.reply && 'mt-5'
+        )}>
         <div className="chat-image avatar">
           <Avatar
             size={'40px'}
@@ -190,6 +194,9 @@ const Message: React.FC<IMessage> = ({
               className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52 z-10">
               <li>
                 <a
+                  onClick={() => {
+                    dispatch(setReplyMessage(message));
+                  }}
                   className={
                     'flex items-center justify-between text-light-1100 dark:text-night-1100'
                   }>
