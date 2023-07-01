@@ -20,7 +20,7 @@ export class MessageDto extends BaseMapEntity{
   @Expose()
   @Transform(({ value }) => value || null)
   @Type(() => ConversationDto)
-  conversation: Conversation | string;
+  conversation: ConversationDto | string;
   @Expose()
   @Transform(({ value }) => value || null)
   @Type(() => UserDto)

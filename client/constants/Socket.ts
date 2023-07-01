@@ -17,5 +17,6 @@ export const SOCKET_EVENT = {
   },
   MESSAGE: {
     NEW_MESSAGE: 'NEW_MESSAGE',
+    MESSAGE_RECALL: 'MESSAGE_RECALL',
   },
 };

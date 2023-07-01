@@ -39,6 +39,6 @@ export const API = {
     FIND_ALL_BY_CONVERSATION: `/message/find-all-by-conversation`, //`/message/find-all-by-conversation/:conversationId`
     CREATE: `/message/create`,
     UPDATE: `/message/update/:id`,
-    MESSAGE_RECALL: `/message/message-recall/:id`,
+    MESSAGE_RECALL: `/message/message-recall`, ///message/message-recall/:id
   },
 };

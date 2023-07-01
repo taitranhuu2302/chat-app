@@ -12,7 +12,9 @@ import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { useOnClickOutside } from 'usehooks-ts';
 import { BsFillFileTextFill } from 'react-icons/bs';
-import {ALLOWED_TYPES} from "@/utils/FileUtils";
+import { ALLOWED_TYPES } from '@/utils/FileUtils';
+import GifPicker from 'gif-picker-react';
+import { HiGif } from 'react-icons/hi2';
 
 interface IChatFooter {
   handleSendMessage: (payload: MessageCreateType) => void;
@@ -29,14 +31,20 @@ const ChatFooter: React.FC<IChatFooter> = ({
   const [format, setFormat] = useState(false);
   const router = useRouter();
   const [openEmoji, setOpenEmoji] = useState(false);
+  const [openGif, setOpenGif] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [gifs, setGifs] = useState<string[]>([]);
   const fileAttachRef = useRef<any>(null);
+  const gifRef = useRef<any>(null);
   const {
     query: { id },
   } = router;
   const buttonEmojiRef = useRef<any>(null);
   useOnClickOutside(buttonEmojiRef, () => {
     setOpenEmoji(false);
+  });
+  useOnClickOutside(gifRef, () => {
+    setOpenGif(false);
   });
   useEffect(() => {
     setEditorLoaded(true);
@@ -50,9 +58,11 @@ const ChatFooter: React.FC<IChatFooter> = ({
       text,
       conversation: id as string,
       files,
+      gifs,
     });
     setText('');
     setFiles([]);
+    setGifs([]);
   };
 
   const handleChangeAttachFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +74,9 @@ const ChatFooter: React.FC<IChatFooter> = ({
       const file = fileList[i];
       if (!file) continue;
       const splitFileName = file.name.split('.');
-      if (!ALLOWED_TYPES.includes(`.${splitFileName[splitFileName.length - 1]}`))
+      if (
+        !ALLOWED_TYPES.includes(`.${splitFileName[splitFileName.length - 1]}`)
+      )
         continue;
       setFiles((f) => [...f, file]);
     }
@@ -76,12 +88,24 @@ const ChatFooter: React.FC<IChatFooter> = ({
     setFiles([...temp]);
   };
 
+  const handleDeleteGif = (index: number) => {
+    const temp = gifs;
+    temp.splice(index, 1);
+    setGifs([...temp]);
+  };
+
   return (
     <div
       className={`${styles.chatFooter} border-t border-light-400 dark:border-night-400 relative`}>
-      {!!files.length && (
+      {(!!files.length || !!gifs.length) && (
         <div
           className={`absolute scrollbar w-[calc(100%_-_20px)] rounded-lg overflow-x-auto gap-2.5 min-h-[140px] flex items-center shadow-lg border dark:border-none p-2 bg-white dark:bg-via-300 bottom-[110%] left-1/2 -translate-x-1/2`}>
+          {gifs.map((gif, index) => (
+            <picture key={index} className={`min-w-fit relative`}>
+              <img src={gif} alt="" className={`h-[120px] min-w-fit rounded`} />
+              <ButtonClose onClick={() => handleDeleteGif(index)} />
+            </picture>
+          ))}
           {files.map((file, index) => {
             if (!file) return null;
             if (file.type.includes('image')) {
@@ -164,6 +188,25 @@ const ChatFooter: React.FC<IChatFooter> = ({
               />
             </div>
           )}
+        </div>
+        <div className={'relative flex-center'} ref={gifRef}>
+          <button
+            type={'button'}
+            className={'tooltip tooltip-top'}
+            onClick={() => setOpenGif((g) => !g)}
+            data-tip={'Gif'}>
+            <HiGif className={'text-primary'} size={20} />
+          </button>
+          <div className={'absolute bottom-full right-0'}>
+            {openGif && (
+              <GifPicker
+                onGifClick={(gif) => {
+                  setGifs((g) => [...g, gif.url]);
+                }}
+                tenorApiKey={process.env.GOOGLE_API_KEY || ''}
+              />
+            )}
+          </div>
         </div>
         <label
           htmlFor={'attached-file'}

@@ -14,4 +14,5 @@ type MessageCreateType = {
   reply?: string;
   conversation: string;
   files?: any[]
+  gifs?: string[]
 };

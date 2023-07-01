@@ -137,6 +137,9 @@ const language = {
   messageAcceptRequestSuccess: "Chấp nhận yêu cầu kết bạn thành công",
   friend: "Bạn bè",
   messageCancelFriend: "Bạn muốn huỷ kết bạn ?",
+  confirmDelete: "Xác nhận Xóa",
+  descDeleteMessage: "Bạn có chắc chắn muốn xóa tin nhắn này?",
+  delete: "Xóa"
 };
 
 export default language;

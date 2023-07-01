@@ -13,6 +13,8 @@ import { MessageUpdateDto } from './dto/message-update.dto';
 import { SocketService } from '../socket/socket.service';
 import { RedisService } from '../redis/redis.service';
 import { SOCKET_EVENT } from '../shared/constants/socket.constant';
+import { Conversation } from '../conversation/conversation.model';
+import { ConversationDto } from '../conversation/dto/conversation.dto';
 
 @Injectable()
 export class MessageService {
@@ -58,7 +60,11 @@ export class MessageService {
     files: Array<Express.Multer.File>,
     dto: MessageCreateDto,
   ) {
-    if ((!files || !files.length) && !dto.text)
+    if (
+      (!files || !files.length) &&
+      !dto.text &&
+      (!dto.gifs || !dto.gifs.length)
+    )
       throw new BadRequestException('Please enter content');
     const messages: MessageDto[] = [];
 
@@ -79,6 +85,21 @@ export class MessageService {
       for (const file of files) {
         const newMessage = await this.messageModel.create({
           file: `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
+          conversation: dto.conversation,
+          sender: sub,
+        });
+        await newMessage.populate(['sender']);
+        const messageMapped = plainToClass(MessageDto, newMessage, {
+          excludeExtraneousValues: true,
+        });
+        messages.push(messageMapped);
+      }
+    }
+    if (!!dto.gifs) {
+      const gifsToArray = Array.isArray(dto.gifs) ? dto.gifs : [dto.gifs];
+      for (const gif of gifsToArray) {
+        const newMessage = await this.messageModel.create({
+          file: gif,
           conversation: dto.conversation,
           sender: sub,
         });
@@ -110,15 +131,25 @@ export class MessageService {
   }
 
   async messageRecall(sub: string, id: string) {
-    const message = await this.messageModel.findOneAndDelete({
-      sender: sub,
-      _id: id,
-    });
+    const message = await this.messageModel
+      .findOneAndDelete({
+        sender: sub,
+        _id: id,
+      })
+      .populate('conversation');
 
     if (!message) {
       throw new BadRequestException('Message not found');
     }
+    const messageMapped = plainToClass(MessageDto, message, {
+      excludeExtraneousValues: true,
+    });
+    console.log(messageMapped);
 
-    return message;
+    this.socketService.socket
+      .to((messageMapped.conversation as ConversationDto)._id.toString())
+      .emit(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL, messageMapped);
+
+    return messageMapped;
   }
 }

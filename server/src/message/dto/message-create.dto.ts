@@ -5,4 +5,5 @@ export class MessageCreateDto {
   reply?: string;
   @IsNotEmpty()
   conversation: string;
+  gifs?: string[];
 }

@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import Avatar from 'react-avatar';
 import {
   BsFillFileTextFill,
@@ -11,6 +18,16 @@ import 'moment/locale/vi';
 import { getFileType } from '@/utils/FileUtils';
 import { twMerge } from 'tailwind-merge';
 import { FaPlay } from 'react-icons/fa';
+import Portal from '@/components/Portal';
+import useTranslate from '@/hooks/useTranslate';
+import ConfirmDelete from '@/components/Dialog/ConfirmDelete';
+import { useDeleteMessageApi } from '@/service/MessageService';
+import { useAppDispatch } from '@/redux/hooks';
+import { onPageLoading } from '@/redux/features/PageLoadingSlice';
+import { getErrorResponse } from '@/utils/ErrorUtils';
+import toast from 'react-hot-toast';
+import { useQueryClient } from 'react-query';
+import { API } from '@/constants/Api';
 
 interface IMessage {
   isOwner?: boolean;
@@ -27,9 +44,19 @@ const Message: React.FC<IMessage> = ({
   isSameOwner,
   isLastSame,
 }) => {
+  const t: any = useTranslate();
+  const { mutateAsync: deleteMessage, isLoading: deleteMessageLoading } =
+    useDeleteMessageApi();
+  const [openDelete, setOpenDelete] = useState(false);
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    dispatch(onPageLoading(deleteMessageLoading));
+  }, [deleteMessageLoading]);
+
   const renderFile = useMemo(() => {
     if (!message.file || getFileType(message.file) === 'unknown') return null;
-    console.log(getFileType(message.file));
     if (getFileType(message.file) === 'image') {
       return (
         <picture>
@@ -82,6 +109,19 @@ const Message: React.FC<IMessage> = ({
       );
     }
   }, [message.file]);
+
+  const handleDeleteMessage = useCallback(async () => {
+    try {
+      await deleteMessage(message._id);
+      toast.success('Delete message successfully');
+    } catch (e: any) {
+      const errors = getErrorResponse(e.message);
+      toast.error(errors[0]);
+    } finally {
+      setOpenDelete(false);
+    }
+  }, [message]);
+
   return (
     <>
       <div className={`chat ${isOwner ? 'chat-end' : 'chat-start'}`}>
@@ -125,13 +165,15 @@ const Message: React.FC<IMessage> = ({
               dangerouslySetInnerHTML={{ __html: message.text }}
             />
           )}
-          <div
-            className={`tooltip un-reset ${
-              isOwner ? 'tooltip-left' : 'tooltip-right'
-            }`}
-            data-tip={moment(message.updatedAt).locale('en').format('LLL')}>
-            {renderFile}
-          </div>
+          {message.file && (
+            <div
+              className={`tooltip un-reset ${
+                isOwner ? 'tooltip-left' : 'tooltip-right'
+              }`}
+              data-tip={moment(message.updatedAt).locale('en').format('LLL')}>
+              {renderFile}
+            </div>
+          )}
           <div
             className={`absolute dropdown ${
               isFirst ? 'dropdown-bottom' : 'dropdown-top'
@@ -158,6 +200,7 @@ const Message: React.FC<IMessage> = ({
               {isOwner && (
                 <li>
                   <a
+                    onClick={() => setOpenDelete(true)}
                     className={
                       'flex items-center justify-between text-light-1100 dark:text-night-1100'
                     }>
@@ -170,6 +213,13 @@ const Message: React.FC<IMessage> = ({
           </div>
         </div>
       </div>
+      <ConfirmDelete
+        isOpen={openDelete}
+        title={t.confirmDelete}
+        message={t.descDeleteMessage}
+        onClose={() => setOpenDelete(false)}
+        onConfirm={handleDeleteMessage}
+      />
     </>
   );
 };
@@ -219,7 +269,6 @@ const VideoPlayer = ({ src }: { src: string }) => {
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-
       const fullscreenElement =
         document.fullscreenElement ||
         // @ts-ignore

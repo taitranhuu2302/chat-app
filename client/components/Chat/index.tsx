@@ -16,8 +16,8 @@ import FormData from 'form-data';
 import { flatMapObjectInfinite } from '@/utils/ArrayUtils';
 import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
-import {getErrorResponse} from "@/utils/ErrorUtils";
-import toast from "react-hot-toast";
+import { getErrorResponse } from '@/utils/ErrorUtils';
+import toast from 'react-hot-toast';
 
 interface IChat {}
 
@@ -57,14 +57,21 @@ const Chat: React.FC<IChat> = () => {
     if (!socket) return;
 
     socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
-      console.log(data)
       if (data[0].conversation._id === id) {
         setMessages((e) => [...data, ...e]);
       }
     });
 
+    socket.on(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL, (data: MessageType) => {
+      console.log(data)
+      if (data.conversation._id === id) {
+        setMessages((m) => m.filter((message) => message._id !== data._id));
+      }
+    });
+
     return () => {
       socket.off(SOCKET_EVENT.MESSAGE.NEW_MESSAGE);
+      socket.off(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL);
     };
   }, [socket, id]);
 
@@ -77,6 +84,7 @@ const Chat: React.FC<IChat> = () => {
     conversation,
     reply,
     files,
+    gifs,
   }: MessageCreateType) => {
     if (!text && !files) return;
     try {
@@ -89,12 +97,15 @@ const Chat: React.FC<IChat> = () => {
           formData.append('files', file);
         });
       }
-      await sendMessage(formData).then(({ data }: { data: MessageType }) => {
-        // setMessages((e) => [data, ...e]);
-      });
+      if (gifs && gifs.length) {
+        gifs.forEach((gif) => {
+          formData.append('gifs', gif);
+        });
+      }
+      await sendMessage(formData);
     } catch (e: any) {
-      const errors = getErrorResponse(e.message)
-      toast.error(errors[0])
+      const errors = getErrorResponse(e.message);
+      toast.error(errors[0]);
     }
   };
 

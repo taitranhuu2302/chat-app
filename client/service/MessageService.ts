@@ -34,3 +34,9 @@ export const useGetMessageByConversationApi = ({
     }
   );
 };
+
+export const useDeleteMessageApi = () => {
+  return useMutation([API.MESSAGE.MESSAGE_RECALL], (id: string) =>
+    axiosConfig.delete(`${API.MESSAGE.MESSAGE_RECALL}/${id}`)
+  );
+};
