@@ -159,7 +159,7 @@ const Sidebar: React.FC<ISidebar> = () => {
             <label tabIndex={0} className={`${styles.sidebarItem}`}>
               <Avatar
                 name={`${auth?.firstName} ${auth?.lastName}`}
-                src={auth?.avatar}
+                src={auth?.avatar || ""}
                 size={'40px'}
                 round
               />
@@ -167,10 +167,22 @@ const Sidebar: React.FC<ISidebar> = () => {
             <ul
               tabIndex={0}
               className="dropdown-content dark:bg-night-200 menu p-2 shadow bg-base-100 rounded-box w-52">
-              <li>
+              <li onClick={() => router.push({
+                pathname: "/",
+                query: {
+                  ...router.query,
+                  tab: "profile"
+                }
+              })}>
                 <a>{t.home.sidebar.profile}</a>
               </li>
-              <li>
+              <li onClick={() => router.push({
+                pathname: "/settings",
+                query: {
+                  ...router.query,
+                  tab: "settings"
+                }
+              })}>
                 <a>{t.home.sidebar.setting}</a>
               </li>
               <Divider />

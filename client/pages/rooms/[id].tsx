@@ -9,9 +9,7 @@ interface IRoomDetail {
 }
 
 const RoomDetail: React.FC<IRoomDetail> = () => {
-  const router = useRouter();
-  const { query: { id } } = router;
-  
+
   return <>
     <MainLayout>
       <Chat />

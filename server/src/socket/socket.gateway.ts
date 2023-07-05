@@ -13,6 +13,11 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../user/user.model';
 import { Model } from 'mongoose';
+import { SOCKET_EVENT } from 'src/shared/constants/socket.constant';
+import {
+  Conversation,
+  ConversationDocument,
+} from 'src/conversation/conversation.model';
 
 @WebSocketGateway({ cors: true })
 export class SocketGateway
@@ -26,24 +31,45 @@ export class SocketGateway
     private redisService: RedisService,
     private jwtService: JwtService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Conversation.name)
+    private conversationModel: Model<ConversationDocument>,
   ) {}
 
   afterInit(server: Server) {
     this.socketService.socket = server;
   }
 
-  async handleConnection(socket: Socket, ...args: any[]): Promise<any> {
+  async handleConnection(socket: Socket): Promise<any> {
     this.logger.log(`Client connected: ${socket.id}`);
 
     const user = await this.getUser(socket);
     if (!user) return;
     await this.redisService.setSocketId(user._id.toString(), socket.id);
+    const conversations = await this.conversationModel.find({
+      members: user._id,
+    });
+    conversations.forEach((c) => socket.join(c._id.toString()));
+
+    const sockets = await this.redisService.getAllSocket();
+
+    this.socketService.socket.emit(SOCKET_EVENT.USER_CONNECTED, sockets);
   }
 
   async handleDisconnect(socket: Socket): Promise<any> {
     this.logger.log(`Client disconnected: ${socket.id}`);
+
+    const sockets = await this.redisService.getAllSocket();
+
+    this.socketService.socket.emit(SOCKET_EVENT.USER_CONNECTED, sockets);
+
     const user = await this.getUser(socket);
     if (!user) return;
+
+    const conversations = await this.conversationModel.find({
+      members: user._id,
+    });
+    conversations.forEach((c) => socket.leave(c._id.toString()));
+
     await this.redisService.removeSocketId(user._id.toString());
   }
 

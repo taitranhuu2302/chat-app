@@ -6,12 +6,14 @@ import UserInfo from '@/components/UserInfo';
 import Divider from '@/components/Divider';
 import useTranslate from '@/hooks/useTranslate';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
+import { useRouter } from 'next/router';
 
-interface ITabProfile {}
+interface ITabProfile { }
 
 const TabProfile: React.FC<ITabProfile> = () => {
   const t = useTranslate();
   const { auth } = useContext(AuthContext) as AuthContextType;
+  const router = useRouter()
 
   return (
     <TabContainer
@@ -27,7 +29,7 @@ const TabProfile: React.FC<ITabProfile> = () => {
               className={
                 'dropdown-content dark:bg-night-200 menu p-2 shadow bg-base-100 rounded-box w-52'
               }>
-              <li>
+              <li onClick={() => router.push({ pathname: 'settings', query: { ...router.query, tab: 'setting' } })}>
                 <a>{t.home.tab.profile.actions.edit}</a>
               </li>
             </ul>
@@ -39,7 +41,7 @@ const TabProfile: React.FC<ITabProfile> = () => {
         name={`${auth?.firstName} ${auth?.lastName}`}
       />
       <Divider />
-      <UserInfo user={auth}/>
+      <UserInfo user={auth} />
     </TabContainer>
   );
 };

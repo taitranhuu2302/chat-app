@@ -224,7 +224,7 @@ const ModalSearchUser: React.FC<Props> = () => {
                     <Avatar
                       size={'40px'}
                       round
-                      src={user.avatar}
+                      src={user.avatar || ""}
                       name={fullName}
                     />
                     <p>{fullName}</p>

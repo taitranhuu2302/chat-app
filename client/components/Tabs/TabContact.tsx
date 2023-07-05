@@ -12,7 +12,7 @@ import { useCancelFriendApi, useGetFriendByUser } from '@/service/UserService';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
 import Skeleton from 'react-loading-skeleton';
 import toast from 'react-hot-toast';
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { onPageLoading } from '@/redux/features/PageLoadingSlice';
 import ConfirmDelete from '@/components/Dialog/ConfirmDelete';
 import { getErrorResponse } from '@/utils/ErrorUtils';
@@ -20,6 +20,8 @@ import { useQueryClient } from 'react-query';
 import { API } from '@/constants/Api';
 import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
+import { useCreateConversation } from '@/service/ConversationService';
+import { useRouter } from 'next/router';
 
 interface ITabContact {}
 
@@ -27,41 +29,41 @@ const TabContact: React.FC<ITabContact> = () => {
   const t = useTranslate();
   const [contacts, setContacts] = useState<any>([]);
   const { auth } = useContext(AuthContext) as AuthContextType;
+  const { userOnline } = useAppSelector((state) => state.notify);
   const { socket } = useContext(SocketContext) as SocketContextType;
   const { isLoading } = useGetFriendByUser({
     id: auth?._id,
     options: {
       onSuccess: (data: any) => {
         const arr = flatMapObjectInfinite(data).map((item: any) => item.friend);
-        setContacts([
-          ...groupContacts(arr),
-        ]);
+        setContacts([...groupContacts(arr)]);
       },
     },
   });
 
   const groupContacts = (data: any[]) => {
     return groupByFirstLetter(
-        _.sortBy(data, (value) => value.firstName),
-        (item) => item.firstName[0]
+      _.sortBy(data, (value) => value.firstName),
+      (item) => item.firstName[0]
     );
-  }
+  };
 
   useEffect(() => {
     if (!socket) return;
     socket.on(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST, (data: UserType) => {
-      setContacts((c: any) => [
-        ...c,
-        ...groupContacts([data]),
-      ]);
+      setContacts((c: any) => [...c, ...groupContacts([data])]);
     });
     socket.on(SOCKET_EVENT.USER.UN_FRIEND, (data: UserType) => {
-      const arr = contacts.flatMap((c: any) => c.list).filter((item: UserType) => item._id !== data._id);
-      setContacts([...groupContacts(arr)])
+      const arr = contacts
+        .flatMap((c: any) => c.list)
+        .filter((item: UserType) => item._id !== data._id);
+      setContacts([...groupContacts(arr)]);
     });
+
     return () => {
       socket.off(SOCKET_EVENT.USER.ACCEPT_FRIEND_REQUEST);
       socket.off(SOCKET_EVENT.USER.UN_FRIEND);
+      socket.off(SOCKET_EVENT.USER_CONNECTED);
     };
   }, [socket]);
 
@@ -103,6 +105,7 @@ const TabContact: React.FC<ITabContact> = () => {
                         item.list.length > 1 &&
                         item.list.length - 1 === subIndex
                       }
+                      isOnline={userOnline.includes(subItem._id)}
                       user={subItem}
                       key={`contact-${subItem._id}-${subIndex}`}
                     />
@@ -120,9 +123,10 @@ const TabContact: React.FC<ITabContact> = () => {
 type TabContactItemType = {
   user: UserType;
   isLastItem?: boolean;
+  isOnline?: boolean;
 };
 
-const TabContactItem = ({ user, isLastItem }: TabContactItemType) => {
+const TabContactItem = ({ user, isLastItem, isOnline }: TabContactItemType) => {
   const t = useTranslate();
   let idRandom = Math.random();
   const { mutateAsync: cancelFriend, isLoading: cancelFriendLoading } =
@@ -131,10 +135,13 @@ const TabContactItem = ({ user, isLastItem }: TabContactItemType) => {
   const [openDelete, setOpenDelete] = useState(false);
   const queryClient = useQueryClient();
   const { auth } = useContext(AuthContext) as AuthContextType;
+  const router = useRouter();
+  const { mutateAsync: createConversation, isLoading: isLoadingCreate } =
+    useCreateConversation({});
 
   useEffect(() => {
-    dispatch(onPageLoading(cancelFriendLoading));
-  }, [cancelFriendLoading]);
+    dispatch(onPageLoading(cancelFriendLoading || isLoadingCreate));
+  }, [cancelFriendLoading, isLoadingCreate]);
 
   const handleCancelFriend = async () => {
     try {
@@ -149,11 +156,32 @@ const TabContactItem = ({ user, isLastItem }: TabContactItemType) => {
     }
   };
 
+  const handleCreate = async (friendId: string) => {
+    try {
+      const { data } = await createConversation({
+        members: [friendId],
+        conversationType: 'PRIVATE',
+      });
+      await router.push({
+        pathname: `/rooms/[id]`,
+        query: {
+          ...router.query,
+          id: data._id,
+        },
+      });
+    } catch (e: any) {
+      console.error(e.message);
+    }
+  };
+
   return (
     <div className={'cursor-pointer py-4 flex items-center'}>
       <p className={'flex-grow'}>
         {user.firstName} {user.lastName}
       </p>
+      {isOnline && (
+        <p className="badge badge-success mr-5 text-white">Online</p>
+      )}
       <div
         className={`dropdown dropdown-left ${
           isLastItem ? 'dropdown-top' : ''
@@ -164,7 +192,7 @@ const TabContactItem = ({ user, isLastItem }: TabContactItemType) => {
         <ul
           tabIndex={idRandom}
           className="dropdown-content menu p-2 shadow bg-via-400 dark:bg-via-300 rounded-box w-52">
-          <li>
+          <li onClick={() => handleCreate(user._id)}>
             <a>Chat</a>
           </li>
           <li onClick={() => toast.error('Chức năng đang phát triển')}>

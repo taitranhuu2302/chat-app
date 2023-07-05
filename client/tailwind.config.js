@@ -9,10 +9,10 @@ module.exports = {
   theme: {
     extend: {
       screens: {
-        'lg': '992px',
+        lg: '992px',
       },
       colors: {
-        'light': {
+        light: {
           DEFAULT: '#FFFFFF',
           100: '#F2F2F2',
           200: '#E9EAE8',
@@ -26,7 +26,7 @@ module.exports = {
           1000: '#090B00',
           1100: '#030B11',
         },
-        'night': {
+        night: {
           DEFAULT: '#030B11',
           100: '#222320',
           200: '#161E1B',
@@ -40,7 +40,7 @@ module.exports = {
           1000: '#E9EAE8',
           1100: '#FFFFFF',
         },
-        'via': {
+        via: {
           100: '#262E35',
           200: '#303841',
           300: '#36404A',
@@ -52,18 +52,21 @@ module.exports = {
     },
   },
   daisyui: {
+    base: true, // applies background color and foreground color for root element by default
+    styled: true, // include daisyUI colors and design decisions for all components
+    utils: true, // adds responsive and modifier utility classes
     themes: [
       {
         mytheme: {
-          'primary': '#7269EF',
-          'secondary': '#F000B8',
-          'accent': '#37CDBE',
-          'neutral': '#3D4451',
+          primary: '#7269EF',
+          secondary: '#F000B8',
+          accent: '#37CDBE',
+          neutral: '#3D4451',
           'base-100': '#FFFFFF',
-          'info': '#007BFF',
-          'success': '#28A745',
-          'warning': '#FFC107',
-          'error': '#DC3545',
+          info: '#007BFF',
+          success: '#28A745',
+          warning: '#FFC107',
+          error: '#DC3545',
         },
       },
     ],

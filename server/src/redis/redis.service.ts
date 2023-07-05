@@ -25,4 +25,8 @@ export class RedisService {
   async removeSocketId(userId: string): Promise<void> {
     await this.redisClient.del(userId);
   }
+
+  async getAllSocket(): Promise<string[]> {
+    return this.redisClient.keys("*");
+  }
 }

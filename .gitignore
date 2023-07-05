@@ -1,0 +1,8 @@
+# IDE
+/.idea
+/.awcache
+/.vscode
+/.devcontainer
+*.code-workspace
+# database
+/database

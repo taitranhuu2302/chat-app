@@ -2,13 +2,13 @@ import React, { useContext } from 'react';
 import Collapse from '@/components/Collapse';
 import useTranslate from '@/hooks/useTranslate';
 import { AuthContext, AuthContextType } from '../contexts/AuthContext';
-import Divider from "@/components/Divider";
+import Divider from '@/components/Divider';
 
 interface IUserInfo {
-  user?: UserType | null
+  user?: UserType | null;
 }
 
-const UserInfo: React.FC<IUserInfo> = ({user}) => {
+const UserInfo: React.FC<IUserInfo> = ({ user }) => {
   const t = useTranslate();
 
   return (
@@ -23,7 +23,7 @@ const UserInfo: React.FC<IUserInfo> = ({user}) => {
               <span className={`text-light-600 dark:text-night-600`}>
                 {t.home.tab.profile.info.about.name}
               </span>
-              <p className={'text-md font-semibold'}>
+              <p className={'text-md'}>
                 {user?.firstName} {user?.lastName}
               </p>
             </li>
@@ -31,31 +31,31 @@ const UserInfo: React.FC<IUserInfo> = ({user}) => {
               <span className={`text-light-600 dark:text-night-600`}>
                 {t.home.tab.profile.info.about.email}
               </span>
-              <p className={'text-md font-semibold'}>{user?.email}</p>
+              <p className={'text-md'}>{user?.email}</p>
             </li>
             <li className={'flex flex-col gap-1'}>
               <span className={`text-light-600 dark:text-night-600`}>
                 {t.home.tab.profile.info.about.location}
               </span>
-              <p className={'text-md font-semibold'}>{user?.address}</p>
+              <p className={'text-md'}>{user?.address}</p>
             </li>
             <li className={'flex flex-col gap-1'}>
               <span className={`text-light-600 dark:text-night-600`}>
                 {t.home.tab.profile.info.about.phone}
               </span>
-              <p className={'text-md font-semibold'}>{user?.phone}</p>
+              <p className={'text-md'}>{user?.phone}</p>
             </li>
             <li className={'flex flex-col gap-1'}>
               <span className={`text-light-600 dark:text-night-600`}>
                 Facebook
               </span>
-              <p className={'text-md font-semibold'}>{user?.facebookLink}</p>
+              <p className={'text-md'}>{user?.facebookLink}</p>
             </li>
             <li className={'flex flex-col gap-1'}>
               <span className={`text-light-600 dark:text-night-600`}>
                 Github
               </span>
-              <p className={'text-md font-semibold'}>{user?.githubLink}</p>
+              <p className={'text-md'}>{user?.githubLink}</p>
             </li>
           </ul>
         </Collapse>
