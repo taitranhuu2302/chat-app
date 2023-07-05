@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IState {
-  reply?: MessageType;
+  reply: MessageType | null;
 }
 
 const initialState: IState = {
-  reply: undefined,
+  reply: null,
 };
 
 const messageSlice = createSlice({
@@ -14,7 +14,7 @@ const messageSlice = createSlice({
   reducers: {
     setReplyMessage: (
       state,
-      { payload }: PayloadAction<MessageType | undefined>
+      { payload }: PayloadAction<MessageType | null>
     ) => {
       state.reply = payload;
     },

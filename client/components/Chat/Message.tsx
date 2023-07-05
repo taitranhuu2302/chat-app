@@ -1,7 +1,6 @@
 import React, {
   useCallback,
   useEffect,
-  useId,
   useMemo,
   useRef,
   useState,
@@ -18,7 +17,6 @@ import 'moment/locale/vi';
 import { getFileType } from '@/utils/FileUtils';
 import { twMerge } from 'tailwind-merge';
 import { FaPlay } from 'react-icons/fa';
-import Portal from '@/components/Portal';
 import useTranslate from '@/hooks/useTranslate';
 import ConfirmDelete from '@/components/Dialog/ConfirmDelete';
 import { useDeleteMessageApi } from '@/service/MessageService';
@@ -26,9 +24,8 @@ import { useAppDispatch } from '@/redux/hooks';
 import { onPageLoading } from '@/redux/features/PageLoadingSlice';
 import { getErrorResponse } from '@/utils/ErrorUtils';
 import toast from 'react-hot-toast';
-import { useQueryClient } from 'react-query';
-import { API } from '@/constants/Api';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
+import styles from '@/styles/components/chat.module.scss';
 
 interface IMessage {
   isOwner?: boolean;
@@ -36,15 +33,19 @@ interface IMessage {
   isFirst?: boolean;
   isSameOwner?: boolean;
   isLastSame?: boolean;
+  scrollToMessageReply?: (message: MessageType) => void;
+  messageReplyActive?: MessageType | null
 }
 
-const Message: React.FC<IMessage> = ({
+const Message = React.forwardRef<HTMLDivElement, IMessage>(({
   isOwner,
   message,
   isFirst,
   isSameOwner,
   isLastSame,
-}) => {
+  messageReplyActive,
+  scrollToMessageReply
+}, ref) => {
   const t: any = useTranslate();
   const { mutateAsync: deleteMessage, isLoading: deleteMessageLoading } =
     useDeleteMessageApi();
@@ -124,11 +125,7 @@ const Message: React.FC<IMessage> = ({
 
   return (
     <>
-      <div
-        className={twMerge(
-          `chat ${isOwner ? 'chat-end' : 'chat-start'}`,
-          message.reply && 'mt-5'
-        )}>
+      <div ref={ref} className={twMerge(`chat ${isOwner ? 'chat-end' : 'chat-start'}`)}>
         <div className="chat-image avatar">
           <Avatar
             size={'40px'}
@@ -137,55 +134,63 @@ const Message: React.FC<IMessage> = ({
             name={`${message.sender.firstName} ${message.sender.lastName}`}
           />
         </div>
-        {!isSameOwner && (
+        {isLastSame && (
           <div
-            className={`chat-header mb-1 gap-2.5 flex items-center ${
-              isOwner ? 'flex-row-reverse' : ''
-            }`}>
+            className={`chat-header mb-1 gap-2.5 flex items-center ${isOwner ? 'flex-row-reverse' : ''
+              }`}>
             <span
               className={
                 'font-semibold'
               }>{`${message.sender.firstName} ${message.sender.lastName}`}</span>
-            {/*<time className="text-xs opacity-50">*/}
-            {/*  {moment(message.updatedAt).locale('vi').format('LT')}*/}
-            {/*</time>*/}
           </div>
         )}
         <div
           className={twMerge(
-            `chat-bubble ${
-              isOwner
-                ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
-                : 'bg-primary text-light'
+            `chat-bubble ${isOwner
+              ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
+              : 'bg-primary text-light'
             } relative max-w-[50%]`,
-            message.file && 'bg-transparent p-0'
+            message.file && 'bg-transparent p-0',
+            messageReplyActive?._id === message._id && 'ring-offset-1 ring'
           )}>
+          {
+            message.reply && (
+              <>
+                <div onClick={() => scrollToMessageReply && scrollToMessageReply(message.reply!)} className={`${styles.messageReply} cursor-pointer m-1 ${isOwner ? `${styles.isOwner}` : ''}`}>
+                  <p className={`font-semibold`}>{message.reply?.sender.firstName} {message.reply?.sender.lastName}</p>
+                  {
+                    message.reply?.text ? (
+                      <div className={`text-sm line-clamp-1`} dangerouslySetInnerHTML={{ __html: message.reply?.text }}></div>
+                    ) : (
+                      <p className={`text-sm line-clamp-1`}>Sent a file</p>
+                    )
+                  }
+                </div>
+              </>
+            )
+          }
           {message.text && (
             <div
-              className={`tooltip un-reset ${
-                isOwner ? 'tooltip-left' : 'tooltip-right'
-              }`}
+              className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
+                }`}
               data-tip={moment(message.updatedAt).locale('en').format('LLL')}
               dangerouslySetInnerHTML={{ __html: message.text }}
             />
           )}
           {message.file && (
             <div
-              className={`tooltip un-reset ${
-                isOwner ? 'tooltip-left' : 'tooltip-right'
-              }`}
+              className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
+                }`}
               data-tip={moment(message.updatedAt).locale('en').format('LLL')}>
               {renderFile}
             </div>
           )}
           <div
-            className={`absolute dropdown ${
-              isFirst ? 'dropdown-bottom' : 'dropdown-top'
-            } ${
-              isOwner
+            className={`absolute dropdown ${isFirst ? 'dropdown-bottom' : 'dropdown-top'
+              } ${isOwner
                 ? 'left-[-15px] dropdown-left'
                 : 'right-[-15px] dropdown-right'
-            } top-0`}>
+              } top-0`}>
             <button tabIndex={0}>
               <BsThreeDotsVertical size={15} className={'text-primary'} />
             </button>
@@ -204,7 +209,7 @@ const Message: React.FC<IMessage> = ({
                   <BsReplyFill size={20} />
                 </a>
               </li>
-              {isOwner && (
+              {/* {isOwner && (
                 <li>
                   <a
                     onClick={() => setOpenDelete(true)}
@@ -215,7 +220,7 @@ const Message: React.FC<IMessage> = ({
                     <MdOutlineDelete size={22} />
                   </a>
                 </li>
-              )}
+              )} */}
             </ul>
           </div>
         </div>
@@ -229,7 +234,9 @@ const Message: React.FC<IMessage> = ({
       />
     </>
   );
-};
+})
+
+Message.displayName = "Message"
 
 const VideoPlayer = ({ src }: { src: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -286,7 +293,6 @@ const VideoPlayer = ({ src }: { src: string }) => {
         document.msFullscreenElement;
 
       setIsFullscreen(!!fullscreenElement);
-      console.log('Fullscreen change');
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);

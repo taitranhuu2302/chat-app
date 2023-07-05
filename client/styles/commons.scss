@@ -5,6 +5,10 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
+html, body { 
+  scroll-behavior: smooth
+}
+
 .modal.modal-override {
   width: 100%;
   height: 100%;
@@ -126,6 +130,10 @@ body {
 
   .ck-rounded-corners .ck.ck-editor__main > .ck-editor__editable, .ck.ck-editor__main > .ck-editor__editable.ck-rounded-corners {
     @apply rounded-lg;
+  }
+
+  .ck .ck-content  {
+    max-height: 200px;
   }
 
   .ck.ck-editor__main > .ck-editor__editable {
@@ -437,6 +445,7 @@ body {
 
   p {
     display: inline-block;
+    word-break: break-all;
   }
 }
 

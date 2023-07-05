@@ -26,6 +26,7 @@ interface IChat {}
 const Chat: React.FC<IChat> = () => {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
   const [messages, setMessages] = useState<MessageType[]>([]);
+  const [isNewMessage, setIsNewMessage] = useState(false)
   const [conversation, setConversation] = useState<ConversationType | null>(
     null
   );
@@ -46,7 +47,7 @@ const Chat: React.FC<IChat> = () => {
     useSendMessageApi();
   const { socket } = useContext(SocketContext) as SocketContextType;
 
-  const { hasNextPage, fetchNextPage } = useGetMessageByConversationApi({
+  const { hasNextPage, fetchNextPage, isLoading: getMessageLoading } = useGetMessageByConversationApi({
     conversationId: id,
     options: {
       onSuccess: (data: any) => {
@@ -62,11 +63,11 @@ const Chat: React.FC<IChat> = () => {
     socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
       if (data[0].conversation._id === id) {
         setMessages((e) => [...data, ...e]);
+        setIsNewMessage(true)
       }
     });
 
     socket.on(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL, (data: MessageType) => {
-      console.log(data);
       if (data.conversation._id === id) {
         setMessages((m) => m.filter((message) => message._id !== data._id));
       }
@@ -79,7 +80,7 @@ const Chat: React.FC<IChat> = () => {
   }, [socket, id]);
 
   useEffect(() => {
-    dispatch(setReplyMessage(undefined));
+    dispatch(setReplyMessage(null));
   }, [id]);
 
   const onToggleSidebar = () => {
@@ -93,12 +94,15 @@ const Chat: React.FC<IChat> = () => {
     files,
     gifs,
   }: MessageCreateType) => {
-    if (!text && !files) return;
+    if (!text && !files?.length && !gifs?.length) return;
+
     try {
       const formData = new FormData();
       formData.append('text', text);
       formData.append('conversation', conversation);
-      formData.append('reply', reply);
+      if (reply) {
+        formData.append('reply', reply);
+      }
       if (files && files.length) {
         files.forEach((file) => {
           formData.append('files', file);
@@ -133,6 +137,8 @@ const Chat: React.FC<IChat> = () => {
           onToggleSidebar={onToggleSidebar}
         />
         <ChatContent
+          isNewMessage={isNewMessage}
+          setIsNewMessage={setIsNewMessage}
           messages={messages.slice(0).reverse()}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}

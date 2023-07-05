@@ -67,7 +67,7 @@ const ChatFooter: React.FC<IChatFooter> = ({
     setText('');
     setFiles([]);
     setGifs([]);
-    dispatch(setReplyMessage(undefined));
+    dispatch(setReplyMessage(null));
   };
 
   const handleChangeAttachFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,20 +172,22 @@ const ChatFooter: React.FC<IChatFooter> = ({
           )}
           {reply.file && <p className={'text-xs'}>{getFileType(reply.file)}</p>}
           <button
-            onClick={() => dispatch(setReplyMessage(undefined))}
+            onClick={() => dispatch(setReplyMessage(null))}
             className={'absolute top-0 right-0'}>
             <IoClose size={20} />
           </button>
         </div>
       )}
       <div className={'flex gap-5 w-full'}>
-        <Editor
-          editorLoaded={editorLoaded}
-          onChange={setText}
-          handleSubmit={handleSubmit}
-          value={text}
-          showTopEditor={format}
-        />
+        <div className="flex-grow">
+          <Editor
+            editorLoaded={editorLoaded}
+            onChange={setText}
+            handleSubmit={handleSubmit}
+            value={text}
+            showTopEditor={format}
+          />
+        </div>
         <div className={'flex items-center gap-5'}>
           <button
             type={'button'}

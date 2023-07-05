@@ -37,7 +37,9 @@ export class MessageService {
           {},
           { sort: { createdAt: -1 } },
         )
-        .populate(['sender', 'conversation', 'reply']),
+        .populate({ path: 'sender' })
+        .populate({ path: 'conversation' })
+        .populate({ path: 'reply', populate: { path: 'sender' } }),
       options,
       async (data) => {
         const formattedData = [];
@@ -68,13 +70,29 @@ export class MessageService {
     const messages: MessageDto[] = [];
 
     if (dto.text) {
-      const message = await this.messageModel.create({
-        text: dto.text,
-        conversation: dto.conversation,
-        sender: sub,
-        reply: dto.reply ?? null,
+      let message = null;
+      if (dto.reply) {
+        console.log(dto.reply);
+        message = await this.messageModel.create({
+          text: dto.text,
+          conversation: dto.conversation,
+          sender: sub,
+          reply: dto.reply,
+        });
+      } else {
+        message = await this.messageModel.create({
+          text: dto.text,
+          conversation: dto.conversation,
+          sender: sub,
+        });
+      }
+      await message.populate({
+        path: 'reply',
+        populate: {
+          path: 'sender',
+        },
       });
-      await message.populate(['sender', 'reply']);
+      await message.populate('sender');
       const mapped = plainToClass(MessageDto, message, {
         excludeExtraneousValues: true,
       });
@@ -83,13 +101,28 @@ export class MessageService {
 
     if (!!files.length) {
       for (const file of files) {
-        const newMessage = await this.messageModel.create({
-          file: `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
-          conversation: dto.conversation,
-          sender: sub,
-          reply: dto.reply ?? null,
+        let newMessage = null;
+        if (dto.reply) {
+          newMessage = await this.messageModel.create({
+            file: `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
+            conversation: dto.conversation,
+            sender: sub,
+            reply: dto.reply,
+          });
+        } else {
+          newMessage = await this.messageModel.create({
+            file: `${process.env.SERVER_URL}/uploads/message/${file.filename}`,
+            conversation: dto.conversation,
+            sender: sub,
+          });
+        }
+        await newMessage.populate({
+          path: 'reply',
+          populate: {
+            path: 'sender',
+          },
         });
-        await newMessage.populate(['sender', 'reply']);
+        await newMessage.populate('sender');
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });
@@ -99,13 +132,29 @@ export class MessageService {
     if (!!dto.gifs) {
       const gifsToArray = Array.isArray(dto.gifs) ? dto.gifs : [dto.gifs];
       for (const gif of gifsToArray) {
-        const newMessage = await this.messageModel.create({
-          file: gif,
-          conversation: dto.conversation,
-          sender: sub,
-          reply: dto.reply ?? null,
+        let newMessage = null;
+        if (dto.reply) {
+          newMessage = await this.messageModel.create({
+            file: gif,
+            conversation: dto.conversation,
+            sender: sub,
+            reply: dto.reply,
+          });
+        } else {
+          newMessage = await this.messageModel.create({
+            file: gif,
+            conversation: dto.conversation,
+            sender: sub,
+          });
+        }
+
+        await newMessage.populate({
+          path: 'reply',
+          populate: {
+            path: 'sender',
+          },
         });
-        await newMessage.populate(['sender', 'reply']);
+        await newMessage.populate('sender');
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });
@@ -146,7 +195,6 @@ export class MessageService {
     const messageMapped = plainToClass(MessageDto, message, {
       excludeExtraneousValues: true,
     });
-    console.log(messageMapped);
 
     this.socketService.socket
       .to((messageMapped.conversation as ConversationDto)._id.toString())
