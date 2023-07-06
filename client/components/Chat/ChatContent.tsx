@@ -12,7 +12,7 @@ interface IChatContent {
   hasNextPage?: boolean;
   isNewMessage?: boolean;
   setIsNewMessage?: (value: boolean) => void;
-  getMessageLoading: boolean;
+  getMessageLoading?: boolean;
 }
 
 type MessageGroup = MessageType & {

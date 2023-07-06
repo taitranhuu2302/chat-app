@@ -142,6 +142,7 @@ const Chat: React.FC<IChat> = () => {
           messages={messages.slice(0).reverse()}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
+          getMessageLoading={getMessageLoading}
         />
         <ChatFooter
           handleSendMessage={handleSendMessage}

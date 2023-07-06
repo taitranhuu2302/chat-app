@@ -1,10 +1,13 @@
-import React, {useContext} from 'react';
-import {AiOutlineUsergroupAdd} from 'react-icons/ai';
-import {IoClose} from 'react-icons/io5';
+import React, { useContext, useState } from 'react';
+import { AiOutlineUsergroupAdd } from 'react-icons/ai';
+import { IoClose } from 'react-icons/io5';
 import Divider from '@/components/Divider';
-import Select, {StylesConfig} from 'react-select';
-import {DarkModeContext} from '../../contexts/DarkModeProvider';
+import Select, { StylesConfig } from 'react-select';
+import { DarkModeContext } from '../../contexts/DarkModeProvider';
 import useTranslate from '@/hooks/useTranslate';
+import { useGetFriendByUser } from '@/service/UserService';
+import { AuthContext, AuthContextType } from 'contexts/AuthContext';
+import { flatMapObjectInfinite } from '@/utils/ArrayUtils';
 
 interface IModalCreateGroup {
 
@@ -17,12 +20,12 @@ const options = [
 ]
 
 const colorStyles: StylesConfig = {
-  control: (styles) => ({...styles, backgroundColor: '#36404A'}),
+  control: (styles) => ({ ...styles, backgroundColor: '#36404A' }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
     return {
       ...styles,
       backgroundColor: '#36404A',
-      ':active' : {
+      ':active': {
         ...styles[':active'],
         backgroundColor: '#303841'
       }
@@ -50,9 +53,20 @@ const colorStyles: StylesConfig = {
 
 
 const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
-  const {theme} = useContext(DarkModeContext)
+  const { theme } = useContext(DarkModeContext)
   const t = useTranslate();
-  
+  const { auth } = useContext(AuthContext) as AuthContextType;
+  const [friends, setFriends] = useState<UserType[]>([])
+  const { } = useGetFriendByUser({
+    options: {
+      onSuccess: (data: any) => {
+        setFriends(flatMapObjectInfinite(data))
+        console.log(friends);
+      }
+    },
+    id: auth?._id
+  })
+
   return <>
     <div>
       <label data-tip={"Create Group"} htmlFor='modal-create-group' className={'tooltip cursor-pointer tooltip-left'}>
@@ -64,21 +78,21 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
           <div className={'flex justify-between items-center'}>
             <h4 className={'text-lg font-semibold'}>{t.home.tab.group.createGroup.title}</h4>
             <label htmlFor='modal-create-group' className={'cursor-pointer'}>
-              <IoClose size={20}/>
+              <IoClose size={20} />
             </label>
           </div>
           <Divider />
           <form className={'flex flex-col gap-2.5 h-full'}>
             <div className={'flex flex-col gap-2.5'}>
               <label htmlFor='group-name' className={'text-md'}>{t.home.tab.group.createGroup.groupName.label}</label>
-              <input type='text' id={'group-name'} placeholder={t.home.tab.group.createGroup.groupName.hint} className={'outline-none border dark:bg-via-300 py-1.5 px-2.5 rounded'}/>
+              <input type='text' id={'group-name'} placeholder={t.home.tab.group.createGroup.groupName.hint} className={'outline-none border dark:bg-via-300 py-1.5 px-2.5 rounded'} />
             </div>
             <div className={'flex flex-col gap-2.5'}>
               <label htmlFor='group-members' className={'text-md'}>{t.home.tab.group.createGroup.groupMember.label}</label>
               <Select
                 isMulti
                 id={'group-members'}
-                options={options}
+                options={friends.map((friend) => ({ label: `${friend.firstName} ${friend.lastName}`, value: friend._id }))}
                 className={'select-custom'}
                 placeholder={t.home.tab.group.createGroup.groupMember.hint}
                 classNamePrefix="select"
@@ -89,7 +103,7 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
                 <textarea placeholder={t.home.tab.group.createGroup.groupDesc.hint} className={'outline-none border dark:bg-via-300 py-1.5 px-2.5 rounded'}></textarea>
               </div>
             </div>
-            
+
             <div className='modal-action flex-grow'>
               <label htmlFor='modal-create-group' className='btn btn-sm btn-error'>{t.home.tab.group.createGroup.closeText}</label>
               <label htmlFor='modal-create-group' className='btn btn-sm btn-primary'>{t.home.tab.group.createGroup.submitText}</label>
