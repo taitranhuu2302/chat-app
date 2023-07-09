@@ -60,11 +60,11 @@ export const useRejectRequestFriendApi = (options?: any) => {
   );
 };
 
-export const useGetFriendByUser = ({ options, id }: any) => {
+export const useGetFriendByUser = ({ options, id, limit = 10 }: {options?: any, id?: string, limit?: number}) => {
   return useInfiniteQuery(
     [API.USER.GET_FRIEND, id],
     ({ pageParam = 1 }) =>
-      axiosConfig.get(`${API.USER.GET_FRIEND}/${id}?page=${pageParam}`),
+      axiosConfig.get(`${API.USER.GET_FRIEND}/${id}?limit=${limit}&page=${pageParam}`),
     {
       enabled: !!id,
       getNextPageParam: ({ data }) => data.meta.nextPage,

@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai';
 import { IoClose } from 'react-icons/io5';
 import Divider from '@/components/Divider';
@@ -59,16 +59,28 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
   const [members, setMembers] = useState<string[]>([])
   const [groupName, setGroupName] = useState<string>("")
   const selectInputRef = useRef<any>(null);
-  useGetFriendByUser({
+  const [totalFriends, setTotalFriends] = useState(10)
+  const { data: friendData, refetch } = useGetFriendByUser({
     options: {
       onSuccess: (data: any) => {
         setFriends(flatMapObjectInfinite(data).map((item: any) => item.friend))
       }
     },
-    id: auth?._id
+    id: auth?._id,
+    limit: totalFriends
   })
   const { mutateAsync: createConversation, isLoading: createLoading } = useCreateConversation({ options: {} })
   const queryClient = useQueryClient()
+  const [isGetFriends, setIsGetFriends] = useState(false)
+
+  useEffect(() => {
+    if (!isGetFriends) {
+      const total = friendData?.pages[0].data.meta.total;
+      setTotalFriends(total)
+      refetch()
+      setIsGetFriends(true)
+    }
+  }, [friendData])
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
@@ -106,7 +118,7 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
       </label>
       <input type='checkbox' id='modal-create-group' className='modal-toggle' />
       <div className='modal'>
-        <div className='modal-box dark:bg-via-100 max-h-[500px]'>
+        <div className='modal-box dark:bg-via-100 max-h-[500px] overflow-visible'>
           <div className={'flex justify-between items-center'}>
             <h4 className={'text-lg font-semibold'}>{t.home.tab.group.createGroup.title}</h4>
             <label htmlFor='modal-create-group' className={'cursor-pointer'}>
