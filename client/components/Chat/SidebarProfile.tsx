@@ -8,10 +8,12 @@ import { AuthContext, AuthContextType } from 'contexts/AuthContext';
 
 interface ISidebarProfile {
   onClose: () => void;
+  conversation: ConversationType
 }
 
-const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose }) => {
-  const {auth} = useContext(AuthContext) as AuthContextType;
+const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose, conversation }) => {
+  const { auth } = useContext(AuthContext) as AuthContextType;
+  
   return <>
     <motion.div initial={{ x: '100%' }}
       animate={{ x: '0' }}
@@ -24,9 +26,13 @@ const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose }) => {
         </button>
       </div>
       <div>
-        <AvatarCustom />
+        <AvatarCustom src={conversation.avatar || ""} name={conversation.conversationName} />
         <Divider />
-        <UserInfo user={auth}/>
+        {
+          conversation.conversationType === "PRIVATE" && (
+            <UserInfo user={conversation.members.find((item) => item._id !== auth?._id)} />
+          )
+        }
       </div>
     </motion.div>
   </>;

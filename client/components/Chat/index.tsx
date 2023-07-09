@@ -21,7 +21,7 @@ import toast from 'react-hot-toast';
 import { useAppDispatch } from '@/redux/hooks';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
 
-interface IChat {}
+interface IChat { }
 
 const Chat: React.FC<IChat> = () => {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
@@ -150,7 +150,7 @@ const Chat: React.FC<IChat> = () => {
         />
       </motion.div>
       <AnimatePresence>
-        {isOpenSidebar && <SidebarProfile onClose={onToggleSidebar} />}
+        {isOpenSidebar && conversation && <SidebarProfile onClose={onToggleSidebar} conversation={conversation} />}
       </AnimatePresence>
     </div>
   );
