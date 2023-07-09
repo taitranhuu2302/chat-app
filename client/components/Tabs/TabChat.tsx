@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TabContainer from '@/components/Tabs/TabContainer';
 import Input from '@/components/Input';
 import { IoSearchOutline } from 'react-icons/io5';
@@ -10,12 +10,15 @@ import { useGetConversationByUser } from '@/service/ConversationService';
 import { flatMapObjectInfinite } from '@/utils/ArrayUtils';
 import moment from 'moment';
 import Skeleton from 'react-loading-skeleton';
+import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
+import { SOCKET_EVENT } from '@/constants/Socket';
 
 interface ITabChat {}
 
 const TabChat: React.FC<ITabChat> = () => {
   const t = useTranslate();
   const [conversations, setConversations] = useState<ConversationType[]>([]);
+  const { socket } = useContext(SocketContext) as SocketContextType;
   const { isLoading: isLoadingConversations } = useGetConversationByUser({
     options: {
       onSuccess: (data: any) => {
@@ -23,6 +26,16 @@ const TabChat: React.FC<ITabChat> = () => {
       },
     },
   });
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on(SOCKET_EVENT.CONVERSATION.CREATE_CONVERSATION, (data: ConversationType) => {
+      setConversations((c) => [data, ...c]);
+    });
+    return () => {
+      socket.off(SOCKET_EVENT.CONVERSATION.CREATE_CONVERSATION);
+    };
+  }, [socket]);
 
   return (
     <>
@@ -102,7 +115,9 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
         {conversation.latestMessage ? (
           conversation.latestMessage.text ? (
             <div
-              className={'text-md font-light text-light-600 dark:text-night-600 un-reset'}
+              className={
+                'text-md font-light text-light-600 dark:text-night-600 un-reset'
+              }
               dangerouslySetInnerHTML={{
                 __html: conversation.latestMessage.text,
               }}></div>

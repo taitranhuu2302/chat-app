@@ -14,11 +14,17 @@ import { SocketService } from '../socket/socket.service';
 import { RedisService } from '../redis/redis.service';
 import { SOCKET_EVENT } from '../shared/constants/socket.constant';
 import { ConversationDto } from '../conversation/dto/conversation.dto';
+import {
+  Conversation,
+  ConversationDocument,
+} from '../conversation/conversation.model';
 
 @Injectable()
 export class MessageService {
   constructor(
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    @InjectModel(Conversation.name)
+    private conversationModel: Model<ConversationDocument>,
     private socketService: SocketService,
     private redisService: RedisService,
   ) {}
@@ -30,13 +36,10 @@ export class MessageService {
   ) {
     return paginate(
       this.messageModel
-        .find(
-          {
-            conversation: id,
-          },
-          {},
-          { sort: { createdAt: -1 } },
-        )
+        .find({
+          conversation: id,
+        })
+        .sort({ createdAt: -1 })
         .populate({ path: 'sender' })
         .populate({ path: 'conversation' })
         .populate({ path: 'reply', populate: { path: 'sender' } }),
@@ -69,10 +72,15 @@ export class MessageService {
       throw new BadRequestException('Please enter content');
     const messages: MessageDto[] = [];
 
+    const conversation = await this.conversationModel.findById(
+      dto.conversation,
+    );
+
+    if (!conversation) throw new BadRequestException('Conversation not found');
+
     if (dto.text) {
       let message = null;
       if (dto.reply) {
-        console.log(dto.reply);
         message = await this.messageModel.create({
           text: dto.text,
           conversation: dto.conversation,
@@ -161,6 +169,11 @@ export class MessageService {
         messages.push(messageMapped);
       }
     }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    conversation.updatedAt = new Date();
+    await conversation.save();
 
     this.socketService.socket
       .to(dto.conversation)

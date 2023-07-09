@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai';
 import { IoClose } from 'react-icons/io5';
 import Divider from '@/components/Divider';
@@ -17,12 +17,6 @@ import { API } from '@/constants/Api';
 interface IModalCreateGroup {
 
 }
-
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
-]
 
 const colorStyles: StylesConfig = {
   control: (styles) => ({ ...styles, backgroundColor: '#36404A' }),
@@ -64,6 +58,7 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
   const [friends, setFriends] = useState<UserType[]>([])
   const [members, setMembers] = useState<string[]>([])
   const [groupName, setGroupName] = useState<string>("")
+  const selectInputRef = useRef<any>(null);
   useGetFriendByUser({
     options: {
       onSuccess: (data: any) => {
@@ -77,17 +72,16 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
-    console.log(!groupName || !!members.length);
     if (!groupName || !members.length) {
-      toast.error("Please enter all fields")
+      toast.error('Please enter all fields');
       return;
     }
 
     const payload: ConversationCreate = {
-      conversationType: "GROUP",
-      members,
-      conversationName: groupName
-    }
+      conversationType: 'GROUP',
+      members: members.map((item: any) => item.value),
+      conversationName: groupName,
+    };
 
     try {
       await createConversation(payload)
@@ -102,7 +96,7 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
   }
 
   const onChangeSelect = (selectOptions: any) => {
-    setMembers([...selectOptions.map((item: any) => item.value)])
+    setMembers([...selectOptions])
   }
 
   return <>
@@ -112,7 +106,7 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
       </label>
       <input type='checkbox' id='modal-create-group' className='modal-toggle' />
       <div className='modal'>
-        <div className='modal-box dark:bg-via-100 max-h-[500px] min-h-[400px]'>
+        <div className='modal-box dark:bg-via-100 max-h-[500px]'>
           <div className={'flex justify-between items-center'}>
             <h4 className={'text-lg font-semibold'}>{t.home.tab.group.createGroup.title}</h4>
             <label htmlFor='modal-create-group' className={'cursor-pointer'}>
@@ -132,15 +126,17 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
                 id={'group-members'}
                 options={friends.map((friend) => ({ label: `${friend.firstName} ${friend.lastName}`, value: friend._id }))}
                 className={'select-custom'}
+                value={members}
                 placeholder={t.home.tab.group.createGroup.groupMember.hint}
                 classNamePrefix="select"
                 onChange={onChangeSelect}
                 styles={theme === 'dark' ? colorStyles : {}}
+                ref={selectInputRef}
               />
-              <div className={'flex flex-col gap-2.5'}>
-                <label htmlFor='group-description' className={'text-md'}>{t.home.tab.group.createGroup.groupDesc.label}</label>
-                <textarea placeholder={t.home.tab.group.createGroup.groupDesc.hint} className={'outline-none border dark:bg-via-300 py-1.5 px-2.5 rounded'}></textarea>
-              </div>
+              {/*<div className={'flex flex-col gap-2.5'}>*/}
+              {/*  <label htmlFor='group-description' className={'text-md'}>{t.home.tab.group.createGroup.groupDesc.label}</label>*/}
+              {/*  <textarea placeholder={t.home.tab.group.createGroup.groupDesc.hint} className={'outline-none border dark:bg-via-300 py-1.5 px-2.5 rounded'}></textarea>*/}
+              {/*</div>*/}
             </div>
 
             <div className='modal-action flex-grow'>
