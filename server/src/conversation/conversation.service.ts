@@ -47,7 +47,13 @@ export class ConversationService {
   async findAll(sub: string, options: PaginationOptions) {
     return await paginate(
       this.conversationModel
-        .find({ members: sub, deletedAt: null })
+        .find(
+          { members: sub, deletedAt: null },
+          {},
+          {
+            sort: { updatedAt: -1 },
+          },
+        )
         .populate(['owner', 'members']),
       options,
       async (data) => {

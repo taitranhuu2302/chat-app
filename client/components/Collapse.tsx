@@ -16,7 +16,7 @@ const Collapse: React.FC<ICollapse> = ({ title, children, className }) => {
         <div className="collapse-title text-md font-medium bg-light dark:bg-via-300 rounded-tl rounded-tr">
           {title}
         </div>
-        <div className="collapse-content bg-white dark:bg-via-100 rounded-bl rounded-br">
+        <div className="collapse-content bg-white dark:bg-via-300 rounded-bl rounded-br">
           {children}
         </div>
       </div>

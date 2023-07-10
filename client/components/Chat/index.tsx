@@ -20,8 +20,9 @@ import { getErrorResponse } from '@/utils/ErrorUtils';
 import toast from 'react-hot-toast';
 import { useAppDispatch } from '@/redux/hooks';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
+import Portal from '../Portal';
 
-interface IChat {}
+interface IChat { }
 
 const Chat: React.FC<IChat> = () => {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
@@ -142,6 +143,7 @@ const Chat: React.FC<IChat> = () => {
           messages={messages.slice(0).reverse()}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
+          getMessageLoading={getMessageLoading}
         />
         <ChatFooter
           handleSendMessage={handleSendMessage}
@@ -149,7 +151,7 @@ const Chat: React.FC<IChat> = () => {
         />
       </motion.div>
       <AnimatePresence>
-        {isOpenSidebar && <SidebarProfile onClose={onToggleSidebar} />}
+        {isOpenSidebar && conversation && <Portal><SidebarProfile onClose={onToggleSidebar} conversation={conversation} /></Portal>}
       </AnimatePresence>
     </div>
   );

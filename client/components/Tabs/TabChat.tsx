@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import TabContainer from '@/components/Tabs/TabContainer';
 import Input from '@/components/Input';
 import { IoSearchOutline } from 'react-icons/io5';
@@ -10,19 +10,40 @@ import { useGetConversationByUser } from '@/service/ConversationService';
 import { flatMapObjectInfinite } from '@/utils/ArrayUtils';
 import moment from 'moment';
 import Skeleton from 'react-loading-skeleton';
+import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
+import { SOCKET_EVENT } from '@/constants/Socket';
+import { useInView } from 'react-intersection-observer';
 
-interface ITabChat {}
+interface ITabChat { }
 
 const TabChat: React.FC<ITabChat> = () => {
   const t = useTranslate();
+  const { ref: loadingRef, inView } = useInView()
   const [conversations, setConversations] = useState<ConversationType[]>([]);
-  const { isLoading: isLoadingConversations } = useGetConversationByUser({
+  const { socket } = useContext(SocketContext) as SocketContextType;
+  const { isLoading: isLoadingConversations, hasNextPage, fetchNextPage } = useGetConversationByUser({
     options: {
       onSuccess: (data: any) => {
         setConversations(flatMapObjectInfinite(data));
       },
     },
   });
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on(SOCKET_EVENT.CONVERSATION.CREATE_CONVERSATION, (data: ConversationType) => {
+      setConversations((c) => [data, ...c]);
+    });
+    return () => {
+      socket.off(SOCKET_EVENT.CONVERSATION.CREATE_CONVERSATION);
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage()
+    }
+  }, [inView, loadingRef])
 
   return (
     <>
@@ -46,21 +67,28 @@ const TabChat: React.FC<ITabChat> = () => {
             className={'flex flex-col h-0 flex-grow overflow-y-auto scrollbar'}>
             {isLoadingConversations
               ? Array(5)
-                  .fill(1)
-                  .map((_, index) => (
-                    <div
-                      key={index}
-                      className={'flex items-center gap-2.5 p-4'}>
-                      <Skeleton circle={true} width={45} height={45} />
-                      <div className={'flex flex-col gap-2.5'}>
-                        <Skeleton width={200} height={20} />
-                        <Skeleton width={200} height={15} />
-                      </div>
+                .fill(1)
+                .map((_, index) => (
+                  <div
+                    key={index}
+                    className={'flex items-center gap-2.5 p-4'}>
+                    <Skeleton circle={true} width={45} height={45} />
+                    <div className={'flex flex-col gap-2.5'}>
+                      <Skeleton width={200} height={20} />
+                      <Skeleton width={200} height={15} />
                     </div>
-                  ))
+                  </div>
+                ))
               : conversations.map((c) => (
-                  <TabChatItem key={c._id} conversation={c} />
-                ))}
+                <TabChatItem key={c._id} conversation={c} />
+              ))}
+            {
+              hasNextPage && (
+                <div ref={loadingRef} className='flex-center'>
+                  Loading...
+                </div>
+              )
+            }
           </div>
         </div>
       </TabContainer>
@@ -102,7 +130,9 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
         {conversation.latestMessage ? (
           conversation.latestMessage.text ? (
             <div
-              className={'text-md font-light text-light-600 dark:text-night-600 un-reset'}
+              className={
+                'text-md font-light text-light-600 dark:text-night-600 un-reset'
+              }
               dangerouslySetInnerHTML={{
                 __html: conversation.latestMessage.text,
               }}></div>
@@ -122,10 +152,10 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
         )}
       </div>
       <div className={'flex flex-col items-center gap-1'}>
-        <p className={'text-sm text-light-600 dark:text-night-600'}>
-          {moment(conversation.updatedAt).format('LT')}
+        <p className={'text-sm text-light-600 dark:text-night-600 truncate'}>
+          {moment(conversation.updatedAt).locale(router.locale === 'vi' ? 'vi' : 'en').fromNow()}
         </p>
-        <div className="badge badge-sm">5</div>
+        {/* <div className="badge badge-sm">5</div> */}
       </div>
     </div>
   );

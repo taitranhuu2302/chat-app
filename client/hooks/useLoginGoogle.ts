@@ -28,7 +28,7 @@ export const useLoginGoogle = () => {
       toast.success('Login success');
     },
     onError: (errorResponse) => {
-      console.log(errorResponse);
+      console.error(errorResponse);
     },
   });
 

@@ -3,7 +3,6 @@ import { TokenResponse } from '@react-oauth/google';
 import { useMutation, useQuery } from 'react-query';
 import axiosConfig from '../config/AxiosConfig';
 import { API } from '@/constants/Api';
-import {UseQueryOptions} from "react-query/types/react/types";
 
 export const getToken = () => ({
   accessToken: localStorage.getItem(TOKEN_KEY) || '',

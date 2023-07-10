@@ -81,7 +81,7 @@ html, body {
 }
 
 .btn-custom {
-  @apply bg-primary text-light w-full py-2 rounded-md mt-5;
+  @apply bg-primary text-light w-full py-2 rounded-md mt-5 hover:opacity-95 disabled:opacity-50;
 }
 
 

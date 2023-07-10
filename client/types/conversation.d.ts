@@ -14,3 +14,7 @@ type ConversationCreate = {
   members: string[];
   conversationType: ConversationEnum;
 };
+
+type ConversationUpdate = {
+  conversationName?: string;
+}
