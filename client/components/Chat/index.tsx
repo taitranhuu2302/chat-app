@@ -20,6 +20,7 @@ import { getErrorResponse } from '@/utils/ErrorUtils';
 import toast from 'react-hot-toast';
 import { useAppDispatch } from '@/redux/hooks';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
+import Portal from '../Portal';
 
 interface IChat { }
 
@@ -150,7 +151,7 @@ const Chat: React.FC<IChat> = () => {
         />
       </motion.div>
       <AnimatePresence>
-        {isOpenSidebar && conversation && <SidebarProfile onClose={onToggleSidebar} conversation={conversation} />}
+        {isOpenSidebar && conversation && <Portal><SidebarProfile onClose={onToggleSidebar} conversation={conversation} /></Portal>}
       </AnimatePresence>
     </div>
   );

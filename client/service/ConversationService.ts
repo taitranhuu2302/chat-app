@@ -38,3 +38,24 @@ export const useGetConversationById = ({
     }
   );
 };
+
+export const useUpdateConversationApi = ({options}: {options?: any}) => {
+  return useMutation(
+    [API.CONVERSATION.UPDATE],
+    ({id, data}: {id: string, data: ConversationUpdate}) => axiosConfig.put(`${API.CONVERSATION.UPDATE}/${id}`, data),
+    {
+      ...options
+    }
+  )
+}
+
+export const useUpdateConversationAvatarApi = () => {
+  return useMutation(
+    [API.CONVERSATION.CHANGE_AVATAR],
+    ({id, data}: {id: string, data: any}) => axiosConfig.post(`${API.CONVERSATION.CHANGE_AVATAR}/${id}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  )
+}

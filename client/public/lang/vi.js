@@ -1,5 +1,12 @@
 const language = {
   notify: "Thông báo",
+  roomInformation: "Thông tin phòng chat",
+  attachedFile: 'Tập tin đính kèm',
+  membersOfRoom: "Thành viên phòng chat",
+  changeChatName: "Đổi tên cuộc trò chuyện",
+  changeChatAvatar: "Đổi ảnh cuộc trò chuyện",
+  addNewMember: "Thêm thành viên mới",
+  fileImage: "File phương tiện",
   home: {
     tab: {
       profile: {

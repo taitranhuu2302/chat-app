@@ -63,4 +63,9 @@
     gap: 20px;
     flex-direction: column;
   }
+
+}
+
+.item {
+  @apply w-full flex items-center gap-2.5 hover:bg-slate-200 p-3 transition-all duration-150 rounded;
 }

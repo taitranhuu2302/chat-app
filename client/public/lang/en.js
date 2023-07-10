@@ -1,5 +1,12 @@
 const language = {
   notify: 'Notifications',
+  roomInformation: 'Room Information',
+  attachedFile: 'Attached file',
+  membersOfRoom: "Chat members",
+  changeChatName: "Change chat name",
+  changeChatAvatar: "Change chat avatar",
+  addNewMember: "Add new members",
+  fileImage: "File image",
   home: {
     tab: {
       profile: {
