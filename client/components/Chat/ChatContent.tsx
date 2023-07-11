@@ -40,7 +40,15 @@ const ChatContent: React.FC<IChatContent> = ({
       const message = messageReverse[i];
       const lastMessage = i > 0 ? messageReverse[i - 1] : null;
 
-      if (!lastMessage || message.sender._id !== lastMessage.sender._id) {
+      if (message.messageType === 'NOTIFY') {
+        result.push({
+          ...message,
+          isSame: false
+        })
+        continue;
+      }
+
+      if (!lastMessage || message.sender?._id !== lastMessage.sender?._id) {
         // Phần tử đầu tiên của một nhóm mới
         if (i > 0) {
           result[i - 1].isLastSame = true;
@@ -73,7 +81,7 @@ const ChatContent: React.FC<IChatContent> = ({
     if (inView) {
       fetchNextPage().then((r) => { });
     }
-  }, [inView]);
+  }, [inView, loadingRef]);
 
   const scrollToMessageReply = (message: MessageType) => {
     const item = listMessageRef.current.find(item => item.data._id === message._id)
@@ -117,7 +125,7 @@ const ChatContent: React.FC<IChatContent> = ({
               }}
               isFirst={index === messageGroup.length - 1}
               isLastSame={message.isLastSame}
-              isOwner={auth?._id === message.sender._id}
+              isOwner={auth?._id === message.sender?._id}
               message={message}
               key={message._id}
               isSameOwner={message.isSame}

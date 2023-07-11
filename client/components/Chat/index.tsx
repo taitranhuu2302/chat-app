@@ -62,14 +62,15 @@ const Chat: React.FC<IChat> = () => {
     if (!socket) return;
 
     socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
-      if (data[0].conversation._id === id) {
+      const conversationId = typeof data[0].conversation === 'string' ? data[0].conversation : data[0].conversation._id
+      if (conversationId === id) {
         setMessages((e) => [...data, ...e]);
         setIsNewMessage(true)
       }
     });
 
     socket.on(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL, (data: MessageType) => {
-      if (data.conversation._id === id) {
+      if ((data.conversation as ConversationType)._id === id) {
         setMessages((m) => m.filter((message) => message._id !== data._id));
       }
     });

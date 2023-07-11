@@ -62,7 +62,7 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(({
       return (
         <picture>
           <img
-            data-fancybox={message.conversation._id}
+            data-fancybox={(message.conversation as ConversationType)._id}
             className={
               'max-w-[200px] border cursor-pointer rounded-lg object-cover'
             }
@@ -125,91 +125,96 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(({
 
   return (
     <>
-      <div ref={ref} className={twMerge(`chat ${isOwner ? 'chat-end' : 'chat-start'}`)}>
-        <div className="chat-image avatar">
-          <Avatar
-            size={'40px'}
-            src={message.sender.avatar || ''}
-            round
-            name={`${message.sender.firstName} ${message.sender.lastName}`}
-          />
-        </div>
-        {isLastSame && (
-          <div
-            className={`chat-header mb-1 gap-2.5 flex items-center ${isOwner ? 'flex-row-reverse' : ''
-              }`}>
-            <span
-              className={
-                'font-semibold'
-              }>{`${message.sender.firstName} ${message.sender.lastName}`}</span>
-          </div>
-        )}
-        <div
-          className={twMerge(
-            `chat-bubble ${isOwner
-              ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
-              : 'bg-primary text-light'
-            } relative max-w-[50%]`,
-            message.file && 'bg-transparent p-0',
-            messageReplyActive?._id === message._id && 'ring-offset-1 ring'
-          )}>
-          {
-            message.reply && (
-              <>
-                <div onClick={() => scrollToMessageReply && scrollToMessageReply(message.reply!)} className={`${styles.messageReply} cursor-pointer m-1 ${isOwner ? `${styles.isOwner}` : ''}`}>
-                  <p className={`font-semibold`}>{message.reply?.sender.firstName} {message.reply?.sender.lastName}</p>
-                  {
-                    message.reply?.text ? (
-                      <div className={`text-sm line-clamp-1`} dangerouslySetInnerHTML={{ __html: message.reply?.text }}></div>
-                    ) : (
-                      <p className={`text-sm line-clamp-1`}>Sent a file</p>
-                    )
-                  }
-                </div>
-              </>
-            )
-          }
-          {message.text && (
-            <div
-              className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
-                }`}
-              data-tip={moment(message.updatedAt).locale('en').format('LLL')}
-              dangerouslySetInnerHTML={{ __html: message.text }}
-            />
-          )}
-          {message.file && (
-            <div
-              className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
-                }`}
-              data-tip={moment(message.updatedAt).locale('en').format('LLL')}>
-              {renderFile}
+      {message.messageType === "NOTIFY" && (
+        <p className='flex-center text-sm text-gray-400'>{message.text}</p>
+      )}
+      {
+        message.messageType === "DEFAULT" && (
+          <div ref={ref} className={twMerge(`chat ${isOwner ? 'chat-end' : 'chat-start'}`)}>
+            <div className="chat-image avatar">
+              <Avatar
+                size={'40px'}
+                src={message.sender?.avatar || ''}
+                round
+                name={`${message.sender?.firstName} ${message.sender?.lastName}`}
+              />
             </div>
-          )}
-          <div
-            className={`absolute dropdown ${isFirst ? 'dropdown-bottom' : 'dropdown-top'
-              } ${isOwner
-                ? 'left-[-15px] dropdown-left'
-                : 'right-[-15px] dropdown-right'
-              } top-0`}>
-            <button tabIndex={0}>
-              <BsThreeDotsVertical size={15} className={'text-primary'} />
-            </button>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52 z-10">
-              <li>
-                <a
-                  onClick={() => {
-                    dispatch(setReplyMessage(message));
-                  }}
+            {isLastSame && (
+              <div
+                className={`chat-header mb-1 gap-2.5 flex items-center ${isOwner ? 'flex-row-reverse' : ''
+                  }`}>
+                <span
                   className={
-                    'flex items-center justify-between text-light-1100 dark:text-night-1100'
-                  }>
-                  <span>Reply</span>
-                  <BsReplyFill size={20} />
-                </a>
-              </li>
-              {/* {isOwner && (
+                    'font-semibold'
+                  }>{`${message.sender?.firstName} ${message.sender?.lastName}`}</span>
+              </div>
+            )}
+            <div
+              className={twMerge(
+                `chat-bubble ${isOwner
+                  ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
+                  : 'bg-primary text-light'
+                } relative max-w-[50%]`,
+                message.file && 'bg-transparent p-0',
+                messageReplyActive?._id === message._id && 'ring-offset-1 ring'
+              )}>
+              {
+                message.reply && (
+                  <>
+                    <div onClick={() => scrollToMessageReply && scrollToMessageReply(message.reply!)} className={`${styles.messageReply} cursor-pointer m-1 ${isOwner ? `${styles.isOwner}` : ''}`}>
+                      <p className={`font-semibold`}>{message.reply?.sender?.firstName} {message.reply?.sender?.lastName}</p>
+                      {
+                        message.reply?.text ? (
+                          <div className={`text-sm line-clamp-1`} dangerouslySetInnerHTML={{ __html: message.reply?.text }}></div>
+                        ) : (
+                          <p className={`text-sm line-clamp-1`}>Sent a file</p>
+                        )
+                      }
+                    </div>
+                  </>
+                )
+              }
+              {message.text && (
+                <div
+                  className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
+                    }`}
+                  data-tip={moment(message.updatedAt).locale('en').format('LLL')}
+                  dangerouslySetInnerHTML={{ __html: message.text }}
+                />
+              )}
+              {message.file && (
+                <div
+                  className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
+                    }`}
+                  data-tip={moment(message.updatedAt).locale('en').format('LLL')}>
+                  {renderFile}
+                </div>
+              )}
+              <div
+                className={`absolute dropdown ${isFirst ? 'dropdown-bottom' : 'dropdown-top'
+                  } ${isOwner
+                    ? 'left-[-15px] dropdown-left'
+                    : 'right-[-15px] dropdown-right'
+                  } top-0`}>
+                <button tabIndex={0}>
+                  <BsThreeDotsVertical size={15} className={'text-primary'} />
+                </button>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52 z-10">
+                  <li>
+                    <a
+                      onClick={() => {
+                        dispatch(setReplyMessage(message));
+                      }}
+                      className={
+                        'flex items-center justify-between text-light-1100 dark:text-night-1100'
+                      }>
+                      <span>Reply</span>
+                      <BsReplyFill size={20} />
+                    </a>
+                  </li>
+                  {/* {isOwner && (
                 <li>
                   <a
                     onClick={() => setOpenDelete(true)}
@@ -221,10 +226,12 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(({
                   </a>
                 </li>
               )} */}
-            </ul>
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        )
+      }
       <ConfirmDelete
         isOpen={openDelete}
         title={t.confirmDelete}

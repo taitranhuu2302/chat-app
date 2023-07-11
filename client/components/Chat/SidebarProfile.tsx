@@ -108,8 +108,17 @@ const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose, conversation }) =>
                     {
                       conversation.members.map((m) => (
                         <li key={`profile-${conversation._id}-${m._id}`} className={`${styles.item} dark:hover:bg-slate-500`}>
-                          <Avatar src={m.avatar || ""} name={`${m.firstName} ${m.lastName}`} size={'40px'}/>
-                          <span>{m.firstName} {m.lastName}</span>
+                          <div className='flex gap-2.5 items-center'>
+                            <Avatar src={m.avatar || ""} className='rounded' name={`${m.firstName} ${m.lastName}`} size={'40px'} />
+                            <span>{m.firstName} {m.lastName}</span>
+                            <div className="dropdown dropdown-end">
+                              <label tabIndex={0} className="btn m-1">Click</label>
+                              <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                                <li><a>Item 1</a></li>
+                                <li><a>Item 2</a></li>
+                              </ul>
+                            </div>
+                          </div>
                         </li>
                       ))
                     }

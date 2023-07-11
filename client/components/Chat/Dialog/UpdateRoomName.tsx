@@ -16,7 +16,7 @@ interface IProps {
 
 const UpdateRoomName: React.FC<IProps> = ({ open, onClose, conversation }) => {
   const t = useTranslate()
-  const [chatName, setChatName] = useState("")
+  const [chatName, setChatName] = useState(conversation.conversationName)
   const { mutateAsync, isLoading } = useUpdateConversationApi({})
   const queryClient = useQueryClient()
 

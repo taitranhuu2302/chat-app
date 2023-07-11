@@ -122,6 +122,7 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
         src={conversation.avatar}
         name={conversation.conversationName}
         size={'40px'}
+        className='min-w-[40px]'
       />
       <div className={'flex flex-col flex-grow truncate'}>
         <p className={'text-md font-semibold'}>
