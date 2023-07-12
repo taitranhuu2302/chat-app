@@ -31,6 +31,7 @@ export const API = {
   CONVERSATION: {
     INDEX: `${PREFIX}/conversation`,
     FIND_ALL_BY_USER: `find-all-by-user`,
+    FIND_ALL_FILE: `find-all-file/:id`,
     CREATE: `create`,
     UPDATE: `update/:id`,
     FIND_BY_ID: `get/:id`,

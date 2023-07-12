@@ -1,4 +1,6 @@
 const language = {
+  newMember: "New member",
+  addNewMember: "Add new member",
   notify: 'Notifications',
   roomInformation: 'Room Information',
   attachedFile: 'Attached file',

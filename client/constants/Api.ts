@@ -33,6 +33,7 @@ export const API = {
     CHANGE_AVATAR: `/conversation/change-avatar`, // /conversation/change-avatar/:id
     ADD_MEMBER: `/conversation/add-member`,
     REMOVE_MEMBER: `/conversation/remove-member`,
+    FIND_ALL_FILE: `/conversation/find-all-file`, // /conversation/find-all-file/:id
   },
   MESSAGE: {
     INDEX: `/message`,

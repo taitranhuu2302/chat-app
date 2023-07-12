@@ -13,13 +13,16 @@ import { BiImageAdd } from 'react-icons/bi';
 import { IoAddCircleOutline } from 'react-icons/io5';
 import UpdateRoomName from './Dialog/UpdateRoomName';
 import { toast } from 'react-hot-toast';
-import { useUpdateConversationAvatarApi } from '@/service/ConversationService';
+import { useCreateConversation, useUpdateConversationAvatarApi } from '@/service/ConversationService';
 import { useAppDispatch } from '@/redux/hooks';
 import { onPageLoading } from '@/redux/features/PageLoadingSlice';
 import { getErrorResponse } from '@/utils/ErrorUtils';
 import { useQueryClient } from 'react-query';
 import { API } from '@/constants/Api';
 import Avatar from 'react-avatar';
+import { BsThreeDots } from 'react-icons/bs';
+import AddNewMember from './Dialog/AddNewMember';
+import { useRouter } from 'next/router';
 
 
 interface ISidebarProfile {
@@ -30,6 +33,7 @@ interface ISidebarProfile {
 const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose, conversation }) => {
   const { auth } = useContext(AuthContext) as AuthContextType;
   const [isEditChatName, setIsEditChatName] = useState(false)
+  const [isAddNewMember, setIsAddNewMember] = useState(false)
   const t: any = useTranslate()
   const dispatch = useAppDispatch()
   const { mutateAsync: changeRoomAvatar, isLoading: isLoadingChangeRoomAvatar } = useUpdateConversationAvatarApi()
@@ -107,24 +111,14 @@ const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose, conversation }) =>
                   <ul>
                     {
                       conversation.members.map((m) => (
-                        <li key={`profile-${conversation._id}-${m._id}`} className={`${styles.item} dark:hover:bg-slate-500`}>
-                          <div className='flex gap-2.5 items-center'>
-                            <Avatar src={m.avatar || ""} className='rounded' name={`${m.firstName} ${m.lastName}`} size={'40px'} />
-                            <span>{m.firstName} {m.lastName}</span>
-                            <div className="dropdown dropdown-end">
-                              <label tabIndex={0} className="btn m-1">Click</label>
-                              <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                                <li><a>Item 1</a></li>
-                                <li><a>Item 2</a></li>
-                              </ul>
-                            </div>
-                          </div>
-                        </li>
+                        <MemberItem key={`profile-${conversation._id}-${m._id}`} member={m} callback={onClose}/>
                       ))
                     }
-                    <li className={`${styles.item} cursor-pointer dark:hover:bg-slate-500`}>
-                      <IoAddCircleOutline size={25} />
-                      <span>{t.addNewMember}</span>
+                    <li onClick={() => setIsAddNewMember(true)} className={`${styles.item} cursor-pointer dark:hover:bg-slate-500`}>
+                      <a className='flex items-center gap-2.5'>
+                        <IoAddCircleOutline size={25} />
+                        <span>{t.addNewMember}</span>
+                      </a>
                     </li>
                   </ul>
                 </Collapse>
@@ -145,7 +139,60 @@ const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose, conversation }) =>
       </motion.div>
     </div>
     <UpdateRoomName conversation={conversation} open={isEditChatName} onClose={() => setIsEditChatName(false)} />
+    <AddNewMember open={isAddNewMember} conversation={conversation} onClose={() => setIsAddNewMember(false)} />
   </>;
 };
+
+interface IMemberItem {
+  member: UserType;
+  callback?: () => void;
+}
+
+const MemberItem: React.FC<IMemberItem> = ({ member, callback }) => {
+  const { mutateAsync: createConversation, isLoading: isLoadingCreate } = useCreateConversation({});
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+
+  useEffect(() => {
+    dispatch(onPageLoading(isLoadingCreate));
+  }, [isLoadingCreate]);
+
+  const handleCreate = async (friendId: string) => {
+    try {
+      const { data } = await createConversation({
+        members: [friendId],
+        conversationType: 'PRIVATE',
+      });
+      callback && callback()
+      await router.push({
+        pathname: `/rooms/[id]`,
+        query: {
+          ...router.query,
+          id: data._id,
+        },
+      });
+    } catch (e: any) {
+      console.error(e.message);
+    }
+  };
+
+  return (
+    <li className={`${styles.item} dark:hover:bg-slate-500`}>
+      <div className='flex gap-2.5 items-center'>
+        <Avatar src={member.avatar || ""} className='rounded' name={`${member.firstName} ${member.lastName}`} size={'40px'} />
+        <span>{member.firstName} {member.lastName}</span>
+      </div>
+      <div className="dropdown dropdown-end">
+        <label tabIndex={0} className="cursor-pointer">
+          <BsThreeDots />
+        </label>
+        <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+          <li onClick={() => handleCreate(member._id)}><a>Chat</a></li>
+          <li><a>Remove</a></li>
+        </ul>
+      </div>
+    </li>
+  )
+}
 
 export default SidebarProfile;

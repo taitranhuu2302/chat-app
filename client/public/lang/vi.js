@@ -1,4 +1,6 @@
 const language = {
+  newMember: "Thành viên mới",
+  addNewMember: "Thêm thành viên mới",
   notify: "Thông báo",
   roomInformation: "Thông tin phòng chat",
   attachedFile: 'Tập tin đính kèm',

@@ -52,6 +52,11 @@ export class ConversationController {
     return this.conversationService.update(sub, id, dto);
   }
 
+  @Get(API.CONVERSATION.FIND_ALL_FILE)
+  async getAllFile(@GetUser() {sub}, @Param('id') id: string) {
+    return this.conversationService.getAllFile(sub, id)
+  }
+
   @Get(API.CONVERSATION.FIND_BY_ID)
   async findById(@GetUser() { sub }, @Param('id') id: string) {
     return this.conversationService.findById(sub, id);

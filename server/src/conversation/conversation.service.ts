@@ -44,6 +44,13 @@ export class ConversationService {
     private redisService: RedisService,
   ) {}
 
+  async getAllFile(sub: string, conversationId: string) {
+    return await this.messageModel.find({
+      text: null,
+      conversation: conversationId,
+    })
+  }
+
   async findAll(sub: string, options: PaginationOptions) {
     return await paginate(
       this.conversationModel
@@ -105,6 +112,7 @@ export class ConversationService {
           { members: { $all: [sub, friendId] } },
           { members: { $all: [friendId, sub] } },
         ],
+        $and: [{ conversationType: ConversationType.PRIVATE }],
       });
 
       if (checkConversation) {
@@ -145,7 +153,7 @@ export class ConversationService {
     conversationId: string,
     dto: ConversationUpdateDto,
   ) {
-    const currentUser = await this.userModel.findById(sub)
+    const currentUser = await this.userModel.findById(sub);
     const conversation = await this.conversationModel.findOne({
       _id: conversationId,
       members: sub,
@@ -195,8 +203,8 @@ export class ConversationService {
     return mapped;
   }
 
-  async changeAvatar(sub:string, id: string, file: Express.Multer.File) {
-    const currentUser = await this.userModel.findById(sub)
+  async changeAvatar(sub: string, id: string, file: Express.Multer.File) {
+    const currentUser = await this.userModel.findById(sub);
     if (!file) {
       throw new BadRequestException('No avatar files provided');
     }
