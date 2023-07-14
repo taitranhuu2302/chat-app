@@ -1,29 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styles from '@/styles/components/chat.module.scss';
-import { IoIosAttach } from 'react-icons/io';
-import { HiOutlineEmojiHappy } from 'react-icons/hi';
-import { MdSend } from 'react-icons/md';
 import useTranslate from '@/hooks/useTranslate';
-import Editor from '../Editor';
-import { IoClose, IoText } from 'react-icons/io5';
-import { useRouter } from 'next/router';
+import { setReplyMessage } from '@/redux/features/MessageSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import styles from '@/styles/components/chat.module.scss';
+import { ALLOWED_TYPES, getFileType } from '@/utils/FileUtils';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
-import { useOnClickOutside } from 'usehooks-ts';
-import { BsFillFileTextFill } from 'react-icons/bs';
-import { ALLOWED_TYPES, getFileType } from '@/utils/FileUtils';
 import GifPicker from 'gif-picker-react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useRef, useState } from 'react';
+import { BsFillFileTextFill } from 'react-icons/bs';
+import { HiOutlineEmojiHappy } from 'react-icons/hi';
 import { HiGif } from 'react-icons/hi2';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { setReplyMessage } from '@/redux/features/MessageSlice';
+import { IoIosAttach } from 'react-icons/io';
+import { IoClose, IoText } from 'react-icons/io5';
+import { MdSend } from 'react-icons/md';
+import { useOnClickOutside } from 'usehooks-ts';
+import Editor from '../Editor';
 
 interface IChatFooter {
   handleSendMessage: (payload: MessageCreateType) => void;
   isLoadingSendMessage: boolean;
+  onTextChange: (text: string) => void;
 }
 
 const ChatFooter: React.FC<IChatFooter> = ({
   handleSendMessage,
+  onTextChange,
   isLoadingSendMessage,
 }) => {
   const t: any = useTranslate();
@@ -182,7 +184,10 @@ const ChatFooter: React.FC<IChatFooter> = ({
         <div className="flex-grow">
           <Editor
             editorLoaded={editorLoaded}
-            onChange={setText}
+            onChange={(text) => {
+              setText(text)
+              onTextChange(text)
+            }}
             handleSubmit={handleSubmit}
             value={text}
             showTopEditor={format}

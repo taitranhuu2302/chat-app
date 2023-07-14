@@ -26,6 +26,7 @@ import { getErrorResponse } from '@/utils/ErrorUtils';
 import toast from 'react-hot-toast';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
 import styles from '@/styles/components/chat.module.scss';
+import VideoPlayer from './VideoPlayer';
 
 interface IMessage {
   isOwner?: boolean;
@@ -95,7 +96,7 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(({
               window.open(message.file, '_blank');
             }}
             className={
-              'gap-2.5 flex cursor-pointer items-center rounded w-fit max-w-[200px] bg-gray-300 p-3 overflow-hidden relative'
+              twMerge('gap-2.5 flex cursor-pointer dark:bg-gray-700 items-center rounded w-fit max-w-[200px] bg-gray-300 p-3 overflow-hidden relative', !isOwner && 'text-black')
             }>
             <div>
               <BsFillFileTextFill size={30} />
@@ -215,139 +216,38 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(({
                     </a>
                   </li>
                   {/* {isOwner && (
-                <li>
-                  <a
-                    onClick={() => setOpenDelete(true)}
-                    className={
-                      'flex items-center justify-between text-light-1100 dark:text-night-1100'
-                    }>
-                    <span>Delete</span>
-                    <MdOutlineDelete size={22} />
-                  </a>
-                </li>
-              )} */}
+                    <li>
+                      <a
+                        onClick={() => setOpenDelete(true)}
+                        className={
+                          'flex items-center justify-between text-light-1100 dark:text-night-1100'
+                        }>
+                        <span>Delete</span>
+                        <MdOutlineDelete size={22} />
+                      </a>
+                    </li>
+                  )} */}
                 </ul>
               </div>
             </div>
           </div>
         )
       }
-      <ConfirmDelete
-        isOpen={openDelete}
-        title={t.confirmDelete}
-        message={t.descDeleteMessage}
-        onClose={() => setOpenDelete(false)}
-        onConfirm={handleDeleteMessage}
-      />
+      {
+        openDelete && (
+          <ConfirmDelete
+            isOpen={openDelete}
+            title={t.confirmDelete}
+            message={t.descDeleteMessage}
+            onClose={() => setOpenDelete(false)}
+            onConfirm={handleDeleteMessage}
+          />
+        )
+      }
     </>
   );
 })
 
 Message.displayName = "Message"
 
-const VideoPlayer = ({ src }: { src: string }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const togglePlay = () => {
-    const videoElement = videoRef.current;
-
-    if (videoElement && !isFullscreen) {
-      if (videoElement.paused) {
-        videoElement.play();
-      } else {
-        videoElement.pause();
-      }
-
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const enterFullscreen = () => {
-    const videoElement = videoRef.current;
-
-    if (videoElement) {
-      if (videoElement.requestFullscreen) {
-        videoElement.requestFullscreen();
-        // @ts-ignore
-      } else if (videoElement.mozRequestFullScreen) {
-        // @ts-ignore
-        videoElement.mozRequestFullScreen();
-        // @ts-ignore
-      } else if (videoElement.webkitRequestFullscreen) {
-        // @ts-ignore
-        videoElement.webkitRequestFullscreen();
-        // @ts-ignore
-      } else if (videoElement.msRequestFullscreen) {
-        // @ts-ignore
-        videoElement.msRequestFullscreen();
-      }
-
-      setIsFullscreen(true);
-    }
-  };
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      const fullscreenElement =
-        document.fullscreenElement ||
-        // @ts-ignore
-        document.mozFullScreenElement ||
-        // @ts-ignore
-        document.webkitFullscreenElement ||
-        // @ts-ignore
-        document.msFullscreenElement;
-
-      setIsFullscreen(!!fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('msfullscreenchange', handleFullscreenChange);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener(
-        'mozfullscreenchange',
-        handleFullscreenChange
-      );
-      document.removeEventListener(
-        'webkitfullscreenchange',
-        handleFullscreenChange
-      );
-      document.removeEventListener(
-        'msfullscreenchange',
-        handleFullscreenChange
-      );
-    };
-  }, []);
-
-  const handleDoubleClick = () => {
-    enterFullscreen();
-  };
-
-  return (
-    <div className="relative" onDoubleClick={handleDoubleClick}>
-      <video
-        ref={videoRef}
-        src={src}
-        className="rounded-lg"
-        autoPlay={false}
-        onClick={togglePlay}
-        onPlay={() => {
-          setIsPlaying(true);
-        }}
-        onPause={() => {
-          setIsPlaying(false);
-        }}></video>
-      {!isPlaying && (
-        <div className="position-center">
-          <FaPlay color="white" size={30} onClick={togglePlay} />
-        </div>
-      )}
-    </div>
-  );
-};
 export default Message;

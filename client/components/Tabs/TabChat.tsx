@@ -13,6 +13,8 @@ import Skeleton from 'react-loading-skeleton';
 import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
 import { useInView } from 'react-intersection-observer';
+import { AuthContext, AuthContextType } from 'contexts/AuthContext';
+import { twMerge } from 'tailwind-merge';
 
 interface ITabChat { }
 
@@ -102,6 +104,26 @@ type TabChatItemType = {
 
 const TabChatItem = ({ conversation }: TabChatItemType) => {
   const router = useRouter();
+  const { query: { id } } = router;
+  const { socket } = useContext(SocketContext) as SocketContextType
+  const [newMessage, setNewMessage] = useState<MessageType | null>(null)
+  const [messageCount, setMessageCount] = useState<number>(0)
+  const { auth } = useContext(AuthContext) as AuthContextType;
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
+      const conversationId = typeof data[0].conversation === 'string' ? data[0].conversation : data[0].conversation._id
+
+      if (conversationId === conversation._id) {
+        setNewMessage(data[data.length - 1])
+        if (auth?._id !== data[data.length - 1].sender._id && conversationId !== id) {
+          setMessageCount(messageCount + 1)
+        }
+      }
+    });
+  }, [socket, conversation._id, messageCount, auth, id])
 
   return (
     <div
@@ -113,9 +135,13 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
             id: conversation._id,
           },
         });
+        setMessageCount(0)
       }}
       className={
-        'flex items-center gap-2.5 cursor-pointer dark:hover:bg-via-300 hover:bg-via-500 p-4 transition-all duration-500'
+        twMerge(
+          'flex items-center gap-2.5 cursor-pointer rounded dark:hover:bg-via-300 hover:bg-via-500 p-4 transition-all duration-500',
+          conversation._id === id && 'bg-via-500 dark:bg-via-300'
+        )
       }>
       <Avatar
         round
@@ -128,14 +154,14 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
         <p className={'text-md font-semibold'}>
           {conversation.conversationName}
         </p>
-        {conversation.latestMessage ? (
-          conversation.latestMessage.text ? (
+        {newMessage ? (
+          newMessage.text ? (
             <div
               className={
-                'text-md font-light text-light-600 dark:text-night-600 un-reset'
+                twMerge('text-md font-light text-light-600 dark:text-night-600 un-reset', !!messageCount && 'font-bold text-black')
               }
               dangerouslySetInnerHTML={{
-                __html: conversation.latestMessage.text,
+                __html: newMessage.text,
               }}></div>
           ) : (
             <p
@@ -146,17 +172,38 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
             </p>
           )
         ) : (
-          <p
-            className={'text-sm font-light text-light-600 dark:text-night-600'}>
-            There are no messages yet
-          </p>
+          conversation.latestMessage ? (
+            conversation.latestMessage.text ? (
+              <div
+                className={
+                  'text-md text-light-600 dark:text-night-600 un-reset'
+                }
+                dangerouslySetInnerHTML={{
+                  __html: conversation.latestMessage.text,
+                }}></div>
+            ) : (
+              <p
+                className={
+                  'text-sm font-light text-light-600 dark:text-night-600'
+                }>
+                Sent a file
+              </p>
+            )
+          ) : (
+            <p
+              className={'text-sm font-light text-light-600 dark:text-night-600'}>
+              There are no messages yet
+            </p>
+          )
         )}
       </div>
       <div className={'flex flex-col items-center gap-1'}>
         <p className={'text-sm text-light-600 dark:text-night-600 truncate'}>
-          {moment(conversation.updatedAt).locale(router.locale === 'vi' ? 'vi' : 'en').fromNow()}
+          {newMessage ? moment(newMessage.createdAt).locale(router.locale === 'vi' ? 'vi' : 'en').fromNow() : (
+            moment(conversation.updatedAt).locale(router.locale === 'vi' ? 'vi' : 'en').fromNow()
+          )}
         </p>
-        {/* <div className="badge badge-sm">5</div> */}
+        {!!messageCount && <div className="badge badge-sm badge-error">{messageCount}</div>}
       </div>
     </div>
   );
