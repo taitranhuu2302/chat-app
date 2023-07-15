@@ -119,13 +119,17 @@ const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose, conversation }) =>
                 <Collapse title={t.roomInformation} className='border mb-5 rounded dark:border-night-400'>
                   <ul>
                     <li onClick={() => setIsEditChatName(true)} className={`${styles.item} dark:hover:bg-slate-500 cursor-pointer`}>
-                      <AiFillEdit size={22} />
-                      <span>{t.changeChatName}</span>
+                      <div className='flex items-center gap-2.5'>
+                        <AiFillEdit size={22} />
+                        <span>{t.changeChatName}</span>
+                      </div>
                     </li>
                     <label htmlFor='room-avatar' className={`${styles.item} dark:hover:bg-slate-500 cursor-pointer`}>
-                      <BiImageAdd size={25} />
-                      <span>{t.changeChatAvatar}</span>
-                      <input hidden type="file" id="room-avatar" onChange={handleChangeAvatar} />
+                      <div className='flex items-center gap-2.5'>
+                        <BiImageAdd size={25} />
+                        <span>{t.changeChatAvatar}</span>
+                        <input hidden type="file" id="room-avatar" onChange={handleChangeAvatar} />
+                      </div>
                     </label>
                   </ul>
                 </Collapse>
@@ -151,6 +155,11 @@ const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose, conversation }) =>
             <Fancybox>
               <ul className='grid grid-cols-2 gap-2.5'>
                 {
+                  !media.length && <li className='col-span-2 text-center text-gray-500 dark:text-slate-400 text-sm'>
+                    No Media Found
+                  </li>
+                }
+                {
                   media.map((m) => {
                     if (getFileType(m.file) === 'video') {
                       return (
@@ -173,6 +182,11 @@ const SidebarProfile: React.FC<ISidebarProfile> = ({ onClose, conversation }) =>
           </Collapse>
           <Collapse title={t.attachedFile} className='border mb-5 rounded dark:border-night-400'>
             <ul>
+              {
+                !docs.length && <li className='col-span-2 text-center text-gray-500 dark:text-slate-400 text-sm'>
+                  No Docs Found
+                </li>
+              }
               {
                 docs.map((item) => {
                   const fileSplit = item.file.split('/');

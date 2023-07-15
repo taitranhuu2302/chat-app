@@ -23,7 +23,6 @@ const MainLayout: React.FC<IMainLayout> = ({ children, isShowTab = true }) => {
         {/* End Tab */}
         {children}
         <ModalCallVideo />
-        <ModalCalledVideo />
         <ModalSearchUser />
       </div>
     </>
