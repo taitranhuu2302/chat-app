@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styles from '@/styles/components/chat.module.scss';
 
 import ChatHeader from '@/components/Chat/ChatHeader';
@@ -23,6 +23,9 @@ import { setReplyMessage } from '@/redux/features/MessageSlice';
 import Portal from '../Portal';
 import { debounce } from 'lodash';
 import { AuthContext, AuthContextType } from 'contexts/AuthContext';
+import dynamic from 'next/dynamic';
+
+const ModalCallVideo = dynamic(() => import('@/components/Modals/ModalCallVideo'), { ssr: false })
 
 interface IChat { }
 
@@ -51,6 +54,9 @@ const Chat: React.FC<IChat> = () => {
   const { mutateAsync: sendMessage, isLoading: isLoadingSendMessage } =
     useSendMessageApi();
   const { socket } = useContext(SocketContext) as SocketContextType;
+  const userOther = useMemo(() => {
+    return conversation?.members.find(u => u._id !== auth?._id);
+  }, [auth, conversation])
 
   const { hasNextPage, fetchNextPage, isLoading: getMessageLoading } = useGetMessageByConversationApi({
     conversationId: id,
@@ -195,6 +201,9 @@ const Chat: React.FC<IChat> = () => {
       <AnimatePresence>
         {isOpenSidebar && conversation && <Portal><SidebarProfile onClose={onToggleSidebar} conversation={conversation} /></Portal>}
       </AnimatePresence>
+      {
+        userOther && <ModalCallVideo user={userOther} />
+      }
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TabContainer from '@/components/Tabs/TabContainer';
 import Input from '@/components/Input';
 import { IoSearchOutline } from 'react-icons/io5';
@@ -105,9 +105,9 @@ type TabChatItemType = {
 const TabChatItem = ({ conversation }: TabChatItemType) => {
   const router = useRouter();
   const { query: { id } } = router;
-  const { socket } = useContext(SocketContext) as SocketContextType
   const [newMessage, setNewMessage] = useState<MessageType | null>(null)
   const [messageCount, setMessageCount] = useState<number>(0)
+  const { socket } = useContext(SocketContext) as SocketContextType
   const { auth } = useContext(AuthContext) as AuthContextType;
 
   useEffect(() => {

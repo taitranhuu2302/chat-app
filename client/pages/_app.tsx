@@ -13,6 +13,9 @@ import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import AuthProvider from '../contexts/AuthContext';
 import SocketProvider from "../contexts/SocketContext";
+import dynamic from 'next/dynamic';
+
+const PeerProvider = dynamic(() => import("contexts/PeerContext"), { ssr: false })
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,7 +39,9 @@ export default function App({ Component, pageProps }: AppProps) {
               <AuthProvider>
                 <DarkModeProvider>
                   <SocketProvider>
-                    <Component {...pageProps} />
+                    <PeerProvider>
+                      <Component {...pageProps} />
+                    </PeerProvider>
                   </SocketProvider>
                 </DarkModeProvider>
               </AuthProvider>

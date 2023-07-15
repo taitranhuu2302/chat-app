@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styles from '@/styles/layouts/main-layout.module.scss';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,6 +16,8 @@ import useTranslate from '@/hooks/useTranslate';
 import Divider from '@/components/Divider';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
 import { useAppSelector } from "@/redux/hooks";
+import { SocketContext, SocketContextType } from 'contexts/SocketContext';
+import { SOCKET_EVENT } from '@/constants/Socket';
 
 interface ISidebar { }
 
@@ -28,6 +30,8 @@ const Sidebar: React.FC<ISidebar> = () => {
   const t = useTranslate();
   const { removeAuth, auth } = useContext(AuthContext) as AuthContextType;
   const { countRequestFriend } = useAppSelector(state => state.notify)
+  const { socket } = useContext(SocketContext) as SocketContextType
+  const [chatCount, setChatCount] = useState(0);
 
   const onChangeLang = async (lang: string) => {
     await router.push(router.asPath, router.asPath, {
@@ -40,6 +44,17 @@ const Sidebar: React.FC<ISidebar> = () => {
     removeAuth();
     await router.push('/auth');
   };
+
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
+      if (data[0].sender._id !== auth?._id) {
+        setChatCount(chatCount + 1)
+      }
+    });
+  }, [socket, chatCount, auth])
 
   return (
     <>
@@ -70,7 +85,11 @@ const Sidebar: React.FC<ISidebar> = () => {
           <SidebarItemLink
             tabText={'chat'}
             isActive={tab === 'chat'}
+            indicatorCount={chatCount}
             tooltip={t.home.sidebar.chat}
+            onCallback={() => {
+              setChatCount(0)
+            }}
             icon={
               <TbMessageCircle2
                 className={tab === 'chat' ? 'text-primary' : ''}
@@ -204,6 +223,7 @@ type SidebarItemLinkType = {
   tabText?: string;
   path?: string;
   indicatorCount?: number;
+  onCallback?: () => void;
 };
 
 const SidebarItemLink = ({
@@ -213,14 +233,15 @@ const SidebarItemLink = ({
   tabText,
   path,
   indicatorCount,
+  onCallback
 }: SidebarItemLinkType) => {
   const router = useRouter();
 
   return (
     <li
       data-tip={tooltip}
-      onClick={() =>
-        router.replace({
+      onClick={async () => {
+        await router.replace({
           pathname: path
             ? path
             : router.pathname === '/settings'
@@ -228,7 +249,8 @@ const SidebarItemLink = ({
               : router.pathname,
           query: { ...router.query, tab: tabText },
         })
-      }
+        onCallback && onCallback()
+      }}
       className={twMerge(
         `tooltip lg:tooltip-right tooltip-top indicator ${styles.sidebarItem} hover:bg-slate-200 dark:hover:bg-slate-700`,
         isActive ? 'bg-slate-200 dark:bg-slate-700' : ''

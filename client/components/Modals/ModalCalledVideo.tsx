@@ -1,9 +1,7 @@
-import Peer from 'peerjs';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { BsFillMicFill, BsFillTelephoneFill } from 'react-icons/bs';
-import Portal from '../Portal';
 import { twMerge } from 'tailwind-merge';
-import { useRouter } from 'next/router';
+import Portal from '../Portal';
 
 interface IProps {
   open: boolean;
@@ -11,78 +9,8 @@ interface IProps {
 }
 
 const ModalCalledVideo: React.FC<IProps> = ({ open, onClose }) => {
-  const [peerId, setPeerId] = useState("")
-  const router = useRouter()
-  const { query: { id } } = router;
-  const localVideoRef = useRef<HTMLVideoElement | null>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
-  const peerInstance = useRef<Peer | null>(null);
-  const getUserMedia = navigator.mediaDevices.getUserMedia;
-  const [mediaConfig, setMediaConfig] = useState({
-    video: true,
-    audio: false,
-  })
-
-  useEffect(() => {
-    if (!id) return;
-
-    const peer = new Peer({
-      host: 'localhost',
-      port: 9000,
-      path: "/",
-    });
-
-    peer.on('open', (id) => {
-      setPeerId(id)
-    })
-
-    peer.on('call', async (call) => {
-      if (window.confirm("Bạn có muốn chấp nhận cuộc gọi ?")) {
-        const stream = await getUserMedia(mediaConfig);
-        const videoLocal = localVideoRef.current;
-        const videoRemote = remoteVideoRef.current;
-        if (!videoLocal || !videoRemote) return;
-        videoLocal.srcObject = stream;
-        videoLocal.play();
-
-        call.answer(stream);
-        call.on('stream', (remoteStream) => {
-          videoRemote.srcObject = remoteStream;
-          videoRemote.play();
-        });
-      }
-    });
-
-
-    peerInstance.current = peer;
-  }, [getUserMedia, localVideoRef, id])
-
-  const onJoinRoom = async (remotePeerId: string) => {
-    try {
-      const peer = peerInstance.current;
-
-      if (!peer) return;
-
-      const stream = await getUserMedia(mediaConfig);
-
-      const videoLocal = localVideoRef.current;
-      const videoRemote = remoteVideoRef.current;
-
-      if (!videoLocal || !videoRemote) return;
-      videoLocal.srcObject = stream;
-      videoLocal.play();
-
-      const call = peer.call(remotePeerId, stream);
-
-      call.on('stream', (remoteStream) => {
-        videoRemote.srcObject = remoteStream;
-        videoRemote.play();
-      });
-
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const remoteVideoRef = useRef<HTMLVideoElement | null>(null)
+  const localVideoRef = useRef<HTMLVideoElement | null>(null)
 
   const handleClose = () => {
     onClose()
