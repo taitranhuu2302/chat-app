@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styles from '@/styles/components/chat.module.scss';
 
 import ChatHeader from '@/components/Chat/ChatHeader';
@@ -21,6 +21,8 @@ import toast from 'react-hot-toast';
 import { useAppDispatch } from '@/redux/hooks';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
 import Portal from '../Portal';
+import { debounce } from 'lodash';
+import { AuthContext, AuthContextType } from 'contexts/AuthContext';
 
 interface IChat { }
 
@@ -43,7 +45,9 @@ const Chat: React.FC<IChat> = () => {
       },
     },
   });
+  const [userTyping, setUserTyping] = useState<IUserTyping[]>([])
   const dispatch = useAppDispatch();
+  const { auth } = useContext(AuthContext) as AuthContextType;
   const { mutateAsync: sendMessage, isLoading: isLoadingSendMessage } =
     useSendMessageApi();
   const { socket } = useContext(SocketContext) as SocketContextType;
@@ -61,24 +65,46 @@ const Chat: React.FC<IChat> = () => {
   useEffect(() => {
     if (!socket) return;
 
+    socket.on(SOCKET_EVENT.USER_IS_TYPING, ({ user, conversationId, isTyping }) => {
+      if (user._id === auth?._id || conversationId !== id) return;
+      setUserTyping(prevTypingUsers => {
+        const userIndex = prevTypingUsers.findIndex(item => item.user._id === user._id);
+
+        if (isTyping && userIndex === -1) {
+          return [...prevTypingUsers, { user, conversationId, isTyping }];
+        }
+
+        if (!isTyping && userIndex !== -1) {
+          const updatedTypingUsers = [...prevTypingUsers];
+          updatedTypingUsers.splice(userIndex, 1);
+          return updatedTypingUsers;
+        }
+
+        return prevTypingUsers;
+      });
+    })
+
     socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
-      if (data[0].conversation._id === id) {
+      const conversationId = typeof data[0].conversation === 'string' ? data[0].conversation : data[0].conversation._id
+      if (conversationId === id) {
         setMessages((e) => [...data, ...e]);
         setIsNewMessage(true)
       }
     });
 
     socket.on(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL, (data: MessageType) => {
-      if (data.conversation._id === id) {
+      if ((data.conversation as ConversationType)._id === id) {
         setMessages((m) => m.filter((message) => message._id !== data._id));
       }
     });
 
+
     return () => {
       socket.off(SOCKET_EVENT.MESSAGE.NEW_MESSAGE);
       socket.off(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL);
+      socket.off(SOCKET_EVENT.USER_IS_TYPING)
     };
-  }, [socket, id]);
+  }, [socket, id, auth?._id]);
 
   useEffect(() => {
     dispatch(setReplyMessage(null));
@@ -87,6 +113,20 @@ const Chat: React.FC<IChat> = () => {
   const onToggleSidebar = () => {
     setIsOpenSidebar((e) => !e);
   };
+
+  const onUserTyping = debounce((text) => {
+    if (!auth || !socket || !conversation) return;
+
+    socket.emit(SOCKET_EVENT.USER_TYPING, {
+      user: auth,
+      conversationId: conversation._id,
+      text
+    })
+  }, 500)
+
+  const onTextChange = useCallback((text: string) => {
+    onUserTyping(text)
+  }, [onUserTyping])
 
   const handleSendMessage = async ({
     text,
@@ -144,10 +184,12 @@ const Chat: React.FC<IChat> = () => {
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           getMessageLoading={getMessageLoading}
+          userTyping={userTyping}
         />
         <ChatFooter
           handleSendMessage={handleSendMessage}
           isLoadingSendMessage={isLoadingSendMessage}
+          onTextChange={onTextChange}
         />
       </motion.div>
       <AnimatePresence>

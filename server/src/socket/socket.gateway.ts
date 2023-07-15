@@ -1,7 +1,9 @@
 import {
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -18,6 +20,7 @@ import {
   Conversation,
   ConversationDocument,
 } from 'src/conversation/conversation.model';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @WebSocketGateway({ cors: true })
 export class SocketGateway
@@ -82,5 +85,31 @@ export class SocketGateway
     if (!user) return null;
 
     return user;
+  }
+
+  @SubscribeMessage(SOCKET_EVENT.USER_TYPING)
+  async handleUserTyping(
+    @MessageBody()
+    data: {
+      user: UserDto;
+      conversationId: string;
+      text: string;
+    },
+  ) {
+    console.log(data.user);
+    if (data.text) {
+      this.server.to(data.conversationId).emit(SOCKET_EVENT.USER_IS_TYPING, {
+        user: data.user,
+        conversationId: data.conversationId,
+        isTyping: true,
+      });
+    } else {
+      this.server.to(data.conversationId).emit(SOCKET_EVENT.USER_IS_TYPING, {
+        user: data.user,
+        conversationId: data.conversationId,
+        isTyping: false,
+      });
+    }
+    return null;
   }
 }

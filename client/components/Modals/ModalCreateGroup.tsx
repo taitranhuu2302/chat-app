@@ -56,7 +56,7 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
   const t = useTranslate();
   const { auth } = useContext(AuthContext) as AuthContextType;
   const [friends, setFriends] = useState<UserType[]>([])
-  const [members, setMembers] = useState<string[]>([])
+  const [members, setMembers] = useState<any[]>([])
   const [groupName, setGroupName] = useState<string>("")
   const selectInputRef = useRef<any>(null);
   const [totalFriends, setTotalFriends] = useState(10)

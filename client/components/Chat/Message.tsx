@@ -26,6 +26,7 @@ import { getErrorResponse } from '@/utils/ErrorUtils';
 import toast from 'react-hot-toast';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
 import styles from '@/styles/components/chat.module.scss';
+import VideoPlayer from './VideoPlayer';
 
 interface IMessage {
   isOwner?: boolean;
@@ -62,7 +63,7 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(({
       return (
         <picture>
           <img
-            data-fancybox={message.conversation._id}
+            data-fancybox={(message.conversation as ConversationType)._id}
             className={
               'max-w-[200px] border cursor-pointer rounded-lg object-cover'
             }
@@ -95,7 +96,7 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(({
               window.open(message.file, '_blank');
             }}
             className={
-              'gap-2.5 flex cursor-pointer items-center rounded w-fit max-w-[200px] bg-gray-300 p-3 overflow-hidden relative'
+              twMerge('gap-2.5 flex cursor-pointer dark:bg-gray-700 items-center rounded w-fit max-w-[200px] bg-gray-300 p-3 overflow-hidden relative', !isOwner && 'text-black')
             }>
             <div>
               <BsFillFileTextFill size={30} />
@@ -125,222 +126,128 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(({
 
   return (
     <>
-      <div ref={ref} className={twMerge(`chat ${isOwner ? 'chat-end' : 'chat-start'}`)}>
-        <div className="chat-image avatar">
-          <Avatar
-            size={'40px'}
-            src={message.sender.avatar || ''}
-            round
-            name={`${message.sender.firstName} ${message.sender.lastName}`}
-          />
-        </div>
-        {isLastSame && (
-          <div
-            className={`chat-header mb-1 gap-2.5 flex items-center ${isOwner ? 'flex-row-reverse' : ''
-              }`}>
-            <span
-              className={
-                'font-semibold'
-              }>{`${message.sender.firstName} ${message.sender.lastName}`}</span>
-          </div>
-        )}
-        <div
-          className={twMerge(
-            `chat-bubble ${isOwner
-              ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
-              : 'bg-primary text-light'
-            } relative max-w-[50%]`,
-            message.file && 'bg-transparent p-0',
-            messageReplyActive?._id === message._id && 'ring-offset-1 ring'
-          )}>
-          {
-            message.reply && (
-              <>
-                <div onClick={() => scrollToMessageReply && scrollToMessageReply(message.reply!)} className={`${styles.messageReply} cursor-pointer m-1 ${isOwner ? `${styles.isOwner}` : ''}`}>
-                  <p className={`font-semibold`}>{message.reply?.sender.firstName} {message.reply?.sender.lastName}</p>
-                  {
-                    message.reply?.text ? (
-                      <div className={`text-sm line-clamp-1`} dangerouslySetInnerHTML={{ __html: message.reply?.text }}></div>
-                    ) : (
-                      <p className={`text-sm line-clamp-1`}>Sent a file</p>
-                    )
-                  }
-                </div>
-              </>
-            )
-          }
-          {message.text && (
-            <div
-              className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
-                }`}
-              data-tip={moment(message.updatedAt).locale('en').format('LLL')}
-              dangerouslySetInnerHTML={{ __html: message.text }}
-            />
-          )}
-          {message.file && (
-            <div
-              className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
-                }`}
-              data-tip={moment(message.updatedAt).locale('en').format('LLL')}>
-              {renderFile}
+      {message.messageType === "NOTIFY" && (
+        <p className='flex-center text-sm text-gray-400'>{message.text}</p>
+      )}
+      {
+        message.messageType === "DEFAULT" && (
+          <div ref={ref} className={twMerge(`chat ${isOwner ? 'chat-end' : 'chat-start'}`)}>
+            <div className="chat-image avatar">
+              <Avatar
+                size={'40px'}
+                src={message.sender?.avatar || ''}
+                round
+                name={`${message.sender?.firstName} ${message.sender?.lastName}`}
+              />
             </div>
-          )}
-          <div
-            className={`absolute dropdown ${isFirst ? 'dropdown-bottom' : 'dropdown-top'
-              } ${isOwner
-                ? 'left-[-15px] dropdown-left'
-                : 'right-[-15px] dropdown-right'
-              } top-0`}>
-            <button tabIndex={0}>
-              <BsThreeDotsVertical size={15} className={'text-primary'} />
-            </button>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52 z-10">
-              <li>
-                <a
-                  onClick={() => {
-                    dispatch(setReplyMessage(message));
-                  }}
+            {isLastSame && (
+              <div
+                className={`chat-header mb-1 gap-2.5 flex items-center ${isOwner ? 'flex-row-reverse' : ''
+                  }`}>
+                <span
                   className={
-                    'flex items-center justify-between text-light-1100 dark:text-night-1100'
-                  }>
-                  <span>Reply</span>
-                  <BsReplyFill size={20} />
-                </a>
-              </li>
-              {/* {isOwner && (
-                <li>
-                  <a
-                    onClick={() => setOpenDelete(true)}
-                    className={
-                      'flex items-center justify-between text-light-1100 dark:text-night-1100'
-                    }>
-                    <span>Delete</span>
-                    <MdOutlineDelete size={22} />
-                  </a>
-                </li>
-              )} */}
-            </ul>
+                    'font-semibold'
+                  }>{`${message.sender?.firstName} ${message.sender?.lastName}`}</span>
+              </div>
+            )}
+            <div
+              className={twMerge(
+                `chat-bubble ${isOwner
+                  ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
+                  : 'bg-primary text-light'
+                } relative max-w-[50%]`,
+                message.file && 'bg-transparent p-0',
+                messageReplyActive?._id === message._id && 'ring-offset-1 ring'
+              )}>
+              {
+                message.reply && (
+                  <>
+                    <div onClick={() => scrollToMessageReply && scrollToMessageReply(message.reply!)} className={`${styles.messageReply} cursor-pointer m-1 ${isOwner ? `${styles.isOwner}` : ''}`}>
+                      <p className={`font-semibold`}>{message.reply?.sender?.firstName} {message.reply?.sender?.lastName}</p>
+                      {
+                        message.reply?.text ? (
+                          <div className={`text-sm line-clamp-1`} dangerouslySetInnerHTML={{ __html: message.reply?.text }}></div>
+                        ) : (
+                          <p className={`text-sm line-clamp-1`}>Sent a file</p>
+                        )
+                      }
+                    </div>
+                  </>
+                )
+              }
+              {message.text && (
+                <div
+                  className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
+                    }`}
+                  data-tip={moment(message.updatedAt).locale('en').format('LLL')}
+                  dangerouslySetInnerHTML={{ __html: message.text }}
+                />
+              )}
+              {message.file && (
+                <div
+                  className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
+                    }`}
+                  data-tip={moment(message.updatedAt).locale('en').format('LLL')}>
+                  {renderFile}
+                </div>
+              )}
+              <div
+                className={`absolute dropdown ${isFirst ? 'dropdown-bottom' : 'dropdown-top'
+                  } ${isOwner
+                    ? 'left-[-15px] dropdown-left'
+                    : 'right-[-15px] dropdown-right'
+                  } top-0`}>
+                <button tabIndex={0}>
+                  <BsThreeDotsVertical size={15} className={'text-primary'} />
+                </button>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52 z-10">
+                  <li>
+                    <a
+                      onClick={() => {
+                        dispatch(setReplyMessage(message));
+                      }}
+                      className={
+                        'flex items-center justify-between text-light-1100 dark:text-night-1100'
+                      }>
+                      <span>Reply</span>
+                      <BsReplyFill size={20} />
+                    </a>
+                  </li>
+                  {/* {isOwner && (
+                    <li>
+                      <a
+                        onClick={() => setOpenDelete(true)}
+                        className={
+                          'flex items-center justify-between text-light-1100 dark:text-night-1100'
+                        }>
+                        <span>Delete</span>
+                        <MdOutlineDelete size={22} />
+                      </a>
+                    </li>
+                  )} */}
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <ConfirmDelete
-        isOpen={openDelete}
-        title={t.confirmDelete}
-        message={t.descDeleteMessage}
-        onClose={() => setOpenDelete(false)}
-        onConfirm={handleDeleteMessage}
-      />
+        )
+      }
+      {
+        openDelete && (
+          <ConfirmDelete
+            isOpen={openDelete}
+            title={t.confirmDelete}
+            message={t.descDeleteMessage}
+            onClose={() => setOpenDelete(false)}
+            onConfirm={handleDeleteMessage}
+          />
+        )
+      }
     </>
   );
 })
 
 Message.displayName = "Message"
 
-const VideoPlayer = ({ src }: { src: string }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const togglePlay = () => {
-    const videoElement = videoRef.current;
-
-    if (videoElement && !isFullscreen) {
-      if (videoElement.paused) {
-        videoElement.play();
-      } else {
-        videoElement.pause();
-      }
-
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const enterFullscreen = () => {
-    const videoElement = videoRef.current;
-
-    if (videoElement) {
-      if (videoElement.requestFullscreen) {
-        videoElement.requestFullscreen();
-        // @ts-ignore
-      } else if (videoElement.mozRequestFullScreen) {
-        // @ts-ignore
-        videoElement.mozRequestFullScreen();
-        // @ts-ignore
-      } else if (videoElement.webkitRequestFullscreen) {
-        // @ts-ignore
-        videoElement.webkitRequestFullscreen();
-        // @ts-ignore
-      } else if (videoElement.msRequestFullscreen) {
-        // @ts-ignore
-        videoElement.msRequestFullscreen();
-      }
-
-      setIsFullscreen(true);
-    }
-  };
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      const fullscreenElement =
-        document.fullscreenElement ||
-        // @ts-ignore
-        document.mozFullScreenElement ||
-        // @ts-ignore
-        document.webkitFullscreenElement ||
-        // @ts-ignore
-        document.msFullscreenElement;
-
-      setIsFullscreen(!!fullscreenElement);
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('msfullscreenchange', handleFullscreenChange);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener(
-        'mozfullscreenchange',
-        handleFullscreenChange
-      );
-      document.removeEventListener(
-        'webkitfullscreenchange',
-        handleFullscreenChange
-      );
-      document.removeEventListener(
-        'msfullscreenchange',
-        handleFullscreenChange
-      );
-    };
-  }, []);
-
-  const handleDoubleClick = () => {
-    enterFullscreen();
-  };
-
-  return (
-    <div className="relative" onDoubleClick={handleDoubleClick}>
-      <video
-        ref={videoRef}
-        src={src}
-        className="rounded-lg"
-        autoPlay={false}
-        onClick={togglePlay}
-        onPlay={() => {
-          setIsPlaying(true);
-        }}
-        onPause={() => {
-          setIsPlaying(false);
-        }}></video>
-      {!isPlaying && (
-        <div className="position-center">
-          <FaPlay color="white" size={30} onClick={togglePlay} />
-        </div>
-      )}
-    </div>
-  );
-};
 export default Message;

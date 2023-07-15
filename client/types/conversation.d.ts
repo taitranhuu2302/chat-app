@@ -18,3 +18,8 @@ type ConversationCreate = {
 type ConversationUpdate = {
   conversationName?: string;
 }
+
+type ConversationAddMember = {
+  conversationId: string;
+  members: string[]
+}

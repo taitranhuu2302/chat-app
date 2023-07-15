@@ -21,7 +21,7 @@ import { ConversationUpdateDto } from './dto/conversation-update.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { localOptionsConversationAvatar } from '../shared/helper/file.helper';
 import { ConversationAddMemberDto } from './dto/conversation-add-member.dto';
-import {ConversationRemoveMemberDto} from "./dto/conversation-remove-member.dto";
+import { ConversationRemoveMemberDto } from './dto/conversation-remove-member.dto';
 
 @Controller(API.CONVERSATION.INDEX)
 @ApiTags('Conversation')
@@ -52,6 +52,11 @@ export class ConversationController {
     return this.conversationService.update(sub, id, dto);
   }
 
+  @Get(API.CONVERSATION.FIND_ALL_FILE)
+  async getAllFile(@GetUser() {sub}, @Param('id') id: string) {
+    return this.conversationService.getAllFile(sub, id)
+  }
+
   @Get(API.CONVERSATION.FIND_BY_ID)
   async findById(@GetUser() { sub }, @Param('id') id: string) {
     return this.conversationService.findById(sub, id);
@@ -70,8 +75,12 @@ export class ConversationController {
       },
     },
   })
-  async changeAvatar(@Param('id') id: string, @UploadedFile() file) {
-    return this.conversationService.changeAvatar(id, file);
+  async changeAvatar(
+    @GetUser() { sub },
+    @Param('id') id: string,
+    @UploadedFile() file,
+  ) {
+    return this.conversationService.changeAvatar(sub, id, file);
   }
 
   @Post(API.CONVERSATION.ADD_MEMBER)
@@ -80,7 +89,10 @@ export class ConversationController {
   }
 
   @Post(API.CONVERSATION.REMOVE_MEMBER)
-  async removeMember(@GetUser() { sub }, @Body() dto: ConversationRemoveMemberDto) {
+  async removeMember(
+    @GetUser() { sub },
+    @Body() dto: ConversationRemoveMemberDto,
+  ) {
     return this.conversationService.removeMember(sub, dto);
   }
 }

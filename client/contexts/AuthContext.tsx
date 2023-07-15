@@ -1,5 +1,4 @@
 import React, { createContext, useState } from 'react';
-import { useQuery } from 'react-query';
 import {removeToken, useGetMeApi} from '@/service/AuthService';
 
 export type AuthContextType = {

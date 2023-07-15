@@ -46,3 +46,9 @@ type UserChangePasswordType = {
   newPassword: string;
   confirmNewPassword: string;
 };
+
+type IUserTyping = {
+  user: UserType;
+  isTyping: boolean;
+  conversationId: string;
+}

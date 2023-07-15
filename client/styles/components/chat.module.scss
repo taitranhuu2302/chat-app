@@ -67,5 +67,5 @@
 }
 
 .item {
-  @apply w-full flex items-center gap-2.5 hover:bg-slate-200 p-3 transition-all duration-150 rounded;
+  @apply w-full flex items-center gap-2.5 justify-between hover:bg-slate-200 p-3 transition-all duration-150 rounded;
 }

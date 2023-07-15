@@ -44,6 +44,13 @@ export class ConversationService {
     private redisService: RedisService,
   ) {}
 
+  async getAllFile(sub: string, conversationId: string) {
+    return await this.messageModel.find({
+      text: null,
+      conversation: conversationId,
+    })
+  }
+
   async findAll(sub: string, options: PaginationOptions) {
     return await paginate(
       this.conversationModel
@@ -105,6 +112,7 @@ export class ConversationService {
           { members: { $all: [sub, friendId] } },
           { members: { $all: [friendId, sub] } },
         ],
+        $and: [{ conversationType: ConversationType.PRIVATE }],
       });
 
       if (checkConversation) {
@@ -145,6 +153,7 @@ export class ConversationService {
     conversationId: string,
     dto: ConversationUpdateDto,
   ) {
+    const currentUser = await this.userModel.findById(sub);
     const conversation = await this.conversationModel.findOne({
       _id: conversationId,
       members: sub,
@@ -155,6 +164,15 @@ export class ConversationService {
 
     conversation.conversationName = dto.conversationName;
     conversation.save();
+
+    const message = await this.messageModel.create({
+      text: `${currentUser.firstName} ${currentUser.lastName} changed the chat name to ${dto.conversationName}`,
+      conversation: conversation._id,
+      messageType: MessageType.NOTIFY,
+    });
+    this.socketService.socket
+      .to(conversation._id.toString())
+      .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, [message]);
 
     this.socketService.socket
       .to(conversation._id.toString())
@@ -185,7 +203,8 @@ export class ConversationService {
     return mapped;
   }
 
-  async changeAvatar(id: string, file: Express.Multer.File) {
+  async changeAvatar(sub: string, id: string, file: Express.Multer.File) {
+    const currentUser = await this.userModel.findById(sub);
     if (!file) {
       throw new BadRequestException('No avatar files provided');
     }
@@ -198,6 +217,16 @@ export class ConversationService {
 
     conversation.avatar = `${process.env.SERVER_URL}/uploads/conversation/${file.filename}`;
     conversation.save();
+
+    const message = await this.messageModel.create({
+      text: `${currentUser.firstName} ${currentUser.lastName} changed photo of conversation`,
+      conversation: conversation._id,
+      messageType: MessageType.NOTIFY,
+    });
+    this.socketService.socket
+      .to(conversation._id.toString())
+      .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, [message]);
+
     this.socketService.socket
       .to(conversation._id.toString())
       .emit(SOCKET_EVENT.CONVERSATION.UPDATE_CONVERSATION, conversation);
@@ -219,13 +248,13 @@ export class ConversationService {
         continue;
       conversation.members.push(newMember);
       const message = await this.messageModel.create({
-        text: `${currentUser.lastName} added ${newMember.lastName} to the group`,
+        text: `${currentUser.firstName} ${currentUser.lastName} added ${newMember.lastName} to the group`,
         conversation: conversation._id,
         messageType: MessageType.NOTIFY,
       });
       this.socketService.socket
         .to(conversation._id.toString())
-        .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, message);
+        .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, [message]);
     }
     conversation.save();
 
@@ -257,14 +286,14 @@ export class ConversationService {
       );
 
       const message = this.messageModel.create({
-        text: `${currentUser.lastName} removed ${user.lastName} from the group`,
+        text: `${currentUser.firstName} ${currentUser.lastName} removed ${user.lastName} from the group`,
         conversation: conversation._id,
         messageType: MessageType.NOTIFY,
       });
 
       this.socketService.socket
         .to(conversation._id.toString())
-        .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, message);
+        .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, [message]);
     } else {
       // Leave conversation
       if (conversation.owner._id.toString() !== sub) {
@@ -274,14 +303,14 @@ export class ConversationService {
         );
 
         const message = this.messageModel.create({
-          text: `${currentUser.lastName} has left the group`,
+          text: `${currentUser.firstName} ${currentUser.lastName} has left the group`,
           conversation: conversation._id,
           messageType: MessageType.NOTIFY,
         });
 
         this.socketService.socket
           .to(conversation._id.toString())
-          .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, message);
+          .emit(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, [message]);
       } else {
         // Delete conversation
         conversation.deletedAt = new Date();

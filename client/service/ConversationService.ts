@@ -59,3 +59,17 @@ export const useUpdateConversationAvatarApi = () => {
     }),
   )
 }
+
+export const useAddMemberToConversation = () => {
+  return useMutation(
+    [API.CONVERSATION.ADD_MEMBER],
+    (data: ConversationAddMember) => axiosConfig.post(`${API.CONVERSATION.ADD_MEMBER}`, data)
+  )
+}
+
+export const useGetAllFileByConversation = ({options, conversationId}: {options?: any, conversationId?: string}) => {
+  return useQuery([API.CONVERSATION.FIND_ALL_FILE], () => axiosConfig.get(`${API.CONVERSATION.FIND_ALL_FILE}/${conversationId}`),{
+    ...options,
+    enabled: !!conversationId
+  })
+}

@@ -1,5 +1,6 @@
 import '@/styles/globals.scss';
 import '@/styles/commons.scss';
+import '@/styles/font.scss';
 import 'react-loading-skeleton/dist/skeleton.css'
 import type { AppProps } from 'next/app';
 import { Provider } from 'react-redux';

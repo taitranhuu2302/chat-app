@@ -1,7 +1,7 @@
 type MessageType = BaseType & {
   text?: string;
   reply?: MessageType;
-  conversation: ConversationType;
+  conversation: ConversationType | string;
   sender: UserType;
   messageType: 'DEFAULT' | 'NOTIFY';
   file: string;
