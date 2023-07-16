@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
-import Avatar from 'react-avatar';
-import { IoClose } from 'react-icons/io5';
-import { BsCameraVideo, BsCameraVideoFill } from 'react-icons/bs';
 import useTranslate from '@/hooks/useTranslate';
 import dynamic from 'next/dynamic';
-import { useGetConversationById } from '@/service/ConversationService';
+import React, { useState } from 'react';
+import Avatar from 'react-avatar';
+import { BsCameraVideoFill } from 'react-icons/bs';
+import { IoClose } from 'react-icons/io5';
 import Portal from '../Portal';
-import { PeerContext, PeerContextType } from 'contexts/PeerContext';
 const ModalCalledVideoDynamic = dynamic(() => import("@/components/Modals/ModalCalledVideo"), { ssr: false })
 
 interface IModalCallVideo {
@@ -16,8 +14,7 @@ interface IModalCallVideo {
 const ModalCallVideo: React.FC<IModalCallVideo> = ({ user }) => {
   const t = useTranslate();
   const [openCalledVideo, setOpenCalledVideo] = useState(false)
-  const { onCallVideo } = useContext(PeerContext) as PeerContextType;
-
+  
   return <>
     <Portal>
       <div>
@@ -33,7 +30,6 @@ const ModalCallVideo: React.FC<IModalCallVideo> = ({ user }) => {
               </label>
               <button onClick={() => {
                 setOpenCalledVideo(true)
-                onCallVideo(user._id)
               }} className="bg-success p-4 rounded-full cursor-pointer flex-center">
                 <BsCameraVideoFill size={20} color={'white'} />
               </button>

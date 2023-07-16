@@ -1,7 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { BsFillMicFill, BsFillTelephoneFill } from 'react-icons/bs';
 import { twMerge } from 'tailwind-merge';
 import Portal from '../Portal';
+import eventBus from '@/config/EventBus';
+import { MediaConnection } from 'peerjs';
 
 interface IProps {
   open: boolean;
@@ -11,6 +13,11 @@ interface IProps {
 const ModalCalledVideo: React.FC<IProps> = ({ open, onClose }) => {
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null)
   const localVideoRef = useRef<HTMLVideoElement | null>(null)
+  const getUserMedia = navigator.mediaDevices.getUserMedia;
+  const [mediaConfig, setMediaConfig] = useState({
+    video: true,
+    audio: true,
+  })
 
   const handleClose = () => {
     onClose()
