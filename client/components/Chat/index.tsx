@@ -25,6 +25,7 @@ import { debounce } from 'lodash';
 import { AuthContext, AuthContextType } from 'contexts/AuthContext';
 import dynamic from 'next/dynamic';
 
+const ModalCalledVideoDynamic = dynamic(() => import("@/components/Modals/ModalCalledVideo"), { ssr: false })
 const ModalCallVideo = dynamic(() => import('@/components/Modals/ModalCallVideo'), { ssr: false })
 
 interface IChat { }
@@ -37,6 +38,7 @@ const Chat: React.FC<IChat> = () => {
     null
   );
   const router = useRouter();
+  const [openModalCall, setOpenModalCall] = useState(false)
   const {
     query: { id },
   } = router;
@@ -182,6 +184,7 @@ const Chat: React.FC<IChat> = () => {
           conversation={conversation}
           isLoadingConversation={isLoadingConversation}
           onToggleSidebar={onToggleSidebar}
+          setOpenModalCall={setOpenModalCall}
         />
         <ChatContent
           isNewMessage={isNewMessage}
@@ -202,8 +205,9 @@ const Chat: React.FC<IChat> = () => {
         {isOpenSidebar && conversation && <Portal><SidebarProfile onClose={onToggleSidebar} conversation={conversation} /></Portal>}
       </AnimatePresence>
       {
-        userOther && <ModalCallVideo user={userOther} />
+        userOther && <ModalCallVideo conversation={conversation} user={userOther} open={openModalCall} onClose={() => setOpenModalCall(false)} />
       }
+      <ModalCalledVideoDynamic />
     </div>
   );
 };

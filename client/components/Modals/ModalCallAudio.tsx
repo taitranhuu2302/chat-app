@@ -11,7 +11,6 @@ interface IModalCallAudio {
 }
 
 const ModalCallAudio: React.FC<IModalCallAudio> = () => {
-  const { theme } = useContext(DarkModeContext);
   const t = useTranslate();
   
   return <>

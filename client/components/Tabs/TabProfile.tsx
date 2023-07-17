@@ -20,7 +20,7 @@ const TabProfile: React.FC<ITabProfile> = () => {
       title={t.home.tab.profile.title}
       headerActions={
         <>
-          <div className={'dropdown'}>
+          <div className={'dropdown dropdown-left'}>
             <button tabIndex={0}>
               <BsThreeDotsVertical size={20} />
             </button>

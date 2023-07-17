@@ -20,7 +20,7 @@ function withHOC<T extends object>(
 
     return (
       <>
-        {authLoading ? (
+        {authLoading && auth ? (
           <LoadingPage floating={false} />
         ) : (
           <WrappedComponent {...props} />

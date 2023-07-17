@@ -14,12 +14,14 @@ interface IChatHeader {
   onToggleSidebar: () => void;
   conversation: ConversationType | null;
   isLoadingConversation?: boolean;
+  setOpenModalCall: (value: boolean) => void;
 }
 
 const ChatHeader: React.FC<IChatHeader> = ({
   onToggleSidebar,
   conversation,
   isLoadingConversation,
+  setOpenModalCall
 }) => {
   const t = useTranslate();
   const router = useRouter();
@@ -58,12 +60,12 @@ const ChatHeader: React.FC<IChatHeader> = ({
         )}
       </div>
       <div className={styles.chatHeaderRight}>
-        <label
+        <button
           data-tip={t.home.room.header.videoCall.label}
           className={'tooltip tooltip-bottom cursor-pointer'}
-          htmlFor={'modal-call-video'}>
+          onClick={() => setOpenModalCall(true)}>
           <BsCameraVideo size={22} />
-        </label>
+        </button>
         <button
           data-tip={t.home.room.header.profile}
           className={'tooltip tooltip-bottom'}

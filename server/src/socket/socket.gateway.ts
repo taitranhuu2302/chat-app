@@ -5,7 +5,7 @@ import {
   OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
-  WebSocketServer,
+  WebSocketServer
 } from '@nestjs/websockets';
 import { SocketService } from './socket.service';
 import { Server, Socket } from 'socket.io';
@@ -96,7 +96,6 @@ export class SocketGateway
       text: string;
     },
   ) {
-    console.log(data.user);
     if (data.text) {
       this.server.to(data.conversationId).emit(SOCKET_EVENT.USER_IS_TYPING, {
         user: data.user,
@@ -111,5 +110,16 @@ export class SocketGateway
       });
     }
     return null;
+  }
+
+  @SubscribeMessage(SOCKET_EVENT.VIDEO.JOIN)
+  async handleVideoCalling(
+    @MessageBody() data: { peerId: string; conversationId: string, userId: string },
+    client: Socket
+  ) {
+    // TODO implement video calling logic here
+    this.server.to(data.conversationId).emit(SOCKET_EVENT.VIDEO.CALLING, {
+      ...data,
+    })
   }
 }

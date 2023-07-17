@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import {removeToken, useGetMeApi} from '@/service/AuthService';
 
 export type AuthContextType = {
@@ -6,6 +6,8 @@ export type AuthContextType = {
   removeAuth: () => void;
   authLoading: boolean;
 };
+
+export const useAuthContext = () => useContext(AuthContext) as AuthContextType;
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
