@@ -9,22 +9,23 @@ import useTranslate from '@/hooks/useTranslate';
 import { IoIosArrowBack } from 'react-icons/io';
 import { useRouter } from 'next/router';
 import Skeleton from 'react-loading-skeleton';
+import { useAppDispatch } from '@/redux/hooks';
+import { setModalVideoCall } from '@/redux/features/ModalSlice';
 
 interface IChatHeader {
   onToggleSidebar: () => void;
   conversation: ConversationType | null;
   isLoadingConversation?: boolean;
-  setOpenModalCall: (value: boolean) => void;
 }
 
 const ChatHeader: React.FC<IChatHeader> = ({
   onToggleSidebar,
   conversation,
   isLoadingConversation,
-  setOpenModalCall
 }) => {
   const t = useTranslate();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   return (
     <div
@@ -63,7 +64,13 @@ const ChatHeader: React.FC<IChatHeader> = ({
         <button
           data-tip={t.home.room.header.videoCall.label}
           className={'tooltip tooltip-bottom cursor-pointer'}
-          onClick={() => setOpenModalCall(true)}>
+          onClick={() =>
+            dispatch(
+              setModalVideoCall({
+                isOpen: true,
+              })
+            )
+          }>
           <BsCameraVideo size={22} />
         </button>
         <button

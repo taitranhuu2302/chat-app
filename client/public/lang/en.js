@@ -7,7 +7,6 @@ const language = {
   membersOfRoom: "Chat members",
   changeChatName: "Change chat name",
   changeChatAvatar: "Change chat avatar",
-  addNewMember: "Add new members",
   fileImage: "File image",
   home: {
     tab: {
@@ -81,6 +80,7 @@ const language = {
         videoCall: {
           label: 'Video Call',
           description: 'Start Video Call',
+          calling: "Calling"
         },
         profile: 'Profile',
         more: {

@@ -7,7 +7,6 @@ const language = {
   membersOfRoom: "Thành viên phòng chat",
   changeChatName: "Đổi tên cuộc trò chuyện",
   changeChatAvatar: "Đổi ảnh cuộc trò chuyện",
-  addNewMember: "Thêm thành viên mới",
   fileImage: "File phương tiện",
   home: {
     tab: {
@@ -81,6 +80,7 @@ const language = {
         videoCall: {
           label: 'Cuộc gọi video',
           description: 'Bắt đầu cuộc gọi video',
+          calling: "Đang gọi"
         },
         profile: 'Thông tin',
         more: {
