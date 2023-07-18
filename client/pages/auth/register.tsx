@@ -59,7 +59,7 @@ const RegisterPage: React.FC<IRegister> = () => {
   };
 
   return (
-    <div className={'bg-via-500 dark:bg-via-300 w-full h-screen'}>
+    <div className={'bg-via-500 px-2.5 dark:bg-via-300 w-full h-screen'}>
       <div className={'w-ful h-full flex-center flex-col'}>
         <div className={'flex items-end gap-2.5'}>
           <Image src={'/logo.svg'} alt={'Logo'} width={30} height={30} />
@@ -70,7 +70,7 @@ const RegisterPage: React.FC<IRegister> = () => {
         <form
           onSubmit={handleSubmit(onSubmit)}
           className={
-            'bg-white dark:bg-via-200 w-[450px] mt-5 rounded-md p-5 space-y-3'
+            'bg-white dark:bg-via-200 w-full max-w-[450px] mt-5 rounded-md p-5 space-y-3'
           }>
           <div className={'flex flex-col'}>
             <label htmlFor="FirstName" className={'text-sm ml-[1px]'}>

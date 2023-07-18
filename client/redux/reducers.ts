@@ -4,11 +4,13 @@ import notifySlice from '@/redux/features/NotifySlice';
 import messageSlice from '@/redux/features/MessageSlice';
 import modalSlice from './features/ModalSlice';
 import conversationSlice from './features/ConversationSlice';
+import musicSlice from './features/MusicSlice';
 
 export const reducers = combineReducers({
   pageLoading: pageLoadingSlice,
   notify: notifySlice,
   message: messageSlice,
   modal: modalSlice,
-  conversation: conversationSlice
+  conversation: conversationSlice,
+  music: musicSlice
 });

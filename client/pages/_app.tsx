@@ -1,19 +1,19 @@
-import '@/styles/globals.scss';
+import { store } from '@/redux/store';
 import '@/styles/commons.scss';
 import '@/styles/font.scss';
-import 'react-loading-skeleton/dist/skeleton.css'
-import type { AppProps } from 'next/app';
-import { Provider } from 'react-redux';
-import { store } from '@/redux/store';
-import { ThemeProvider } from 'next-themes';
-import DarkModeProvider from '../contexts/DarkModeProvider';
-import Head from 'next/head';
+import '@/styles/globals.scss';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { Toaster } from 'react-hot-toast';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import AuthProvider from '../contexts/AuthContext';
-import SocketProvider from "../contexts/SocketContext";
+import { ThemeProvider } from 'next-themes';
+import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
+import Head from 'next/head';
+import { Toaster } from 'react-hot-toast';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Provider } from 'react-redux';
+import AuthProvider from '../contexts/AuthContext';
+import DarkModeProvider from '../contexts/DarkModeProvider';
+import SocketProvider from "../contexts/SocketContext";
 
 const PeerProvider = dynamic(() => import("contexts/PeerContext"), { ssr: false })
 
@@ -27,6 +27,7 @@ const queryClient = new QueryClient({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+  
   return (
     <>
       <Head>
