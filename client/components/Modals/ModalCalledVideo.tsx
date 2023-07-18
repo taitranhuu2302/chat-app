@@ -14,6 +14,7 @@ import ReactPlayer from 'react-player';
 import { SOCKET_EVENT } from '@/constants/Socket';
 import { useAuthContext } from 'contexts/AuthContext';
 import { MediaConnection } from 'peerjs';
+import dynamic from 'next/dynamic';
 
 interface IProps {}
 

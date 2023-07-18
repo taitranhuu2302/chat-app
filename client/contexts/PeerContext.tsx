@@ -56,14 +56,19 @@ const PeerProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     socket.on(SOCKET_EVENT.VIDEO.CALLING, (data) => {
       if (data.user._id === auth?._id) return;
-      dispatch(
-        setModalVideoCall({
-          isOpen: true,
-          type: 'Request',
-          userCall: data.user,
-        })
-      );
-      eventBus.emit(SOCKET_EVENT.VIDEO.CALLING, data)
+      if (!data.isJoin) {
+        dispatch(
+          setModalVideoCall({
+            isOpen: true,
+            type: 'Request',
+            userCall: data.user,
+            conversationId: data.conversationId
+          })
+        );
+      }
+      setTimeout(() => {
+        eventBus.emit(SOCKET_EVENT.VIDEO.CALLING, data)
+      }, 500)
     });
 
     peerInstance.current = peer;

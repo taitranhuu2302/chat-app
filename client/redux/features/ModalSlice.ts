@@ -5,7 +5,8 @@ interface IState {
   modalVideoCall: {
     isOpen: boolean;
     type: "Request" | "Default",
-    userCall?: UserType | null
+    userCall?: UserType | null,
+    conversationId?: string | null;
   };
 }
 
@@ -14,7 +15,8 @@ const initialState: IState = {
   modalVideoCall: {
     isOpen: false,
     type: "Default",
-    userCall: null
+    userCall: null,
+    conversationId: null
   },
 };
 
@@ -28,7 +30,8 @@ const modalSlice = createSlice({
     setModalVideoCall: (state, {payload}: PayloadAction<{
       isOpen: boolean,
       type?: "Request" | "Default",
-      userCall?: UserType
+      userCall?: UserType,
+      conversationId?: string | null
     }>) => {
       state.modalVideoCall = {
         ...payload,

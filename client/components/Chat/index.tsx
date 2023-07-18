@@ -1,32 +1,29 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styles from '@/styles/components/chat.module.scss';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import ChatHeader from '@/components/Chat/ChatHeader';
 import ChatContent from '@/components/Chat/ChatContent';
 import ChatFooter from '@/components/Chat/ChatFooter';
+import ChatHeader from '@/components/Chat/ChatHeader';
 import SidebarProfile from '@/components/Chat/SidebarProfile';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useRouter } from 'next/router';
+import { SOCKET_EVENT } from '@/constants/Socket';
+import { setConversationStore, setUserOtherStore } from '@/redux/features/ConversationSlice';
+import { setReplyMessage } from '@/redux/features/MessageSlice';
+import { useAppDispatch } from '@/redux/hooks';
 import { useGetConversationById } from '@/service/ConversationService';
 import {
   useGetMessageByConversationApi,
   useSendMessageApi,
 } from '@/service/MessageService';
-import FormData from 'form-data';
 import { flatMapObjectInfinite } from '@/utils/ArrayUtils';
-import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
-import { SOCKET_EVENT } from '@/constants/Socket';
 import { getErrorResponse } from '@/utils/ErrorUtils';
-import toast from 'react-hot-toast';
-import { useAppDispatch } from '@/redux/hooks';
-import { setReplyMessage } from '@/redux/features/MessageSlice';
-import Portal from '../Portal';
-import { debounce } from 'lodash';
 import { AuthContext, AuthContextType } from 'contexts/AuthContext';
-import dynamic from 'next/dynamic';
-
-const ModalCalledVideoDynamic = dynamic(() => import("@/components/Modals/ModalCalledVideo"), { ssr: false })
-const ModalCallVideo = dynamic(() => import('@/components/Modals/ModalCallVideo'), { ssr: false })
+import FormData from 'form-data';
+import { AnimatePresence, motion } from 'framer-motion';
+import { debounce } from 'lodash';
+import { useRouter } from 'next/router';
+import toast from 'react-hot-toast';
+import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
+import Portal from '../Portal';
 
 interface IChat { }
 
@@ -69,6 +66,11 @@ const Chat: React.FC<IChat> = () => {
       },
     },
   });
+
+  useEffect(() => {
+    userOther && dispatch(setUserOtherStore(userOther))
+    conversation && dispatch(setConversationStore(conversation))
+  }, [userOther, conversation])
 
   useEffect(() => {
     if (!socket) return;
@@ -184,7 +186,6 @@ const Chat: React.FC<IChat> = () => {
           conversation={conversation}
           isLoadingConversation={isLoadingConversation}
           onToggleSidebar={onToggleSidebar}
-          setOpenModalCall={setOpenModalCall}
         />
         <ChatContent
           isNewMessage={isNewMessage}
@@ -204,10 +205,6 @@ const Chat: React.FC<IChat> = () => {
       <AnimatePresence>
         {isOpenSidebar && conversation && <Portal><SidebarProfile onClose={onToggleSidebar} conversation={conversation} /></Portal>}
       </AnimatePresence>
-      {
-        userOther && <ModalCallVideo conversation={conversation} user={userOther} open={openModalCall} onClose={() => setOpenModalCall(false)} />
-      }
-      <ModalCalledVideoDynamic />
     </div>
   );
 };

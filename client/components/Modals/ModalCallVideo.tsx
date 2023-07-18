@@ -17,25 +17,26 @@ import { usePeerContext } from 'contexts/PeerContext';
 import { useAuthContext } from 'contexts/AuthContext';
 
 interface IModalCallVideo {
-  user: UserType;
-  conversation: ConversationType;
+
 }
 
-const ModalCallVideo: React.FC<IModalCallVideo> = ({ user, conversation }) => {
+const ModalCallVideo: React.FC<IModalCallVideo> = () => {
   const t = useTranslate();
   const dispatch = useAppDispatch();
   const { socket } = useSocketContext();
   const { peerId } = usePeerContext();
   const { auth } = useAuthContext();
   const { modalVideoCall } = useAppSelector((state) => state.modal);
+  const {conversation, userOther} = useAppSelector(state => state.conversation)
 
   const handleCall = () => {
     dispatch(setOpenModalVideoCalling(true));
     socket &&
       socket.emit(SOCKET_EVENT.VIDEO.JOIN, {
         peerId,
-        conversationId: conversation._id,
+        conversationId: modalVideoCall.conversationId || conversation?._id,
         user: auth,
+        isJoin: !!modalVideoCall.conversationId
       });
     handleClose();
   };
@@ -68,9 +69,9 @@ const ModalCallVideo: React.FC<IModalCallVideo> = ({ user, conversation }) => {
                   </>
                 ) : (
                   <>
-                    <Avatar name={`${user.firstName} ${user.lastName}`} round size={'100px'} />
+                    <Avatar name={`${userOther?.firstName} ${userOther?.lastName}`} round size={'100px'} />
                     <p className={'text-lg mt-5 font-bold'}>
-                      {user.firstName} {user.lastName}
+                      {userOther?.firstName} {userOther?.lastName}
                     </p>
                   </>
                 )

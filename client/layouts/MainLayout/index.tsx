@@ -3,6 +3,10 @@ import Sidebar from '@/layouts/MainLayout/Sidebar';
 import styles from '@/styles/layouts/main-layout.module.scss';
 import React from 'react';
 import Tabs from './Tabs';
+import dynamic from 'next/dynamic';
+
+const ModalCalledVideoDynamic = dynamic(() => import("@/components/Modals/ModalCalledVideo"), { ssr: false })
+const ModalCallVideo = dynamic(() => import('@/components/Modals/ModalCallVideo'), { ssr: false })
 
 interface IMainLayout {
   children: React.ReactNode;
@@ -20,7 +24,8 @@ const MainLayout: React.FC<IMainLayout> = ({ children, isShowTab = true }) => {
         {isShowTab && <Tabs />}
         {/* End Tab */}
         {children}
-        
+        <ModalCallVideo />
+        <ModalCalledVideoDynamic />
         <ModalSearchUser />
       </div>
     </>
