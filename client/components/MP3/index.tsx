@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
 import Sidebar from './Sidebar'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { twMerge } from 'tailwind-merge'
@@ -8,8 +8,23 @@ const MP3 = () => {
   const {open} = useAppSelector(state => state.music)
   const dispatch = useAppDispatch()
 
+  const getPositionMouse = useCallback((event: MouseEvent) => { 
+    const {pageX, pageY} = event;
+    console.log("🚀 ~ file: index.tsx:13 ~ getPositionMouse ~ pageX, pageY:", pageX, pageY)
+  }, [])
+  
+  useEffect(() => {
+    document.addEventListener('click', getPositionMouse)
+
+    return () => {
+      document.removeEventListener('click', getPositionMouse)
+    }
+  }, [getPositionMouse])
+  
   return (
-    <div className={twMerge('fixed z-[1001] w-full h-full left-0 top-0 bg-[#170f23] flex', !open && 'opacity-0 invisible')}>
+    <div className={twMerge('fixed z-[1001] w-full h-full left-0 top-0 bg-[#170f23] flex transition-all duration-500', !open && 'scale-0')} style={{
+      transform: 'translate(1036,)'
+    }}>
       {/* Sidebar */}
       <Sidebar />
       {/* End Sidebar */}
