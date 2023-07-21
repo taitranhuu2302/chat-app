@@ -35,7 +35,6 @@ const Chat: React.FC<IChat> = () => {
     null
   );
   const router = useRouter();
-  const [openModalCall, setOpenModalCall] = useState(false)
   const {
     query: { id },
   } = router;

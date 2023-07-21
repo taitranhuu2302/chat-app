@@ -15,6 +15,7 @@ import { useSocketContext } from 'contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
 import { usePeerContext } from 'contexts/PeerContext';
 import { useAuthContext } from 'contexts/AuthContext';
+import {useRouter} from "next/router";
 
 interface IModalCallVideo {
 
@@ -28,8 +29,9 @@ const ModalCallVideo: React.FC<IModalCallVideo> = () => {
   const { auth } = useAuthContext();
   const { modalVideoCall } = useAppSelector((state) => state.modal);
   const {conversation, userOther} = useAppSelector(state => state.conversation)
+  const router = useRouter();
 
-  const handleCall = () => {
+  const handleCall = async () => {
     dispatch(setOpenModalVideoCalling(true));
     socket &&
       socket.emit(SOCKET_EVENT.VIDEO.JOIN, {

@@ -12,7 +12,7 @@ function Home() {
     <MainLayout>
       <div
         className={
-          'hidden lg:flex items-center justify-center w-full h-full flex-col gap-5 dark:bg-via-100'
+          'hidden lg:flex items-center justify-center w-full h-full flex-col gap-5 dark:bg-via-100 select-none'
         }>
         <Image src={'/logo.svg'} alt={''} width={100} height={100} />
         <p className={'text-xl font-semibold'}>{t.home.welcome}</p>

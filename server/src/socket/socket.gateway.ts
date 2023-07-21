@@ -114,12 +114,17 @@ export class SocketGateway
 
   @SubscribeMessage(SOCKET_EVENT.VIDEO.JOIN)
   async handleVideoCalling(
-    @MessageBody() data: { peerId: string; conversationId: string, userId: string },
-    client: Socket
+    @MessageBody() data: any,
   ) {
     // TODO implement video calling logic here
     this.server.to(data.conversationId).emit(SOCKET_EVENT.VIDEO.CALLING, {
       ...data,
     })
+  }
+
+  @SubscribeMessage(SOCKET_EVENT.VIDEO.USER_DISCONNECTED)
+  async handleVideoDisconnected(@MessageBody() data: any) {
+    console.log(data);
+    this.server.to(data.conversationId).emit(SOCKET_EVENT.VIDEO.DISCONNECTED, data)
   }
 }

@@ -14,6 +14,7 @@ import { Provider } from 'react-redux';
 import AuthProvider from '../contexts/AuthContext';
 import DarkModeProvider from '../contexts/DarkModeProvider';
 import SocketProvider from "../contexts/SocketContext";
+import GlobalLayout from "@/layouts/GlobalLayout";
 
 const PeerProvider = dynamic(() => import("contexts/PeerContext"), { ssr: false })
 
@@ -41,7 +42,9 @@ export default function App({ Component, pageProps }: AppProps) {
                 <DarkModeProvider>
                   <SocketProvider>
                     <PeerProvider>
-                      <Component {...pageProps} />
+                      <GlobalLayout>
+                        <Component {...pageProps} />
+                      </GlobalLayout>
                     </PeerProvider>
                   </SocketProvider>
                 </DarkModeProvider>
