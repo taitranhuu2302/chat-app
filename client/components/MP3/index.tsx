@@ -1,42 +1,41 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react'
 import Sidebar from './Sidebar'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { twMerge } from 'tailwind-merge'
 import { onOpenMusic } from '@/redux/features/MusicSlice'
+import Header from './Header'
+import Charts from './Charts'
 
 const MP3 = () => {
   const {open} = useAppSelector(state => state.music)
-  const dispatch = useAppDispatch()
-
-  const getPositionMouse = useCallback((event: MouseEvent) => { 
-    const {pageX, pageY} = event;
-    console.log("🚀 ~ file: index.tsx:13 ~ getPositionMouse ~ pageX, pageY:", pageX, pageY)
-  }, [])
+  const [tabActive, setTabActive] = useState<SidebarMP3>("charts")
+  const rootRef = useRef<HTMLDivElement | null>(null)
   
-  useEffect(() => {
-    document.addEventListener('click', getPositionMouse)
-
-    return () => {
-      document.removeEventListener('click', getPositionMouse)
+  const renderContent = useMemo(() =>{ 
+    switch (tabActive) {
+      case "charts":
+        return <Charts />;
+      case "library":
+        return <div>Library</div>
+      case "search":
+        return <div>Search</div>
+      default:
+        
+        return <Charts />;
     }
-  }, [getPositionMouse])
+  }, [tabActive])
   
   return (
-    <div className={twMerge('fixed z-[1001] w-full h-full left-0 top-0 bg-[#170f23] flex transition-all duration-500', !open && 'scale-0')} style={{
-      transform: 'translate(1036,)'
-    }}>
+    <div ref={rootRef} className={twMerge('fixed z-[1001] w-full h-full left-0 top-0 bg-[#170f23] flex transition-all duration-500', !open && 'scale-0')}>
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar tabActive={tabActive} setTabActive={setTabActive}/>
       {/* End Sidebar */}
       {/* Main */}
       <div className='flex-grow p-5'>
         {/* Header */}
-        <div className='flex justify-end'>
-          <button className="btn btn-circle" onClick={() => dispatch(onOpenMusic(false))}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
+        <Header />
         {/* End Header */}
+        {renderContent}
       </div>
       {/* End Main */}
     </div>

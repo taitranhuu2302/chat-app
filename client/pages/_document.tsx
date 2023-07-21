@@ -5,7 +5,9 @@ class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head />
+        <Head>
+          <link rel="shortcut icon" href="/logo.svg" />
+        </Head>
         <body
           id={'body'}
           className="bg-light dark:bg-via-100 text-light-1100 dark:text-night-1100">

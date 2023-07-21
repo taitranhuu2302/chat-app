@@ -1,0 +1,1 @@
+type SidebarMP3 = "charts" | "library" | "search"

@@ -1,4 +1,7 @@
 const language = {
+  search: 'Search',
+  library: 'Library',
+  charts: 'Charts',
   newMember: "New member",
   addNewMember: "Add new member",
   notify: 'Notifications',
@@ -97,18 +100,18 @@ const language = {
         attachedImage: 'Images',
       },
     },
-    welcome: 'Welcome to chat app',
+    welcome: 'Welcome to MeloChat',
   },
   auth: {
-    title: 'Chat app',
+    title: 'MeloChat',
     signIn: {
       label: 'Sign In',
-      description: 'Sign in to continue to chat app',
+      description: 'Sign in to continue to MeloChat',
       subDescription: `Don't have an account ?`,
     },
     signUp: {
       label: 'Sign Up',
-      description: 'Sign up to continue to chat app',
+      description: 'Sign up to continue to MeloChat',
       subDescription: `Already have an account ?`,
     },
     rememberMe: 'Remember Me',

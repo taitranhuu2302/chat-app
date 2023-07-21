@@ -1,4 +1,7 @@
 const language = {
+  search: 'Tìm kiếm',
+  library: 'Thư viện',
+  charts: 'Bảng xếp hạng',
   newMember: "Thành viên mới",
   addNewMember: "Thêm thành viên mới",
   notify: "Thông báo",
@@ -97,7 +100,7 @@ const language = {
         attachedImage: 'Hình ảnh kèm theo',
       },
     },
-    welcome: 'Chào mừng bạn đến với ứng dụng trò chuyện',
+    welcome: 'Chào mừng bạn đến với MeloChat',
   },
   auth: {
     title: 'Chat app',

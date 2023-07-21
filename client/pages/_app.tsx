@@ -31,7 +31,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Chat App</title>
+        <title>MeloChat</title>
       </Head>
       <ThemeProvider attribute={'class'} defaultTheme={'light'}>
         <QueryClientProvider client={queryClient}>

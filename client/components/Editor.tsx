@@ -23,11 +23,12 @@ const Editor: React.FC<IProps> = ({
   showTopEditor,
   handleSubmit,
 }) => {
-  const editorRef = useRef<any>();
+  const editorRef = useRef<any>(null);
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [isFocus, setIsFocus] = useState(false);
 
   useEffect(() => {
+    if (editorRef.current && Object.keys(editorRef.current).length > 0) return;
     editorRef.current = {
       CKEditor: require('@ckeditor/ckeditor5-react').CKEditor,
       ClassicEditor: require('@ckeditor/ckeditor5-build-classic'),
