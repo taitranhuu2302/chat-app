@@ -1,0 +1,18 @@
+.mediaItem {
+  @apply flex py-3 px-2.5 hover:bg-[#2f2739] transition-all duration-200 rounded cursor-pointer items-center;
+  .mediaItemCount {
+    -webkit-text-stroke: 1px #4a90e2;
+    color: rgba(74,144,226,0);
+    min-width: 38px;
+    opacity: .7;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+.textCaption {
+  @apply text-[13px] text-[#FFFFFF80];
+}

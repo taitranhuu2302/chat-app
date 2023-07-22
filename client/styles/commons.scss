@@ -496,3 +496,58 @@ html.dark .ripple {
     }
   }
 }
+
+.mp3 {
+  @apply text-white;
+
+  .text-caption {
+    @apply text-[12px] text-[#FFFFFF80];
+  }
+
+  .item-hover {
+    @apply hover:text-[#8b45ca];
+  }
+
+  .color-opacity-ct {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .bg-opacity-ct {
+    background: rgba(255, 255, 255, 0.1);
+
+    .bg-opacity-ct--active {
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .07);
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .scroll-lyric {
+    max-height: 500px;
+    overflow: hidden auto;
+    position: relative;
+    mask-image: linear-gradient(180deg, rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 0.8) 10%, #fff 25%, #fff 75%,
+            rgba(255, 255, 255, 0.8) 90%, rgba(255, 255, 255, 0));
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .lyric-item {
+      color: white;
+      font-size: 35px;
+      padding: 10px 0;
+      font-weight: bold;
+      letter-spacing: -1px;
+
+      &.is-active {
+        color: #ffed00;
+      }
+
+      &.is-over {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+}

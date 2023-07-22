@@ -1,7 +1,7 @@
 import { onOpenMusic } from '@/redux/features/MusicSlice'
 import { useAppDispatch } from '@/redux/hooks'
 import React from 'react'
-import { IoSearchOutline } from 'react-icons/io5'
+import {IoClose, IoSearchOutline } from 'react-icons/io5'
 
 interface IProps {
 
@@ -21,7 +21,7 @@ const Header: React.FC<IProps> = () => {
       <div className="flex items-center gap-2.5">
         {/* <Avatar src={auth?.avatar || ""} name={`${auth?.firstName} ${auth?.lastName}`} size={`40px`} round/> */}
         <button className="bg-white w-[40px] hover:opacity-90 h-[40px] rounded-full flex-center" onClick={() => dispatch(onOpenMusic(false))}>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          <IoClose color={'black'} size={25} />
         </button>
       </div>
     </div>
