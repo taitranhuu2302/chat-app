@@ -18,11 +18,11 @@ const Library: React.FC<PropsWithChildren<IProps>> = () => {
         </button>
       </div>
       <div className={'space-y-2.5 py-2.5'}>
-        {Array(5)
-          .fill(0)
-          .map((_, index) => (
-            <MediaItem key={index} />
-          ))}
+        {/*{Array(5)*/}
+        {/*  .fill(0)*/}
+        {/*  .map((_, index) => (*/}
+        {/*    <MediaItem key={index} />*/}
+        {/*  ))}*/}
       </div>
     </div>
   );

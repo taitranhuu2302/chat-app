@@ -4,11 +4,11 @@ import Control from '@/components/MP3/Control';
 import Volume from '@/components/MP3/Volume';
 import { TbListDetails } from 'react-icons/tb';
 import AudioModal from '@/components/MP3/Modal/AudioModal';
+import ButtonHeart from "@/components/MP3/ButtonHeart";
 
 interface IProps {}
 
 const Footer: React.FC<PropsWithChildren<IProps>> = () => {
-  const [isFavourite, setIsFavourite] = useState(false);
   const [openAudioModal, setOpenAudioModal] = useState(false);
 
   return (
@@ -27,13 +27,7 @@ const Footer: React.FC<PropsWithChildren<IProps>> = () => {
             <p className={'text-caption'}>Hoà Minzy</p>
           </div>
           <div>
-            <button onClick={() => setIsFavourite((e) => !e)}>
-              {isFavourite ? (
-                <AiFillHeart className={'text-[#8b45ca]'} size={20} />
-              ) : (
-                <AiOutlineHeart size={20} />
-              )}
-            </button>
+            <ButtonHeart />
           </div>
         </div>
         <div className={'flex-grow flex-center'}>
