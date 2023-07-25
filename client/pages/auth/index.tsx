@@ -6,13 +6,13 @@ import useTranslate from '@/hooks/useTranslate';
 import withPageLoading from '../../HOC/withPageLoading';
 import LoginSocial from '@/components/LoginSocial';
 import * as yup from 'yup';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { setToken, useLoginApi } from '@/service/AuthService';
-import {getErrorResponse} from "@/utils/ErrorUtils";
-import {API} from "@/constants/Api";
-import {useQueryClient} from "react-query";
-import withLogged from "@/HOC/withLogged";
+import { getErrorResponse } from '@/utils/ErrorUtils';
+import { API } from '@/constants/Api';
+import { useQueryClient } from 'react-query';
+import withLogged from '@/HOC/withLogged';
 
 interface ILoginPage {}
 

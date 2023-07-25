@@ -1,13 +1,9 @@
 import React from 'react';
 import MainLayout from '@/layouts/MainLayout';
-import {useRouter} from 'next/router';
 import Chat from '@/components/Chat';
 import withAuth from '@/HOC/withAuth';
-import dynamic from "next/dynamic";
 
-interface IRoomDetail {
-
-}
+interface IRoomDetail {}
 
 const RoomDetail: React.FC<IRoomDetail> = () => {
 

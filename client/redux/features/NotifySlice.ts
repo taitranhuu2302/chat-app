@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IState {
   countRequestFriend: number;
-  userOnline: string[]
+  userOnline: string[];
 }
 
 const initialState: IState = {

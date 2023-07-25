@@ -13,9 +13,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider } from 'react-redux';
 import AuthProvider from '../contexts/AuthContext';
 import DarkModeProvider from '../contexts/DarkModeProvider';
-import SocketProvider from "../contexts/SocketContext";
-import GlobalLayout from "@/layouts/GlobalLayout";
-import {useEffect} from 'react'
+import SocketProvider from '../contexts/SocketContext';
+import GlobalLayout from '@/layouts/GlobalLayout';
 
 const PeerProvider = dynamic(() => import("contexts/PeerContext"), { ssr: false })
 

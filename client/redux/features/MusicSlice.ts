@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IState {
   open: boolean;
-  songCurrent: SongInfoType | null,
+  songCurrent: SongInfoType | null;
   volume: number;
-  currentTime: number,
+  currentTime: number;
   currentTimeChange: number;
   isPlaying: boolean;
 }
@@ -12,7 +12,7 @@ interface IState {
 const initialState: IState = {
   open: false,
   songCurrent: null,
-  volume: 80,
+  volume: 0.8,
   currentTime: 0,
   currentTimeChange: 0,
   isPlaying: false

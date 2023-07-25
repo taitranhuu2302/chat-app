@@ -5,7 +5,7 @@ import useTranslate from '@/hooks/useTranslate';
 import LoginSocial from '@/components/LoginSocial';
 import withPageLoading from '../../HOC/withPageLoading';
 import * as yup from 'yup';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { setToken, useRegisterApi } from '@/service/AuthService';
 import { useRouter } from 'next/router';
@@ -13,7 +13,7 @@ import IconLoading from '@/components/Loading/IconLoading';
 import { getErrorResponse } from '@/utils/ErrorUtils';
 import { API } from '@/constants/Api';
 import { useQueryClient } from 'react-query';
-import withLogged from "@/HOC/withLogged";
+import withLogged from '@/HOC/withLogged';
 
 interface IRegister {}
 

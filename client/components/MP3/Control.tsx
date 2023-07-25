@@ -1,13 +1,18 @@
-import React, {PropsWithChildren} from 'react';
-import {IoPauseCircleOutline, IoPlayCircleOutline, IoShuffleOutline } from 'react-icons/io5';
-import {MdSkipNext, MdSkipPrevious } from 'react-icons/md';
+import React, { PropsWithChildren } from 'react';
+import {
+  IoPauseCircleOutline,
+  IoPlayCircleOutline,
+  IoShuffleOutline,
+} from 'react-icons/io5';
+import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
 import { RxLoop } from 'react-icons/rx';
 import Slider from './Slider';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { convertSecondToMinute } from '@/utils/TimerUtils';
-import { setCurrentTime, setIsPlaying } from '@/redux/features/MusicSlice';
+import { setIsPlaying } from '@/redux/features/MusicSlice';
 import eventBus from '@/config/EventBus';
 import { CHANGE_CURRENT_TIME } from '@/constants/Music';
+
 interface IProps {
 
 }

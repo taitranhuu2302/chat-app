@@ -1,11 +1,11 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IState {
   openModalVideoCalling: boolean;
   modalVideoCall: {
     isOpen: boolean;
-    type: "Request" | "Default",
-    userCall?: UserType | null,
+    type: 'Request' | 'Default';
+    userCall?: UserType | null;
     conversationId?: string | null;
   };
 }

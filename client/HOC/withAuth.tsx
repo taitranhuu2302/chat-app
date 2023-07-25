@@ -1,5 +1,4 @@
 import { ComponentType, FC, useContext, useEffect } from 'react';
-import { useAppSelector } from '@/redux/hooks';
 import LoadingPage from '@/components/Loading';
 import { AuthContext, AuthContextType } from '../contexts/AuthContext';
 import { useRouter } from 'next/router';
@@ -15,7 +14,7 @@ function withHOC<T extends object>(
 
     useEffect(() => {
       if (!authLoading && !auth) {
-        router.push('/auth').then((r) => {});
+        router.push('/auth').then(() => {});
       }
     }, [auth, authLoading]);
 
