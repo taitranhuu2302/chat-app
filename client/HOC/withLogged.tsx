@@ -14,7 +14,7 @@ function withHOC<T extends object>(
 
     useEffect(() => {
       if (!authLoading && auth) {
-        router.push('/').then((r) => {});
+        router.push('/').then(() => {});
       }
     }, [auth, authLoading]);
 
