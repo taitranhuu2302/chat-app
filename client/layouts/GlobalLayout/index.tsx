@@ -1,8 +1,9 @@
-import React, {PropsWithChildren, useRef, useState} from 'react';
+import React, {PropsWithChildren, useMemo, useRef, useState} from 'react';
 import {motion} from "framer-motion";
 import {useAppDispatch} from "@/redux/hooks";
 import {onOpenMusic} from "@/redux/features/MusicSlice";
 import {useRouter} from "next/router";
+import AudioMusic from '@/components/MP3/AudioMusic';
 
 interface IProps {
 
@@ -23,9 +24,13 @@ const GlobalLayout: React.FC<PropsWithChildren> = ({children}) => {
       dispatch(onOpenMusic(true))
     }
   }
+  console.log('Global Layout');
+
+  const isAuthRoute = useMemo(() => router.pathname.startsWith('/auth'), [router])
+
   return (
     <motion.div ref={constraintsRef}>
-      {!router.pathname.startsWith('/auth') && <motion.div onMouseUp={onMouseUp} onMouseDown={onMouseDown}
+      {!isAuthRoute && <motion.div onMouseUp={onMouseUp} onMouseDown={onMouseDown}
                    className="fixed z-[1000] opacity-40 hover:opacity-100 cursor-pointer"
                    drag dragConstraints={constraintsRef}>
         <picture>
@@ -35,6 +40,7 @@ const GlobalLayout: React.FC<PropsWithChildren> = ({children}) => {
         </picture>
       </motion.div>}
       {children}
+      {!isAuthRoute && <AudioMusic />}
     </motion.div>
   )
 }

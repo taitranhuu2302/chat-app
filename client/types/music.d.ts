@@ -109,15 +109,15 @@ type SongInfoType = {
   streamingStatus: number;
   allowAudioAds: boolean;
   hasLyric: boolean;
-  userid: number;
-  genres: GenreType[];
-  composers: ComposerType[];
-  album: AlbumType;
-  isRBT: boolean;
-  like: number;
-  listen: number;
-  liked: boolean;
-  comment: number;
+  userid?: number;
+  genres?: GenreType[];
+  composers?: ComposerType[];
+  album?: AlbumType;
+  isRBT?: boolean;
+  like?: number;
+  listen?: number;
+  liked?: boolean;
+  comment?: number;
 };
 
 type GenreType = {

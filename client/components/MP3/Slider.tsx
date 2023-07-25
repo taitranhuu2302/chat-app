@@ -57,10 +57,11 @@ const Slider: React.FC<IProps> = ({
             {...props}
             style={{
               ...props.style,
-              height: '42px',
-              width: '42px',
-              backgroundColor: '#999',
-              display: 'none',
+              height: '10px',
+              width: '10px',
+              backgroundColor: '#fff',
+              borderRadius: '999px'
+              // display: 'none',
             }}
           />
         )}

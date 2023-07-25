@@ -15,6 +15,7 @@ import AuthProvider from '../contexts/AuthContext';
 import DarkModeProvider from '../contexts/DarkModeProvider';
 import SocketProvider from "../contexts/SocketContext";
 import GlobalLayout from "@/layouts/GlobalLayout";
+import {useEffect} from 'react'
 
 const PeerProvider = dynamic(() => import("contexts/PeerContext"), { ssr: false })
 

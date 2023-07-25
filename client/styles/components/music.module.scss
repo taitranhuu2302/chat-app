@@ -1,5 +1,10 @@
 .mediaItem {
-  @apply flex py-3 px-2.5 hover:bg-[#2f2739] transition-all duration-200 rounded cursor-pointer items-center;
+  @apply flex py-3 pl-2.5 pr-5 hover:bg-[#2f2739] transition-all duration-200 rounded cursor-pointer items-center;
+
+  &.active {
+    @apply bg-[#2f2739];
+  }
+  
   .mediaItemCount {
     -webkit-text-stroke: 1px #bebbc1;
     min-width: 65px;

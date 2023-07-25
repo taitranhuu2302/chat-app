@@ -5,11 +5,14 @@ import Volume from '@/components/MP3/Volume';
 import { TbListDetails } from 'react-icons/tb';
 import AudioModal from '@/components/MP3/Modal/AudioModal';
 import ButtonHeart from "@/components/MP3/ButtonHeart";
+import { useAppSelector } from '@/redux/hooks';
+import { formatLimitText } from '@/utils/StringUtils';
 
 interface IProps {}
 
 const Footer: React.FC<PropsWithChildren<IProps>> = () => {
   const [openAudioModal, setOpenAudioModal] = useState(false);
+  const songCurrent = useAppSelector(state => state.music.songCurrent)
 
   return (
     <>
@@ -18,13 +21,13 @@ const Footer: React.FC<PropsWithChildren<IProps>> = () => {
           <picture>
             <img
               className={'w-[64px] h-[64px] rounded'}
-              src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp…over/2/d/5/c/2d5cc8bc9f930ce292c464e929ea31fb.jpg"
+              src={songCurrent?.thumbnailM || "https://static-zmp3.zadn.vn/skins/common/logo600.png"}
               alt=""
             />
           </picture>
-          <div>
-            <p className={'text-[14px] font-semibold'}>Bật tình yêu lên</p>
-            <p className={'text-caption'}>Hoà Minzy</p>
+          <div className='flex flex-col items-start gap-1'>
+            <p className={'text-[14px] font-semibold tooltip tooltip-top'} data-tip={songCurrent?.title || ""}>{formatLimitText(songCurrent?.title || "", 20)}</p>
+            <p className={'text-caption tooltip tooltip-top'} data-tip={songCurrent?.artistsNames}>{formatLimitText(songCurrent?.artistsNames || "", 30)}</p>
           </div>
           <div>
             <ButtonHeart />

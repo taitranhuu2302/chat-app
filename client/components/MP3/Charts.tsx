@@ -2,6 +2,7 @@ import React from 'react';
 import { BsFillPlayCircleFill } from 'react-icons/bs';
 import MediaItem from '@/components/MP3/MediaItem';
 import { useGetCharts } from '@/service/MusicService';
+import { useAppSelector } from '@/redux/hooks';
 
 const Charts = () => {
   const { data } = useGetCharts();
