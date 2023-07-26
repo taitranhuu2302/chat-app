@@ -6,6 +6,11 @@ type MusicResponse<T> = {
   timestamp: number;
 };
 
+type MusicConfigType = {
+  isLoop?: boolean;
+  isRandom?: boolean;
+}
+
 type ObjectType = "song" | "hub";
 
 type SearchType = {

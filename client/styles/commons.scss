@@ -508,6 +508,10 @@ html.dark .ripple {
     @apply hover:text-[#8b45ca];
   }
 
+  .item-active {
+    @apply text-[#8b45ca];
+  }
+
   .color-opacity-ct {
     color: rgba(255, 255, 255, 0.5);
   }

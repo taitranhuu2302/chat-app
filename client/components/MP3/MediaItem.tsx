@@ -4,14 +4,15 @@ import { convertSecondToMinute } from '@/utils/TimerUtils';
 import ButtonHeart from '@/components/MP3/ButtonHeart';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { setSongCurrent } from '@/redux/features/MusicSlice';
+import { PlaylistType, setPlayList, setSongCurrent } from '@/redux/features/MusicSlice';
 
 interface IProps {
   data: ChartItemType;
   index: number;
+  playlist: PlaylistType
 }
 
-const MediaItem: React.FC<PropsWithChildren<IProps>> = ({ data, index }) => {
+const MediaItem: React.FC<PropsWithChildren<IProps>> = ({ data, index, playlist }) => {
   const dispatch = useAppDispatch()
   const { songCurrent } = useAppSelector(state => state.music)
   
@@ -27,6 +28,7 @@ const MediaItem: React.FC<PropsWithChildren<IProps>> = ({ data, index }) => {
       ...data,
     }
     dispatch(setSongCurrent(song))
+    dispatch(setPlayList({...playlist, isDefaultSong: false}))
   }, [data])
 
   return (

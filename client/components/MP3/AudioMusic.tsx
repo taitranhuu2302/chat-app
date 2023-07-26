@@ -1,6 +1,6 @@
 import eventBus from '@/config/EventBus';
 import { CHANGE_CURRENT_TIME } from '@/constants/Music';
-import { setCurrentTime, setIsPlaying } from '@/redux/features/MusicSlice';
+import { setCurrentTime, setIsPlaying, setSongChange } from '@/redux/features/MusicSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useGetSong } from '@/service/MusicService';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
@@ -12,8 +12,10 @@ const AudioMusic = memo(function AudioMusic() {
   const dispatch = useAppDispatch();
   const isPlaying = useAppSelector((state) => state.music.isPlaying);
   const volume = useAppSelector(state => state.music.volume)
+  const currentTime = useAppSelector(state => state.music.currentTime)
+  const isLoop = useAppSelector(state => state.music.isLoop)
 
-  const { isLoading } = useGetSong(songCurrent?.encodeId, {
+  useGetSong(songCurrent?.encodeId, {
     onSuccess: ({ data }: { data: SongType }) => {
       const audio = audioRef.current;
       if (!audio) return;
@@ -68,6 +70,17 @@ const AudioMusic = memo(function AudioMusic() {
       eventBus.off(CHANGE_CURRENT_TIME);
     };
   }, [audioRef.current]);
+
+  useEffect(() => {
+    if (Math.ceil(currentTime) >= Number(songCurrent?.duration)) {
+      if (isLoop) {
+        audioRef.current!.currentTime = 0
+        return;
+      }
+      
+      dispatch(setSongChange("Next"))
+    }
+  }, [currentTime])
 
   const handleChangeTime = useCallback((timer: number) => {
     dispatch(setCurrentTime(timer));
