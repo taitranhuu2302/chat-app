@@ -1,7 +1,13 @@
-import React, {PropsWithChildren, useMemo, useRef, useState} from 'react';
+import React, {
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {motion} from "framer-motion";
 import {useAppDispatch} from "@/redux/hooks";
-import {onOpenMusic} from "@/redux/features/MusicSlice";
+import {onOpenMusic, setConfigDefaultMusic} from "@/redux/features/MusicSlice";
 import {useRouter} from "next/router";
 import AudioMusic from '@/components/MP3/AudioMusic';
 
@@ -18,6 +24,11 @@ const GlobalLayout: React.FC<PropsWithChildren> = ({children}) => {
   const onMouseDown = (event: any) => {
     setDragStart(new Date().getTime());
   };
+
+  useEffect(() => {
+    dispatch(setConfigDefaultMusic())
+  }, []);
+
 
   const onMouseUp = () => {
     if ((new Date().getTime() - dragStart) < 150) {

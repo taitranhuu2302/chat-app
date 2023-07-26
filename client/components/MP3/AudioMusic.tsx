@@ -1,6 +1,10 @@
 import eventBus from '@/config/EventBus';
 import { CHANGE_CURRENT_TIME } from '@/constants/Music';
-import { setCurrentTime, setIsPlaying, setSongChange } from '@/redux/features/MusicSlice';
+import {
+  setCurrentTime,
+  setIsPlaying,
+  setSongChange,
+} from '@/redux/features/MusicSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useGetSong } from '@/service/MusicService';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
@@ -11,9 +15,9 @@ const AudioMusic = memo(function AudioMusic() {
   const songCurrent = useAppSelector((state) => state.music.songCurrent);
   const dispatch = useAppDispatch();
   const isPlaying = useAppSelector((state) => state.music.isPlaying);
-  const volume = useAppSelector(state => state.music.volume)
-  const currentTime = useAppSelector(state => state.music.currentTime)
-  const isLoop = useAppSelector(state => state.music.isLoop)
+  const volume = useAppSelector((state) => state.music.volume);
+  const currentTime = useAppSelector((state) => state.music.currentTime);
+  const isLoop = useAppSelector((state) => state.music.isLoop);
 
   useGetSong(songCurrent?.encodeId, {
     onSuccess: ({ data }: { data: SongType }) => {
@@ -27,11 +31,12 @@ const AudioMusic = memo(function AudioMusic() {
 
       audio.src = data['128'];
       audio.addEventListener('loadedmetadata', () => {
+        if (!isPlaying) return;
         audio.play().then(() => {
           dispatch(setIsPlaying(true));
         });
       });
-      audio.volume = volume
+      audio.volume = volume;
       audio.setAttribute('crossorigin', 'anonymous');
     },
   });
@@ -39,7 +44,7 @@ const AudioMusic = memo(function AudioMusic() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = volume
+    audio.volume = volume;
   }, [volume]);
 
   useEffect(() => {
@@ -74,13 +79,13 @@ const AudioMusic = memo(function AudioMusic() {
   useEffect(() => {
     if (Math.ceil(currentTime) >= Number(songCurrent?.duration)) {
       if (isLoop) {
-        audioRef.current!.currentTime = 0
+        audioRef.current!.currentTime = 0;
         return;
       }
-      
-      dispatch(setSongChange("Next"))
+
+      dispatch(setSongChange());
     }
-  }, [currentTime])
+  }, [currentTime]);
 
   const handleChangeTime = useCallback((timer: number) => {
     dispatch(setCurrentTime(timer));

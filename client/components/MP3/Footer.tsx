@@ -1,5 +1,4 @@
 import React, { PropsWithChildren, useState } from 'react';
-import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 import Control from '@/components/MP3/Control';
 import Volume from '@/components/MP3/Volume';
 import { TbListDetails } from 'react-icons/tb';
@@ -17,7 +16,7 @@ const Footer: React.FC<PropsWithChildren<IProps>> = () => {
   return (
     <>
       <div className={'flex items-center gap-2.5 px-5 h-[90px] bg-[#130c1c]'}>
-        <div className={'flex items-center gap-5'}>
+        <div className={'flex items-center gap-5 w-[320px]'}>
           <picture>
             <img
               className={'w-[64px] h-[64px] rounded'}
