@@ -13,7 +13,15 @@ const Volume: React.FC<PropsWithChildren<IProps>> = () => {
   return (
     <>
       <div className={'flex items-center gap-4'}>
-        {volume <= 0 ? <IoVolumeMute size={25} /> : <IoVolumeHigh size={25} />}
+        <button onClick={() => {
+          if (volume !== 0) {
+            dispatch(setVolume(0))
+          } else {
+            dispatch(setVolume(0.5))
+          }
+        }}>
+          {volume <= 0 ? <IoVolumeMute size={25} /> : <IoVolumeHigh size={25} />}
+        </button>
         <div className={'w-[70px]'}>
           <Slider
             values={[volume]}

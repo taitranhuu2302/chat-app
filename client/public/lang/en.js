@@ -1,4 +1,12 @@
 const language = {
+  favourite: "Favourite",
+  random: "Random",
+  loop: "Loop",
+  next: "Next",
+  previous: "Previous",
+  play: "Play",
+  pause: "Pause",
+  showDetail: "Show detail",
   search: 'Search',
   library: 'Library',
   charts: 'Charts',

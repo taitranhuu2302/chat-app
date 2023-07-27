@@ -31,7 +31,6 @@ const AudioMusic = memo(function AudioMusic() {
 
       audio.src = data['128'];
       audio.addEventListener('loadedmetadata', () => {
-        if (!isPlaying) return;
         audio.play().then(() => {
           dispatch(setIsPlaying(true));
         });

@@ -1,20 +1,28 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useContext, useState } from 'react';
+import React, { memo, useContext, useMemo, useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { TAB_AUDIO_MODAL, TabAudioActiveType } from '@/constants/AudioModal';
 import { twMerge } from 'tailwind-merge';
 import Control from '@/components/MP3/Control';
-import ListMusic from "@/components/MP3/Modal/ListMusic";
-import Lyrics from "@/components/MP3/Modal/Lyrics";
+import ListMusic from '@/components/MP3/Modal/ListMusic';
+import Lyrics from '@/components/MP3/Modal/Lyrics';
+import { useAppSelector } from '@/redux/hooks';
 
 interface IProps {
   open: boolean;
   onClose: () => void;
 }
 
-const AudioModal: React.FC<IProps> = ({ open, onClose }) => {
+const AudioModal: React.FC<IProps> = memo(function AudioModal({
+  open,
+  onClose,
+}) {
   const [tabActive, setTabActive] = useState<TabAudioActiveType>('Lyric');
+  const songCurrent = useAppSelector((state) => state.music.songCurrent);
+
+  const styleActive = (isActive: boolean) =>
+    isActive ? 'active-soft' : 'hidden-soft';
 
   return (
     <>
@@ -66,26 +74,38 @@ const AudioModal: React.FC<IProps> = ({ open, onClose }) => {
                   </button>
                 </div>
               </div>
-              <div className={'flex-grow'}>
-                {tabActive === 'List' && <ListMusic />}
-                {tabActive === 'Lyric' && <Lyrics />}
+              <div className={'flex-grow flex'}>
+                <div
+                  className={twMerge(
+                    'h-full w-full',
+                    styleActive(tabActive === 'List')
+                  )}>
+                  <ListMusic />
+                </div>
+                <div
+                  className={twMerge(
+                    'h-full w-full',
+                    styleActive(tabActive === 'Lyric')
+                  )}>
+                  <Lyrics />
+                </div>
               </div>
               <div className={'py-5 px-2.5 flex-center flex-col'}>
-                {/*<div className={'mb-2 flex-center gap-2.5'}>*/}
-                {/*  <p className={'text-center text-lg font-semibold text-white'}>*/}
-                {/*    {sourceCurrent?.name}*/}
-                {/*  </p>*/}
-                {/*  <div*/}
-                {/*    className={'w-[5px] h-[5px] rounded-full bg-[#CACECC]'}*/}
-                {/*  ></div>*/}
-                {/*  <p className={'font-semibold text-[#AFB6B2]'}>*/}
-                {/*    {sourceCurrent?.artistsNames}*/}
-                {/*  </p>*/}
-                {/*</div>*/}
-                <div
-                  className={
-                    'flex items-center gap-5 max-w-[500px] w-full mb-2'
-                  }>
+                {songCurrent && (
+                  <div className={'mb-2 flex-center gap-2.5'}>
+                    <p className={'text-center font-semibold text-white'}>
+                      {songCurrent?.title}
+                    </p>
+                    <div
+                      className={
+                        'w-[5px] h-[5px] rounded-full bg-[#CACECC]'
+                      }></div>
+                    <p className={'font-semibold text-[#AFB6B2]'}>
+                      {songCurrent?.artistsNames}
+                    </p>
+                  </div>
+                )}
+                <div className={'flex-center gap-5 max-w-[500px] w-full mb-2'}>
                   <Control />
                 </div>
               </div>
@@ -95,9 +115,10 @@ const AudioModal: React.FC<IProps> = ({ open, onClose }) => {
       </AnimatePresence>
     </>
   );
-};
+});
 
 const AudioModalBG = () => {
+  const songCurrent = useAppSelector((state) => state.music.songCurrent);
   return (
     <div className={'absolute top-0 left-0 w-full h-full'}>
       <div
@@ -113,7 +134,9 @@ const AudioModalBG = () => {
         style={{
           width: '100%',
           height: '100%',
-          backgroundImage: `url(${'https://photo-resize-zmp3.zmdcdn.me/'})`,
+          backgroundImage: `url(${
+            songCurrent?.thumbnailM ?? 'https://photo-resize-zmp3.zmdcdn.me/'
+          })`,
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',

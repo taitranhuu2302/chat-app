@@ -16,8 +16,6 @@ interface IMainLayout {
 }
 
 const MainLayout: React.FC<IMainLayout> = ({children, isShowTab = true}) => {
-  const {openModalVideoCalling} = useAppSelector(state => state.modal)
-
   return (
     <>
       <div className="w-full h-full">

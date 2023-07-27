@@ -19,7 +19,6 @@ const Header: React.FC<IProps> = () => {
         <input type="text" className='flex-grow outline-none pl-2.5 pr-5 border-none bg-transparent text-white' placeholder='Tìm kiếm bài hát'/>
       </div>
       <div className="flex items-center gap-2.5">
-        {/* <Avatar src={auth?.avatar || ""} name={`${auth?.firstName} ${auth?.lastName}`} size={`40px`} round/> */}
         <button className="bg-white w-[40px] hover:opacity-90 h-[40px] rounded-full flex-center" onClick={() => dispatch(onOpenMusic(false))}>
           <IoClose color={'black'} size={25} />
         </button>

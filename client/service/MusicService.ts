@@ -11,9 +11,24 @@ export const useGetCharts = (options?: any) => {
 };
 
 export const useGetSong = (id?: string, options?: any) => {
-  return useQuery(['get-song-source', id], (): Promise<MusicResponse<SongType>> => 
-  axios.get(`/api/music/song/${id}`).then(res => res.data), {
-    enabled: !!id,
-    ...options
-  })
-}
+  return useQuery(
+    ['get-song-source', id],
+    (): Promise<MusicResponse<SongType>> =>
+      axios.get(`/api/music/song/${id}`).then((res) => res.data),
+    {
+      enabled: !!id,
+      ...options,
+    }
+  );
+};
+
+export const useGetLyrics = (id?: string, options?: any) => {
+  return useQuery(
+    ['get-lyrics-song', id],
+    (): Promise<MusicResponse<any>> =>
+      axios.get(`/api/music/lyrics/${id}`).then((res) => res.data),
+    {
+      ...options,
+    }
+  );
+};

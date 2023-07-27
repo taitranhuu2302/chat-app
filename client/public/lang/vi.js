@@ -1,4 +1,13 @@
 const language = {
+  favourite: "Yêu thích",
+  random: "Ngẫu nhiên",
+  loop: "Lặp",
+  next: "Bài tiếp theo",
+  previous: "Bài trước",
+  play: "Mở nhạc",
+  pause: "Dừng",
+  showDetail: "Mở chi tiết",
+  search: 'Search',
   search: 'Tìm kiếm',
   library: 'Thư viện',
   charts: 'Bảng xếp hạng',

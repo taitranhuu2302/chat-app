@@ -1,11 +1,10 @@
 import React, {
-  useCallback,
   useMemo,
-  useEffect,
   useRef,
   useState,
   Suspense,
   lazy,
+  useEffect,
 } from 'react';
 import Sidebar from './Sidebar';
 import { useAppSelector } from '@/redux/hooks';

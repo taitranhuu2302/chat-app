@@ -2,6 +2,7 @@ import { store } from '@/redux/store';
 import '@/styles/commons.scss';
 import '@/styles/font.scss';
 import '@/styles/globals.scss';
+import 'swiper/css';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ThemeProvider } from 'next-themes';
@@ -28,7 +29,7 @@ const queryClient = new QueryClient({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
-  
+
   return (
     <>
       <Head>
