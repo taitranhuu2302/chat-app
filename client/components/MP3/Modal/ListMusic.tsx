@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SongItem from './SongItem';
 import { useAppSelector } from '@/redux/hooks';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -25,25 +25,32 @@ const ListMusic: React.FC<IProps> = () => {
   return (
     <>
       <div className={'h-full px-5'}>
-        <Swiper
-          className="h-full"
-          onSwiper={setSwiper}
-          spaceBetween={30}
-          onActiveIndexChange={(swiper) => {
-            setCurrentIndex(swiper.activeIndex);
-          }}
-          slidesPerView={'auto'}
-          centeredSlides={true}>
-          {playlist.map((song, index) => {
-            return (
-              <SwiperSlide
-                key={song.encodeId}
-                className={'!flex items-center !w-fit'}>
-                <SongItem song={song} isActive={currentIndex === index} />
-              </SwiperSlide>
-            );
-          })}
-        </Swiper>
+        {!playlist.length && songCurrent && (
+          <div className={'flex-center h-full'}>
+            <SongItem song={songCurrent} />
+          </div>
+        )}
+        {!!playlist.length && (
+          <Swiper
+            className="h-full"
+            onSwiper={setSwiper}
+            spaceBetween={30}
+            onActiveIndexChange={(swiper) => {
+              setCurrentIndex(swiper.activeIndex);
+            }}
+            slidesPerView={'auto'}
+            centeredSlides={true}>
+            {playlist.map((song, index) => {
+              return (
+                <SwiperSlide
+                  key={song.encodeId}
+                  className={'!flex items-center !w-fit'}>
+                  <SongItem song={song} isActive={currentIndex === index} />
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
+        )}
       </div>
     </>
   );

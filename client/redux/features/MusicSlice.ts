@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getRandomInt } from '@/utils/NumberUtils';
-import volume from '@/components/MP3/Volume';
 
 export type PlaylistType = {
   items: SongInfoType[];
@@ -17,6 +16,7 @@ interface IState {
   isLoop: boolean;
   isRandom: boolean;
   playlist: PlaylistType;
+  favourite: FavouriteType[];
 }
 
 const initialState: IState = {
@@ -32,6 +32,7 @@ const initialState: IState = {
     items: [],
     type: '',
   },
+  favourite: [],
 };
 
 export const setConfigMusic = (config: {
@@ -46,7 +47,7 @@ export const setConfigMusic = (config: {
     ...configLocal,
     ...config,
   };
-  localStorage.setItem("config", JSON.stringify(obj))
+  localStorage.setItem('config', JSON.stringify(obj));
 };
 
 export const getConfigMusic = () => {
@@ -64,11 +65,11 @@ const musicSlice = createSlice({
     },
     setSongCurrent: (state, { payload }: PayloadAction<SongInfoType>) => {
       state.songCurrent = payload;
-      setConfigMusic({songCurrent: payload})
+      setConfigMusic({ songCurrent: payload });
     },
     setVolume: (state, { payload }: PayloadAction<number>) => {
       state.volume = payload;
-      setConfigMusic({volume: payload})
+      setConfigMusic({ volume: payload });
     },
     setCurrentTime: (state, { payload }: PayloadAction<number>) => {
       state.currentTime = payload;
@@ -79,20 +80,20 @@ const musicSlice = createSlice({
     setIsRandom: (state, { payload }: PayloadAction<boolean | undefined>) => {
       if (typeof payload === 'undefined') {
         state.isRandom = !state.isRandom;
-        setConfigMusic({isRandom: state.isRandom})
+        setConfigMusic({ isRandom: state.isRandom });
         return;
       }
       state.isRandom = payload;
-      setConfigMusic({isRandom: payload})
+      setConfigMusic({ isRandom: payload });
     },
     setIsLoop: (state, { payload }: PayloadAction<boolean | undefined>) => {
       if (typeof payload === 'undefined') {
         state.isLoop = !state.isLoop;
-        setConfigMusic({isLoop: state.isLoop})
+        setConfigMusic({ isLoop: state.isLoop });
         return;
       }
       state.isLoop = payload;
-      setConfigMusic({isLoop: payload})
+      setConfigMusic({ isLoop: payload });
     },
     setIsPlaying: (state, { payload }: PayloadAction<boolean | null>) => {
       if (typeof payload === 'boolean') {
@@ -105,32 +106,36 @@ const musicSlice = createSlice({
       state,
       { payload }: PayloadAction<'Previous' | 'Next' | undefined>
     ) => {
-      const indexItemCurrent = state.playlist.items.findIndex(
-        (item) => item.encodeId === state.songCurrent?.encodeId
-      );
+      const playlist = state.playlist.items;
+      if (!playlist.length) return;
+      const indexItemCurrent = playlist.findIndex((item: SongInfoType) => {
+        return item.encodeId === state.songCurrent?.encodeId;
+      });
+
+      if (indexItemCurrent === -1) return;
 
       if (typeof payload === 'undefined' && state.isRandom) {
         const position = indexItemCurrent + getRandomInt(1, 10);
         state.songCurrent =
-          position > state.playlist.items.length - 1
-            ? state.playlist.items[state.playlist.items.length - 1]
-            : state.playlist.items[position];
+          position > playlist.length - 1
+            ? playlist[playlist.length - 1]
+            : playlist[position];
         return;
       }
 
       if (payload === 'Next' || typeof payload === 'undefined') {
         state.songCurrent =
-          indexItemCurrent === state.playlist.items.length - 1
-            ? state.playlist.items[0]
-            : state.playlist.items[indexItemCurrent + 1];
+          indexItemCurrent === playlist.length - 1
+            ? playlist[0]
+            : playlist[indexItemCurrent + 1];
         return;
       }
 
       if (payload === 'Previous') {
         state.songCurrent =
           indexItemCurrent === 0
-            ? state.playlist.items[state.playlist.items.length - 1]
-            : state.playlist.items[indexItemCurrent - 1];
+            ? playlist[playlist.length - 1]
+            : playlist[indexItemCurrent - 1];
         return;
       }
     },
@@ -144,30 +149,46 @@ const musicSlice = createSlice({
         isDefaultSong: boolean;
       }>
     ) => {
-      if (payload.type === state.playlist.type || !payload.items.length) return;
+      if (payload.type === state.playlist.type) return;
 
       state.playlist = {
         items: [...payload.items],
         type: payload.type,
       };
-      setConfigMusic({playlist: state.playlist})
+      setConfigMusic({ playlist: state.playlist });
       if (payload.isDefaultSong) {
         state.songCurrent = payload.items[0];
       }
     },
     setConfigDefaultMusic: (state) => {
       const configDefault = getConfigMusic();
-      if ('isLoop' in configDefault) state.isLoop = configDefault.isLoop
-      if ('isRandom' in configDefault) state.isRandom = configDefault.isRandom
-      if ('playlist' in configDefault) state.playlist = configDefault.playlist
-      if ('volume' in configDefault) state.volume = configDefault.volume
-      if ('songCurrent' in configDefault) state.songCurrent = configDefault.songCurrent
-      state.isPlaying = false
-    }
+      if ('isLoop' in configDefault) state.isLoop = configDefault.isLoop;
+      if ('isRandom' in configDefault) state.isRandom = configDefault.isRandom;
+      if ('playlist' in configDefault) state.playlist = configDefault.playlist;
+      if ('volume' in configDefault) state.volume = configDefault.volume;
+      if ('songCurrent' in configDefault)
+        state.songCurrent = configDefault.songCurrent;
+      state.isPlaying = false;
+    },
+    setFavourite: (state, { payload }: PayloadAction<FavouriteType[]>) => {
+      state.favourite = [...payload];
+    },
+    addFavourite: (state, { payload }: PayloadAction<FavouriteType>) => {
+      state.favourite = [...state.favourite, payload];
+    },
+    removeFavourite: (state, { payload }: PayloadAction<FavouriteType>) => {
+      state.favourite = [
+        ...state.favourite.filter(
+          (item) => item.song.encodeId === payload.song.encodeId
+        ),
+      ];
+    },
   },
 });
 
 export const {
+  addFavourite,
+  removeFavourite,
   setSongChange,
   onOpenMusic,
   setSongCurrent,
@@ -178,6 +199,7 @@ export const {
   setIsPlaying,
   setIsRandom,
   setIsLoop,
+  setFavourite,
 } = musicSlice.actions;
 
 export default musicSlice.reducer;

@@ -13,6 +13,7 @@ import { useGetLyrics } from '@/service/MusicService';
 import axios from 'axios';
 import eventBus from '@/config/EventBus';
 import { CHANGE_CURRENT_TIME } from '@/constants/Music';
+import {removeMetadata} from "@/utils/StringUtils";
 
 interface IProps {}
 
@@ -29,9 +30,11 @@ const Lyrics: React.FC<IProps> = () => {
         return;
       }
       const response = await axios.get(`${data.file}`, {});
-      setLyrics(response.data);
+      setLyrics(removeMetadata(response.data));
     },
   });
+
+
 
   const lineRenderer = useCallback(
     ({
@@ -82,7 +85,7 @@ const Lyrics: React.FC<IProps> = () => {
   return (
     <div className={'grid grid-cols-12 h-full items-center px-5 gap-5'}>
       <div className={'col-span-5 hidden lg:block'}>
-        <SongItem song={songCurrent} />
+        {songCurrent && <SongItem song={songCurrent} />}
       </div>
       <div className={'scroll-lyric flex-grow col-span-12 lg:col-span-7'}>
         {!!lyrics ? (

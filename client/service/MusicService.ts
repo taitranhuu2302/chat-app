@@ -32,3 +32,20 @@ export const useGetLyrics = (id?: string, options?: any) => {
     }
   );
 };
+
+export const useSearchSong = ({
+  keyword,
+  options,
+}: {
+  keyword: string;
+  options?: any;
+}) => {
+  return useQuery(
+    ['get-search-song', keyword],
+    () => axios.get(`/api/music/search?keyword=${keyword}`).then(res => res.data),
+    {
+      // enabled: !!keyword,
+      ...options,
+    }
+  );
+};

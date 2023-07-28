@@ -31,7 +31,7 @@ const Footer: React.FC<PropsWithChildren<IProps>> = memo(function Footer() {
             <p className={'text-caption text-left tooltip tooltip-top'} data-tip={songCurrent?.artistsNames}>{formatLimitText(songCurrent?.artistsNames || "", 30)}</p>
           </div>
           <div>
-            <ButtonHeart />
+            {songCurrent && <ButtonHeart song={songCurrent}/>}
           </div>
         </div>
         <div className={'flex-grow flex-center'}>

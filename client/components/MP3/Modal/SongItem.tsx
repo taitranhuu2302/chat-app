@@ -49,7 +49,7 @@ const SongItem: FC<ISongItem> = ({ song, isActive }) => {
             style={{ background: 'rgba(0,0,0,0.6)' }}>
             <div className={'flex-center h-full'}>
               <>
-                <ButtonHeart />
+                <ButtonHeart song={song} />
                 <button
                   onClick={() => {
                     if (!isSongCurrent) {
@@ -62,7 +62,7 @@ const SongItem: FC<ISongItem> = ({ song, isActive }) => {
                   {renderIconPlay}
                 </button>
                 <div className={'opacity-0 invisible'}>
-                  <ButtonHeart />
+                  <ButtonHeart song={song} />
                 </div>
               </>
             </div>

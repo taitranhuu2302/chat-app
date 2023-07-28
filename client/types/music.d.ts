@@ -11,6 +11,12 @@ type MusicConfigType = {
   isRandom?: boolean;
 }
 
+type FavouriteType = {
+  authId: string;
+  song: SongInfoType,
+  id?: string;
+}
+
 type ObjectType = "song" | "hub";
 
 type SearchType = {
