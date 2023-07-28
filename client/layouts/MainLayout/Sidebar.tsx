@@ -11,15 +11,16 @@ import { twMerge } from 'tailwind-merge';
 import { MdLanguage, MdOutlineDarkMode } from 'react-icons/md';
 import Avatar from 'react-avatar';
 import { DarkModeContext } from '../../contexts/DarkModeProvider';
-import { KEY_LANGUAGE } from '../../constants';
+import { KEY_LANGUAGE, URL_NEW_MESSAGE_AUDIO } from '../../constants';
 import useTranslate from '@/hooks/useTranslate';
 import Divider from '@/components/Divider';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
-import { useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from '@/redux/hooks';
 import { SocketContext, SocketContextType } from 'contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
+import { useAudio } from '@/hooks/useAudio';
 
-interface ISidebar { }
+interface ISidebar {}
 
 const Sidebar: React.FC<ISidebar> = () => {
   const router = useRouter();
@@ -29,9 +30,10 @@ const Sidebar: React.FC<ISidebar> = () => {
   const { onSetTheme } = useContext(DarkModeContext);
   const t = useTranslate();
   const { removeAuth, auth } = useContext(AuthContext) as AuthContextType;
-  const { countRequestFriend } = useAppSelector(state => state.notify)
-  const { socket } = useContext(SocketContext) as SocketContextType
+  const { countRequestFriend } = useAppSelector((state) => state.notify);
+  const { socket } = useContext(SocketContext) as SocketContextType;
   const [chatCount, setChatCount] = useState(0);
+  const { handlePlayAudio } = useAudio(URL_NEW_MESSAGE_AUDIO);
 
   const onChangeLang = async (lang: string) => {
     await router.push(router.asPath, router.asPath, {
@@ -45,16 +47,16 @@ const Sidebar: React.FC<ISidebar> = () => {
     await router.push('/auth');
   };
 
-
   useEffect(() => {
     if (!socket) return;
 
     socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
       if (data[0].sender._id !== auth?._id) {
-        setChatCount(chatCount + 1)
+        setChatCount(chatCount + 1);
+        handlePlayAudio();
       }
     });
-  }, [socket, chatCount, auth])
+  }, [socket, chatCount, auth]);
 
   return (
     <>
@@ -88,7 +90,7 @@ const Sidebar: React.FC<ISidebar> = () => {
             indicatorCount={chatCount}
             tooltip={t.home.sidebar.chat}
             onCallback={() => {
-              setChatCount(0)
+              setChatCount(0);
             }}
             icon={
               <TbMessageCircle2
@@ -178,7 +180,7 @@ const Sidebar: React.FC<ISidebar> = () => {
             <label tabIndex={0} className={`${styles.sidebarItem}`}>
               <Avatar
                 name={`${auth?.firstName} ${auth?.lastName}`}
-                src={auth?.avatar || ""}
+                src={auth?.avatar || ''}
                 size={'40px'}
                 round
               />
@@ -186,22 +188,28 @@ const Sidebar: React.FC<ISidebar> = () => {
             <ul
               tabIndex={0}
               className="dropdown-content dark:bg-night-200 menu p-2 shadow bg-base-100 rounded-box w-52">
-              <li onClick={() => router.push({
-                pathname: "/",
-                query: {
-                  ...router.query,
-                  tab: "profile"
-                }
-              })}>
+              <li
+                onClick={() =>
+                  router.push({
+                    pathname: '/',
+                    query: {
+                      ...router.query,
+                      tab: 'profile',
+                    },
+                  })
+                }>
                 <a>{t.home.sidebar.profile}</a>
               </li>
-              <li onClick={() => router.push({
-                pathname: "/settings",
-                query: {
-                  ...router.query,
-                  tab: "settings"
-                }
-              })}>
+              <li
+                onClick={() =>
+                  router.push({
+                    pathname: '/settings',
+                    query: {
+                      ...router.query,
+                      tab: 'settings',
+                    },
+                  })
+                }>
                 <a>{t.home.sidebar.setting}</a>
               </li>
               <Divider />
@@ -233,7 +241,7 @@ const SidebarItemLink = ({
   tabText,
   path,
   indicatorCount,
-  onCallback
+  onCallback,
 }: SidebarItemLinkType) => {
   const router = useRouter();
 
@@ -245,11 +253,11 @@ const SidebarItemLink = ({
           pathname: path
             ? path
             : router.pathname === '/settings'
-              ? '/'
-              : router.pathname,
+            ? '/'
+            : router.pathname,
           query: { ...router.query, tab: tabText },
-        })
-        onCallback && onCallback()
+        });
+        onCallback && onCallback();
       }}
       className={twMerge(
         `tooltip lg:tooltip-right tooltip-top indicator ${styles.sidebarItem} hover:bg-slate-200 dark:hover:bg-slate-700`,

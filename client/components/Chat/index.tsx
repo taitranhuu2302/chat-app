@@ -1,12 +1,21 @@
 import styles from '@/styles/components/chat.module.scss';
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import ChatContent from '@/components/Chat/ChatContent';
 import ChatFooter from '@/components/Chat/ChatFooter';
 import ChatHeader from '@/components/Chat/ChatHeader';
 import SidebarProfile from '@/components/Chat/SidebarProfile';
 import { SOCKET_EVENT } from '@/constants/Socket';
-import { setConversationStore, setUserOtherStore } from '@/redux/features/ConversationSlice';
+import {
+  setConversationStore,
+  setUserOtherStore,
+} from '@/redux/features/ConversationSlice';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
 import { useAppDispatch } from '@/redux/hooks';
 import { useGetConversationById } from '@/service/ConversationService';
@@ -24,13 +33,15 @@ import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import Portal from '../Portal';
+import { useAudio } from '@/hooks/useAudio';
+import {URL_NEW_MESSAGE_AUDIO} from "@/constants/index";
 
-interface IChat { }
+interface IChat {}
 
 const Chat: React.FC<IChat> = () => {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
   const [messages, setMessages] = useState<MessageType[]>([]);
-  const [isNewMessage, setIsNewMessage] = useState(false)
+  const [isNewMessage, setIsNewMessage] = useState(false);
   const [conversation, setConversation] = useState<ConversationType | null>(
     null
   );
@@ -46,17 +57,21 @@ const Chat: React.FC<IChat> = () => {
       },
     },
   });
-  const [userTyping, setUserTyping] = useState<IUserTyping[]>([])
+  const [userTyping, setUserTyping] = useState<IUserTyping[]>([]);
   const dispatch = useAppDispatch();
   const { auth } = useContext(AuthContext) as AuthContextType;
   const { mutateAsync: sendMessage, isLoading: isLoadingSendMessage } =
     useSendMessageApi();
   const { socket } = useContext(SocketContext) as SocketContextType;
   const userOther = useMemo(() => {
-    return conversation?.members.find(u => u._id !== auth?._id);
-  }, [auth, conversation])
+    return conversation?.members.find((u) => u._id !== auth?._id);
+  }, [auth, conversation]);
 
-  const { hasNextPage, fetchNextPage, isLoading: getMessageLoading } = useGetMessageByConversationApi({
+  const {
+    hasNextPage,
+    fetchNextPage,
+    isLoading: getMessageLoading,
+  } = useGetMessageByConversationApi({
     conversationId: id,
     options: {
       onSuccess: (data: any) => {
@@ -67,37 +82,45 @@ const Chat: React.FC<IChat> = () => {
   });
 
   useEffect(() => {
-    userOther && dispatch(setUserOtherStore(userOther))
-    conversation && dispatch(setConversationStore(conversation))
-  }, [userOther, conversation])
+    userOther && dispatch(setUserOtherStore(userOther));
+    conversation && dispatch(setConversationStore(conversation));
+  }, [userOther, conversation]);
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.on(SOCKET_EVENT.USER_IS_TYPING, ({ user, conversationId, isTyping }) => {
-      if (user._id === auth?._id || conversationId !== id) return;
-      setUserTyping(prevTypingUsers => {
-        const userIndex = prevTypingUsers.findIndex(item => item.user._id === user._id);
+    socket.on(
+      SOCKET_EVENT.USER_IS_TYPING,
+      ({ user, conversationId, isTyping }) => {
+        if (user._id === auth?._id || conversationId !== id) return;
+        setUserTyping((prevTypingUsers) => {
+          const userIndex = prevTypingUsers.findIndex(
+            (item) => item.user._id === user._id
+          );
 
-        if (isTyping && userIndex === -1) {
-          return [...prevTypingUsers, { user, conversationId, isTyping }];
-        }
+          if (isTyping && userIndex === -1) {
+            return [...prevTypingUsers, { user, conversationId, isTyping }];
+          }
 
-        if (!isTyping && userIndex !== -1) {
-          const updatedTypingUsers = [...prevTypingUsers];
-          updatedTypingUsers.splice(userIndex, 1);
-          return updatedTypingUsers;
-        }
+          if (!isTyping && userIndex !== -1) {
+            const updatedTypingUsers = [...prevTypingUsers];
+            updatedTypingUsers.splice(userIndex, 1);
+            return updatedTypingUsers;
+          }
 
-        return prevTypingUsers;
-      });
-    })
+          return prevTypingUsers;
+        });
+      }
+    );
 
     socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
-      const conversationId = typeof data[0].conversation === 'string' ? data[0].conversation : data[0].conversation._id
+      const conversationId =
+        typeof data[0].conversation === 'string'
+          ? data[0].conversation
+          : data[0].conversation._id;
       if (conversationId === id) {
         setMessages((e) => [...data, ...e]);
-        setIsNewMessage(true)
+        setIsNewMessage(true);
       }
     });
 
@@ -107,11 +130,10 @@ const Chat: React.FC<IChat> = () => {
       }
     });
 
-
     return () => {
       socket.off(SOCKET_EVENT.MESSAGE.NEW_MESSAGE);
       socket.off(SOCKET_EVENT.MESSAGE.MESSAGE_RECALL);
-      socket.off(SOCKET_EVENT.USER_IS_TYPING)
+      socket.off(SOCKET_EVENT.USER_IS_TYPING);
     };
   }, [socket, id, auth?._id]);
 
@@ -129,13 +151,16 @@ const Chat: React.FC<IChat> = () => {
     socket.emit(SOCKET_EVENT.USER_TYPING, {
       user: auth,
       conversationId: conversation._id,
-      text
-    })
-  }, 500)
+      text,
+    });
+  }, 500);
 
-  const onTextChange = useCallback((text: string) => {
-    onUserTyping(text)
-  }, [onUserTyping])
+  const onTextChange = useCallback(
+    (text: string) => {
+      onUserTyping(text);
+    },
+    [onUserTyping]
+  );
 
   const handleSendMessage = async ({
     text,
@@ -202,7 +227,14 @@ const Chat: React.FC<IChat> = () => {
         />
       </motion.div>
       <AnimatePresence>
-        {isOpenSidebar && conversation && <Portal><SidebarProfile onClose={onToggleSidebar} conversation={conversation} /></Portal>}
+        {isOpenSidebar && conversation && (
+          <Portal>
+            <SidebarProfile
+              onClose={onToggleSidebar}
+              conversation={conversation}
+            />
+          </Portal>
+        )}
       </AnimatePresence>
     </div>
   );

@@ -15,15 +15,21 @@ import { SOCKET_EVENT } from '@/constants/Socket';
 import { useInView } from 'react-intersection-observer';
 import { AuthContext, AuthContextType } from 'contexts/AuthContext';
 import { twMerge } from 'tailwind-merge';
+import { useAudio } from '@/hooks/useAudio';
+import { URL_NEW_MESSAGE_AUDIO } from '@/constants/index';
 
-interface ITabChat { }
+interface ITabChat {}
 
 const TabChat: React.FC<ITabChat> = () => {
   const t = useTranslate();
-  const { ref: loadingRef, inView } = useInView()
+  const { ref: loadingRef, inView } = useInView();
   const [conversations, setConversations] = useState<ConversationType[]>([]);
   const { socket } = useContext(SocketContext) as SocketContextType;
-  const { isLoading: isLoadingConversations, hasNextPage, fetchNextPage } = useGetConversationByUser({
+  const {
+    isLoading: isLoadingConversations,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetConversationByUser({
     options: {
       onSuccess: (data: any) => {
         setConversations(flatMapObjectInfinite(data));
@@ -33,9 +39,12 @@ const TabChat: React.FC<ITabChat> = () => {
 
   useEffect(() => {
     if (!socket) return;
-    socket.on(SOCKET_EVENT.CONVERSATION.CREATE_CONVERSATION, (data: ConversationType) => {
-      setConversations((c) => [data, ...c]);
-    });
+    socket.on(
+      SOCKET_EVENT.CONVERSATION.CREATE_CONVERSATION,
+      (data: ConversationType) => {
+        setConversations((c) => [data, ...c]);
+      }
+    );
     return () => {
       socket.off(SOCKET_EVENT.CONVERSATION.CREATE_CONVERSATION);
     };
@@ -43,9 +52,9 @@ const TabChat: React.FC<ITabChat> = () => {
 
   useEffect(() => {
     if (inView) {
-      fetchNextPage()
+      fetchNextPage();
     }
-  }, [inView, loadingRef])
+  }, [inView, loadingRef]);
 
   return (
     <>
@@ -69,28 +78,26 @@ const TabChat: React.FC<ITabChat> = () => {
             className={'flex flex-col h-0 flex-grow overflow-y-auto scrollbar'}>
             {isLoadingConversations
               ? Array(5)
-                .fill(1)
-                .map((_, index) => (
-                  <div
-                    key={index}
-                    className={'flex items-center gap-2.5 p-4'}>
-                    <Skeleton circle={true} width={45} height={45} />
-                    <div className={'flex flex-col gap-2.5'}>
-                      <Skeleton width={200} height={20} />
-                      <Skeleton width={200} height={15} />
+                  .fill(1)
+                  .map((_, index) => (
+                    <div
+                      key={index}
+                      className={'flex items-center gap-2.5 p-4'}>
+                      <Skeleton circle={true} width={45} height={45} />
+                      <div className={'flex flex-col gap-2.5'}>
+                        <Skeleton width={200} height={20} />
+                        <Skeleton width={200} height={15} />
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))
               : conversations.map((c) => (
-                <TabChatItem key={c._id} conversation={c} />
-              ))}
-            {
-              hasNextPage && (
-                <div ref={loadingRef} className='flex-center'>
-                  Loading...
-                </div>
-              )
-            }
+                  <TabChatItem key={c._id} conversation={c} />
+                ))}
+            {hasNextPage && (
+              <div ref={loadingRef} className="flex-center">
+                Loading...
+              </div>
+            )}
           </div>
         </div>
       </TabContainer>
@@ -104,26 +111,34 @@ type TabChatItemType = {
 
 const TabChatItem = ({ conversation }: TabChatItemType) => {
   const router = useRouter();
-  const { query: { id } } = router;
-  const [newMessage, setNewMessage] = useState<MessageType | null>(null)
-  const [messageCount, setMessageCount] = useState<number>(0)
-  const { socket } = useContext(SocketContext) as SocketContextType
+  const {
+    query: { id },
+  } = router;
+  const [newMessage, setNewMessage] = useState<MessageType | null>(null);
+  const [messageCount, setMessageCount] = useState<number>(0);
+  const { socket } = useContext(SocketContext) as SocketContextType;
   const { auth } = useContext(AuthContext) as AuthContextType;
 
   useEffect(() => {
     if (!socket) return;
 
     socket.on(SOCKET_EVENT.MESSAGE.NEW_MESSAGE, (data: MessageType[]) => {
-      const conversationId = typeof data[0].conversation === 'string' ? data[0].conversation : data[0].conversation._id
+      const conversationId =
+        typeof data[0].conversation === 'string'
+          ? data[0].conversation
+          : data[0].conversation._id;
 
       if (conversationId === conversation._id) {
-        setNewMessage(data[data.length - 1])
-        if (auth?._id !== data[data.length - 1].sender._id && conversationId !== id) {
-          setMessageCount(messageCount + 1)
+        setNewMessage(data[data.length - 1]);
+        if (
+          auth?._id !== data[data.length - 1].sender._id &&
+          conversationId !== id
+        ) {
+          setMessageCount(messageCount + 1);
         }
       }
     });
-  }, [socket, conversation._id, messageCount, auth, id])
+  }, [socket, conversation._id, messageCount, auth, id]);
 
   return (
     <div
@@ -135,20 +150,18 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
             id: conversation._id,
           },
         });
-        setMessageCount(0)
+        setMessageCount(0);
       }}
-      className={
-        twMerge(
-          'flex items-center gap-2.5 cursor-pointer rounded dark:hover:bg-via-300 hover:bg-via-500 p-4 transition-all duration-500',
-          conversation._id === id && 'bg-via-500 dark:bg-via-300'
-        )
-      }>
+      className={twMerge(
+        'flex items-center gap-2.5 cursor-pointer rounded dark:hover:bg-via-300 hover:bg-via-500 p-4 transition-all duration-500',
+        conversation._id === id && 'bg-via-500 dark:bg-via-300'
+      )}>
       <Avatar
         round
         src={conversation.avatar}
         name={conversation.conversationName}
         size={'40px'}
-        className='min-w-[40px]'
+        className="min-w-[40px]"
       />
       <div className={'flex flex-col flex-grow truncate'}>
         <p className={'text-md font-semibold'}>
@@ -157,9 +170,10 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
         {newMessage ? (
           newMessage.text ? (
             <div
-              className={
-                twMerge('text-md font-light text-light-600 dark:text-night-600 un-reset', !!messageCount && 'font-bold text-black')
-              }
+              className={twMerge(
+                'text-md font-light text-light-600 dark:text-night-600 un-reset',
+                !!messageCount && 'font-bold text-black'
+              )}
               dangerouslySetInnerHTML={{
                 __html: newMessage.text,
               }}></div>
@@ -171,39 +185,41 @@ const TabChatItem = ({ conversation }: TabChatItemType) => {
               Sent a file
             </p>
           )
-        ) : (
-          conversation.latestMessage ? (
-            conversation.latestMessage.text ? (
-              <div
-                className={
-                  'text-md text-light-600 dark:text-night-600 un-reset'
-                }
-                dangerouslySetInnerHTML={{
-                  __html: conversation.latestMessage.text,
-                }}></div>
-            ) : (
-              <p
-                className={
-                  'text-sm font-light text-light-600 dark:text-night-600'
-                }>
-                Sent a file
-              </p>
-            )
+        ) : conversation.latestMessage ? (
+          conversation.latestMessage.text ? (
+            <div
+              className={'text-md text-light-600 dark:text-night-600 un-reset'}
+              dangerouslySetInnerHTML={{
+                __html: conversation.latestMessage.text,
+              }}></div>
           ) : (
             <p
-              className={'text-sm font-light text-light-600 dark:text-night-600'}>
-              There are no messages yet
+              className={
+                'text-sm font-light text-light-600 dark:text-night-600'
+              }>
+              Sent a file
             </p>
           )
+        ) : (
+          <p
+            className={'text-sm font-light text-light-600 dark:text-night-600'}>
+            There are no messages yet
+          </p>
         )}
       </div>
       <div className={'flex flex-col items-center gap-1'}>
         <p className={'text-sm text-light-600 dark:text-night-600 truncate'}>
-          {newMessage ? moment(newMessage.createdAt).locale(router.locale === 'vi' ? 'vi' : 'en').fromNow() : (
-            moment(conversation.updatedAt).locale(router.locale === 'vi' ? 'vi' : 'en').fromNow()
-          )}
+          {newMessage
+            ? moment(newMessage.createdAt)
+                .locale(router.locale === 'vi' ? 'vi' : 'en')
+                .fromNow()
+            : moment(conversation.updatedAt)
+                .locale(router.locale === 'vi' ? 'vi' : 'en')
+                .fromNow()}
         </p>
-        {!!messageCount && <div className="badge badge-sm badge-error">{messageCount}</div>}
+        {!!messageCount && (
+          <div className="badge badge-sm badge-error">{messageCount}</div>
+        )}
       </div>
     </div>
   );
