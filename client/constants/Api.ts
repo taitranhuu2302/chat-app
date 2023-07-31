@@ -42,4 +42,12 @@ export const API = {
     UPDATE: `/message/update/:id`,
     MESSAGE_RECALL: `/message/message-recall`, ///message/message-recall/:id
   },
+  PLAYLIST: {
+    INDEX: `/playlist`,
+    CREATE: `/playlist/create`,
+    GET_BY_USER: `/playlist/get-by-user`,
+    GET_BY_ID: `/playlist/get-by-id`, // /playlist/get-by-id/:id
+    DELETE: `/playlist/delete`, // /playlist/delete/:id
+    DELETE_SONG: (playlistId: string, songId: string) => `/playlist/delete/${playlistId}/song/${songId}`, // /playlist/delete/:playlistId/song/:songId
+  }
 };
