@@ -9,12 +9,20 @@ import {
   setPlayList,
   setSongCurrent,
 } from '@/redux/features/MusicSlice';
+import MenuActions from './MenuContext/MenuActions';
 
 interface IProps {
   data: SongInfoType;
   index: number;
   playlist: PlaylistType;
 }
+
+const initialMenuContext = {
+  song: null,
+  x: 0,
+  y: 0,
+}
+
 
 const MediaItem: React.FC<PropsWithChildren<IProps>> = ({
   data,
@@ -23,7 +31,11 @@ const MediaItem: React.FC<PropsWithChildren<IProps>> = ({
 }) => {
   const dispatch = useAppDispatch();
   const { songCurrent } = useAppSelector((state) => state.music);
-
+  const [openMenuContext, setOpenMenuContext] = useState<{
+    song: SongInfoType | null;
+    x: number;
+    y: number;
+  }>(initialMenuContext)
   const topLevel = (n: number) => {
     if (n > 3) return '';
     if (n === 1) return styles.level1;
@@ -39,8 +51,19 @@ const MediaItem: React.FC<PropsWithChildren<IProps>> = ({
     dispatch(setPlayList({ ...playlist, isDefaultSong: false }));
   }, [data]);
 
+  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, song: SongInfoType) => {
+    event.preventDefault();
+    const {pageX, pageY} = event;
+    setOpenMenuContext({
+      song,
+      x: pageX,
+      y: pageY
+    })
+  }
+
   return (
     <div
+      onContextMenu={(event) => handleContextMenu(event, data)}
       className={`${styles.mediaItem} ${
         songCurrent?.encodeId === data.encodeId ? styles.active : ''
       }`}>
@@ -69,6 +92,7 @@ const MediaItem: React.FC<PropsWithChildren<IProps>> = ({
           {convertSecondToMinute(data.duration)}
         </time>
       </div>
+      <MenuActions song={openMenuContext.song!} handleChooseSong={handleChooseSong} position={{x: openMenuContext.x, y: openMenuContext.y}} open={!!openMenuContext.song} onClose={() => setOpenMenuContext(initialMenuContext)}/>
     </div>
   );
 };

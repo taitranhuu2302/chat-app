@@ -42,7 +42,7 @@ const Control: React.FC<PropsWithChildren<IProps>> = () => {
       <p className={'text-[14px] min-w-[40px] font-semibold text-[#837f88]'}>{convertSecondToMinute(Number(currentTime.toFixed(0)))}</p>
       <Slider 
         values={[currentTime]}
-        max={songCurrent?.duration || 1}
+        max={Number(songCurrent?.duration) + 1 || 1}
         setValues={(n: number[]) => {
           eventBus.emit(CHANGE_CURRENT_TIME, n[0])
         }}

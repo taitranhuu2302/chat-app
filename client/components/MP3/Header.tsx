@@ -4,13 +4,13 @@ import {
   setSongCurrent,
 } from '@/redux/features/MusicSlice';
 import { useAppDispatch } from '@/redux/hooks';
+import { useSearchSong } from '@/service/MusicService';
 import React, { useEffect, useRef, useState } from 'react';
 import { IoClose, IoSearchOutline } from 'react-icons/io5';
-import { twMerge } from 'tailwind-merge';
-import ButtonHeart from './ButtonHeart';
-import { useDebounce, useOnClickOutside } from 'usehooks-ts';
-import { useSearchSong } from '@/service/MusicService';
 import Skeleton from 'react-loading-skeleton';
+import { twMerge } from 'tailwind-merge';
+import { useDebounce, useOnClickOutside } from 'usehooks-ts';
+import ButtonHeart from './ButtonHeart';
 
 interface IProps {}
 
@@ -38,6 +38,7 @@ const Header: React.FC<IProps> = () => {
 
   useOnClickOutside(searchRef, () => {
     setIsFocusSearch(false);
+    setKeyword("")
   });
 
   return (
@@ -64,7 +65,7 @@ const Header: React.FC<IProps> = () => {
             className={
               'absolute top-full left-0 bg-[#34224f] w-full px-3 pt-1 pb-3 rounded-bl-[20px] rounded-br-[20px] z-[1000]'
             }>
-            <div className={'mt-2 space-y-2'}>
+            <div className={'mt-2 space-y-2 max-h-[400px] overflow-y-auto transition-all duration-500 overflow-x-hidden'}>
               <p className={'font-bold text-[14px]'}>Gợi ý kết quả</p>
               <ul>
                 {isLoading &&

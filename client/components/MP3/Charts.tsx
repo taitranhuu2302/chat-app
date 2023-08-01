@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react';
-import { BsFillPlayCircleFill } from 'react-icons/bs';
 import MediaItem from '@/components/MP3/MediaItem';
-import { useGetCharts } from '@/service/MusicService';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setPlayList } from '@/redux/features/MusicSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useGetCharts } from '@/service/MusicService';
+import { BsFillPlayCircleFill } from 'react-icons/bs';
+import MenuActions from './MenuContext/MenuActions';
+import { useState } from 'react';
+
 
 const Charts = () => {
   const dispatch = useAppDispatch();
   const playlist = useAppSelector((state) => state.music.playlist);
+
   const { data } = useGetCharts({
     onSuccess: ({ data }: { data: ChartsType }) => {
       if (playlist.type === 'charts') {
@@ -23,7 +26,7 @@ const Charts = () => {
   });
 
   return (
-    <div className={'h-full flex flex-col overflow-auto relative'}>
+    <div onContextMenu={(event) => event.preventDefault()} className={'h-full flex flex-col overflow-auto '}>
       <div className={'flex items-center gap-3'}>
         <p className={'text-3xl tracking-wide text-white font-bold'}>
           BXH Nhạc Mới
