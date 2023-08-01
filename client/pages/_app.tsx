@@ -16,6 +16,7 @@ import AuthProvider from '../contexts/AuthContext';
 import DarkModeProvider from '../contexts/DarkModeProvider';
 import SocketProvider from '../contexts/SocketContext';
 import GlobalLayout from '@/layouts/GlobalLayout';
+import { useEffect } from 'react';
 
 const PeerProvider = dynamic(() => import("contexts/PeerContext"), { ssr: false })
 
@@ -29,6 +30,23 @@ const queryClient = new QueryClient({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+
+  useEffect(() => {
+    (async () => {
+      if (navigator.permissions) {
+        // @ts-ignore
+        const permissionStatus = await navigator.permissions.query({name: 'camera'});
+        if (permissionStatus.state !== 'granted') {
+          navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
+            console.log('camera');
+          }).catch(() => {
+            console.log('no camera');
+          })
+        }
+      }
+    })()
+    
+  }, [])
 
   return (
     <>
