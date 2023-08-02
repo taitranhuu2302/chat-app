@@ -30,11 +30,12 @@ const modalSlice = createSlice({
     setModalVideoCall: (state, {payload}: PayloadAction<{
       isOpen: boolean,
       type?: "Request" | "Default",
-      userCall?: UserType,
+      userCall?: UserType | null,
       conversationId?: string | null
     }>) => {
       state.modalVideoCall = {
         ...payload,
+        userCall: payload.userCall ?? state.modalVideoCall.userCall,
         type: payload.type || "Default",
       }
     },

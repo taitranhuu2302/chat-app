@@ -4,11 +4,12 @@ import {twMerge} from 'tailwind-merge';
 import Portal from '../Portal';
 import eventBus from '@/config/EventBus';
 import {useAppDispatch, useAppSelector} from '@/redux/hooks';
-import {setOpenModalVideoCalling} from '@/redux/features/ModalSlice';
+import {setModalVideoCall, setOpenModalVideoCalling} from '@/redux/features/ModalSlice';
 import {usePeerContext} from 'contexts/PeerContext';
 import {useSocketContext} from 'contexts/SocketContext';
 import {SOCKET_EVENT} from '@/constants/Socket';
 import {useAuthContext} from 'contexts/AuthContext';
+import Avatar from 'react-avatar';
 
 interface IProps {
 }
@@ -26,6 +27,9 @@ const ModalCalledVideo: React.FC<IProps> = () => {
   const peers: any = {}
   const [conversationId, setConversationId] = useState("");
   const remoteStream = useRef<MediaStream | null>(null)
+  const {userOther} = useAppSelector(state => state.conversation)
+  console.log("🚀 ~ file: ModalCalledVideo.tsx:30 ~ userOther:", userOther)
+  console.log("🚀 ~ file: ModalCalledVideo.tsx:30 ~ modalVideoCall:", modalVideoCall.userCall)
 
   useEffect(() => {
     if (!peer || !socket) return;
@@ -39,7 +43,6 @@ const ModalCalledVideo: React.FC<IProps> = () => {
         peer.on('call', (call) => {
           call.answer(stream);
           call.on('stream', (stream) => {
-            console.log('local await')
             addVideoStream(remoteVideoRef.current, stream);
             remoteStream.current = stream;
           });
@@ -123,6 +126,10 @@ const ModalCalledVideo: React.FC<IProps> = () => {
       peerId,
     })
     dispatch(setOpenModalVideoCalling(false));
+    dispatch(setModalVideoCall({
+      isOpen: false,
+      userCall: null
+    }))
     window.location.reload()
   };
 
@@ -149,10 +156,13 @@ const ModalCalledVideo: React.FC<IProps> = () => {
                 poster="https://static.vecteezy.com/system/resources/previews/005/337/799/original/icon-image-not-found-free-vector.jpg"
                 className="h-full w-full object-cover"></video>
             </div>
-            <video
+            <div className='flex-center'>
+              <Avatar />
+            </div>
+            {/* <video
               ref={remoteVideoRef}
-              poster="https://static.vecteezy.com/system/resources/previews/005/337/799/original/icon-image-not-found-free-vector.jpg"
-              className="h-full w-full object-cover"></video>
+              poster={"https://static.vecteezy.com/system/resources/previews/005/337/799/original/icon-image-not-found-free-vector.jpg"}
+              className="h-full w-full object-cover"></video> */}
             <div
               className={
                 'absolute left-1/2 -translate-x-1/2 bottom-5 flex items-center gap-5'

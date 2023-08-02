@@ -29,7 +29,6 @@ const ModalCallVideo: React.FC<IModalCallVideo> = () => {
   const { auth } = useAuthContext();
   const { modalVideoCall } = useAppSelector((state) => state.modal);
   const {conversation, userOther} = useAppSelector(state => state.conversation)
-  const router = useRouter();
 
   const handleCall = async () => {
     dispatch(setOpenModalVideoCalling(true));

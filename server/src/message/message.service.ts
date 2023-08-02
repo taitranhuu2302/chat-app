@@ -18,6 +18,7 @@ import {
   Conversation,
   ConversationDocument,
 } from '../conversation/conversation.model';
+import { handleDecoding, handleEncoding } from 'src/shared/helper/cryptography';
 
 @Injectable()
 export class MessageService {
@@ -51,6 +52,7 @@ export class MessageService {
           const message = plainToClass(MessageDto, item, {
             excludeExtraneousValues: true,
           });
+          message.text = handleDecoding(message.text)
           formattedData.push(message);
         }
 
@@ -80,16 +82,17 @@ export class MessageService {
 
     if (dto.text) {
       let message = null;
+      const text = handleEncoding(dto.text)
       if (dto.reply) {
         message = await this.messageModel.create({
-          text: dto.text,
+          text: text,
           conversation: dto.conversation,
           sender: sub,
           reply: dto.reply,
         });
       } else {
         message = await this.messageModel.create({
-          text: dto.text,
+          text: text,
           conversation: dto.conversation,
           sender: sub,
         });
@@ -104,6 +107,7 @@ export class MessageService {
       const mapped = plainToClass(MessageDto, message, {
         excludeExtraneousValues: true,
       });
+      mapped.text = handleDecoding(mapped.text)
       messages.push(mapped);
     }
 
