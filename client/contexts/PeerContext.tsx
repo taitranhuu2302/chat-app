@@ -12,14 +12,11 @@ import eventBus from '@/config/EventBus';
 import { SOCKET_EVENT } from '@/constants/Socket';
 import { setModalVideoCall } from '@/redux/features/ModalSlice';
 import { useSocketContext } from './SocketContext';
-import {useAppDispatch, useAppSelector} from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
 export type PeerContextType = {
   peerId: string;
   peer: Peer | null;
-  getUserMedia: (
-    constraints?: MediaStreamConstraints | undefined
-  ) => Promise<MediaStream>;
 };
 
 export const PeerContext = createContext<null | PeerContextType>(null);
@@ -29,17 +26,8 @@ export const usePeerContext = () => useContext(PeerContext) as PeerContextType;
 const PeerProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [peerId, setPeerId] = useState('');
   const peerInstance = useRef<Peer | null>(null);
-  const [mediaConfig, setMediaConfig] = useState({
-    video: true,
-    audio: false,
-  });
   const dispatch = useAppDispatch();
   const { socket } = useSocketContext();
-  const getUserMedia = (constraints?: MediaStreamConstraints | undefined) =>
-    navigator.mediaDevices.getUserMedia({
-      ...mediaConfig,
-      ...constraints,
-    });
   const { auth } = useAuthContext();
 
   useEffect(() => {
@@ -62,32 +50,32 @@ const PeerProvider: React.FC<PropsWithChildren> = ({ children }) => {
             isOpen: true,
             type: 'Request',
             userCall: data.user,
-            conversationId: data.conversationId
+            conversationId: data.conversationId,
           })
         );
       }
       setTimeout(() => {
-        eventBus.emit(SOCKET_EVENT.VIDEO.CALLING, data)
-      }, 500)
+        eventBus.emit(SOCKET_EVENT.VIDEO.CALLING, data);
+      }, 500);
     });
 
     socket.on(SOCKET_EVENT.VIDEO.DISCONNECTED, (data: any) => {
       setTimeout(() => {
-        eventBus.emit(SOCKET_EVENT.VIDEO.DISCONNECTED, data)
-      }, 500)
-    })
+        eventBus.emit(SOCKET_EVENT.VIDEO.DISCONNECTED, data);
+      }, 500);
+    });
 
     peerInstance.current = peer;
 
     return () => {
-      socket.off(SOCKET_EVENT.VIDEO.CALLING)
-      socket.off(SOCKET_EVENT.VIDEO.DISCONNECTED)
-    }
+      socket.off(SOCKET_EVENT.VIDEO.CALLING);
+      socket.off(SOCKET_EVENT.VIDEO.DISCONNECTED);
+    };
   }, [auth, socket, eventBus]);
 
   return (
     <PeerContext.Provider
-      value={{ peerId, peer: peerInstance.current, getUserMedia }}>
+      value={{ peerId, peer: peerInstance.current }}>
       {children}
     </PeerContext.Provider>
   );
