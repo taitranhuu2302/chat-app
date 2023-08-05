@@ -11,6 +11,8 @@ import Skeleton from 'react-loading-skeleton';
 import { twMerge } from 'tailwind-merge';
 import { useDebounce, useOnClickOutside } from 'usehooks-ts';
 import ButtonHeart from './ButtonHeart';
+import { SongSearchItem } from '@/components/MP3/SongSearchItem';
+import SearchSongSkeleton from '@/components/MP3/SearchSongSkeleton';
 
 interface IProps {}
 
@@ -38,7 +40,7 @@ const Header: React.FC<IProps> = () => {
 
   useOnClickOutside(searchRef, () => {
     setIsFocusSearch(false);
-    setKeyword("")
+    setKeyword('');
   });
 
   return (
@@ -46,7 +48,7 @@ const Header: React.FC<IProps> = () => {
       <div
         className={twMerge(
           'flex max-w-[440px] w-full relative items-center bg-[#30293b] h-[40px] rounded-[20px] px-2',
-          isFocusSearch && 'bg-[#34224f] rounded-bl-none rounded-br-none'
+          isFocusSearch && 'bg-[#34224f] rounded-bl-none rounded-br-none',
         )}
         ref={searchRef}
         onFocus={() => setIsFocusSearch(true)}>
@@ -65,7 +67,10 @@ const Header: React.FC<IProps> = () => {
             className={
               'absolute top-full left-0 bg-[#34224f] w-full px-3 pt-1 pb-3 rounded-bl-[20px] rounded-br-[20px] z-[1000]'
             }>
-            <div className={'mt-2 space-y-2 max-h-[400px] overflow-y-auto transition-all duration-500 overflow-x-hidden'}>
+            <div
+              className={
+                'mt-2 space-y-2 max-h-[400px] overflow-y-auto transition-all duration-500 overflow-x-hidden'
+              }>
               <p className={'font-bold text-[14px]'}>Gợi ý kết quả</p>
               <ul>
                 {isLoading &&
@@ -90,69 +95,6 @@ const Header: React.FC<IProps> = () => {
         </button>
       </div>
     </div>
-  );
-};
-
-interface ISongSearchItem {
-  song: SongInfoType;
-}
-
-const SearchSongSkeleton = () => {
-  return (
-    <li
-      className={
-        'p-2.5 hover:bg-[#493961] rounded flex items-center justify-between'
-      }>
-      <div className={'flex items-center gap-2.5'}>
-        <Skeleton width={52} height={52} />
-        <div className={'flex justify-center items-center gap-2 flex-col'}>
-          <Skeleton width={100} height={20} />
-          <Skeleton width={100} height={15} />
-        </div>
-      </div>
-      <Skeleton width={20} height={20} />
-    </li>
-  );
-};
-
-const SongSearchItem: React.FC<ISongSearchItem> = ({ song }) => {
-  const dispatch = useAppDispatch();
-
-  const handleChooseSong = () => {
-    dispatch(setSongCurrent(song));
-    dispatch(
-      setPlayList({
-        items: [],
-        type: 'search',
-        isDefaultSong: false,
-      })
-    );
-  };
-
-  return (
-    <li
-      className={
-        'p-2.5 hover:bg-[#493961] rounded flex items-center justify-between'
-      }>
-      <div className={'flex items-center gap-2.5'}>
-        <picture className={'cursor-pointer'} onClick={handleChooseSong}>
-          <img
-            className={'w-[52px] h-[52px] rounded'}
-            src={song.thumbnailM}
-            alt=""
-          />
-        </picture>
-        <div>
-          <p
-            className={'font-semibold cursor-pointer'}
-            onClick={handleChooseSong}>
-            {song.title}
-          </p>
-          <p className={'text-[13px] text-[#988fa5]'}>{song.artistsNames}</p>
-        </div>
-      </div>
-      <ButtonHeart song={song}/>
-    </li>
   );
 };
 

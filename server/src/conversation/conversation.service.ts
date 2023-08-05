@@ -49,7 +49,7 @@ export class ConversationService {
     return await this.messageModel.find({
       text: null,
       conversation: conversationId,
-    })
+    });
   }
 
   async findAll(sub: string, options: PaginationOptions) {
@@ -82,8 +82,9 @@ export class ConversationService {
             ),
             { excludeExtraneousValues: true },
           );
-
-          latestMessage.text = handleDecoding(latestMessage.text)
+          if (!!latestMessage?.text) {
+            latestMessage.text = handleDecoding(latestMessage.text ?? '');
+          }
 
           if (item.conversationType === ConversationType.PRIVATE) {
             const userOther = conversation.members.find((m) => {

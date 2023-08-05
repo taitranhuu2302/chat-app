@@ -27,6 +27,8 @@ export class Message extends BaseEntity {
   text?: string;
   @Prop({ type: Schema.Types.ObjectId, ref: 'Message' })
   reply?: Message | string;
+  @Prop({ type: Schema.Types.String })
+  song?: string;
   @Prop({ type: Schema.Types.ObjectId, ref: 'Conversation' })
   conversation: Conversation | string;
   @Prop({ type: Schema.Types.ObjectId, ref: 'User' })

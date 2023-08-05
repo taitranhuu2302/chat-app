@@ -33,7 +33,7 @@ const ButtonHeart: React.FC<PropsWithChildren<IProps>> = memo(
       <>
         <button
           datatype={'heart'}
-          className={`${styles.btnHeart} tooltip tooltip-top`}
+          className={`${styles.btnHeart} tooltip tooltip-top text-white`}
           data-tip={t.favourite}
           onClick={handleToggleFavourite}>
           {isFavourite ? (

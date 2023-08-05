@@ -13,7 +13,7 @@ import { useGetLyrics } from '@/service/MusicService';
 import axios from 'axios';
 import eventBus from '@/config/EventBus';
 import { CHANGE_CURRENT_TIME } from '@/constants/Music';
-import {removeMetadata} from "@/utils/StringUtils";
+import { removeMetadata } from '@/utils/StringUtils';
 
 interface IProps {}
 
@@ -33,8 +33,6 @@ const Lyrics: React.FC<IProps> = () => {
       setLyrics(removeMetadata(response.data));
     },
   });
-
-
 
   const lineRenderer = useCallback(
     ({

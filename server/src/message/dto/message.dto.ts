@@ -1,7 +1,3 @@
-import {
-  Conversation,
-  ConversationType,
-} from '../../conversation/conversation.model';
 import { User } from '../../user/user.model';
 import { Message, MessageType } from '../message.model';
 import { Expose, Transform, Type } from 'class-transformer';
@@ -17,6 +13,9 @@ export class MessageDto extends BaseMapEntity{
   @Transform(({ value }) => value || null)
   @Type(() => MessageDto)
   reply?: Message | string;
+  @Expose()
+  @Transform(({ value }) => value || null)
+  song?: string;
   @Expose()
   @Transform(({ value }) => value || null)
   @Type(() => ConversationDto)

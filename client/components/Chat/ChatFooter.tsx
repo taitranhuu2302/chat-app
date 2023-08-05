@@ -14,8 +14,11 @@ import { HiGif } from 'react-icons/hi2';
 import { IoIosAttach } from 'react-icons/io';
 import { IoClose, IoText } from 'react-icons/io5';
 import { MdSend } from 'react-icons/md';
-import { useOnClickOutside } from 'usehooks-ts';
+import { useDebounce, useOnClickOutside } from 'usehooks-ts';
 import Editor from '../Editor';
+import { useSearchSong } from '@/service/MusicService';
+import SongSearchItem from '@/components/MP3/SongSearchItem';
+import SearchSongSkeleton from '@/components/MP3/SearchSongSkeleton';
 
 interface IChatFooter {
   handleSendMessage: (payload: MessageCreateType) => void;
@@ -40,6 +43,18 @@ const ChatFooter: React.FC<IChatFooter> = ({
   const fileAttachRef = useRef<any>(null);
   const { reply } = useAppSelector((state) => state.message);
   const dispatch = useAppDispatch();
+  const [chooseSongs, setChooseSongs] = useState<SongInfoType[]>([]);
+  const [keywordSearchSong, setKeywordSearchSong] = useState('');
+  const keywordSearchSongDebounce = useDebounce(keywordSearchSong, 500);
+  const [searchSongs, setSearchSongs] = useState<SongInfoType[]>([]);
+  const { isLoading } = useSearchSong({
+    keyword: keywordSearchSongDebounce,
+    options: {
+      onSuccess: ({ data }: { data: SearchType }) => {
+        data.songs && setSearchSongs(data.songs);
+      },
+    },
+  });
   const gifRef = useRef<any>(null);
   const {
     query: { id },
@@ -65,10 +80,12 @@ const ChatFooter: React.FC<IChatFooter> = ({
       files,
       gifs,
       reply: reply ? reply._id : undefined,
+      songs: chooseSongs
     });
     setText('');
     setFiles([]);
     setGifs([]);
+    setChooseSongs([])
     dispatch(setReplyMessage(null));
   };
 
@@ -99,6 +116,44 @@ const ChatFooter: React.FC<IChatFooter> = ({
     const temp = gifs;
     temp.splice(index, 1);
     setGifs([...temp]);
+  };
+
+  const handleChangeText = (text: string) => {
+    setText(text);
+    onTextChange(text);
+    if (text.includes('@music/')) {
+      const arrText = text.split('@music/');
+
+      if (arrText.length < 2) {
+        setSearchSongs([]);
+        return;
+      }
+      const matchText = arrText[1].match(/^([\w-]+)/);
+      if (!matchText) {
+        setSearchSongs([]);
+        return;
+      }
+      const songName = matchText[1];
+      setKeywordSearchSong(songName.split('-').join(' '));
+    } else {
+      setSearchSongs([]);
+    }
+  };
+
+  const onToggleSong = (song: SongInfoType, type: 'ADD' | 'REMOVE') => {
+    if (type === 'ADD') {
+      const check = chooseSongs.find((s) => s.encodeId === song.encodeId);
+      if (check) return;
+      setChooseSongs((s) => [...s, song]);
+      return;
+    }
+
+    if (type === 'REMOVE') {
+      setChooseSongs((s) => [
+        ...s.filter((item) => item.encodeId !== song.encodeId),
+      ]);
+      return;
+    }
   };
 
   return (
@@ -162,6 +217,48 @@ const ChatFooter: React.FC<IChatFooter> = ({
           })}
         </div>
       )}
+      {(!!searchSongs.length || !!chooseSongs.length) && (
+        <div
+          className={`absolute w-[calc(100%_-_20px)] space-y-2 bottom-[110%] left-1/2 -translate-x-1/2`}>
+          {!!chooseSongs.length && (
+            <ul
+              className={
+                'flex flex-col scrollbar overflow-y-auto max-h-[200px] rounded-lg shadow-lg bg-[#34224f] p-2'
+              }>
+              {chooseSongs.map((song) => (
+                <SongSearchItem
+                  callback={(song) => {}}
+                  isHeart={false}
+                  onDeleteCallback={(song) => onToggleSong(song, 'REMOVE')}
+                  key={song.encodeId}
+                  song={song}
+                />
+              ))}
+            </ul>
+          )}
+          {!!searchSongs.length && (
+            <ul
+              className={
+                'flex flex-col scrollbar overflow-y-auto max-h-[200px] rounded-lg shadow-lg bg-[#34224f] p-2'
+              }>
+              {isLoading &&
+                Array(5)
+                  .fill(0)
+                  .map((_, index) => {
+                    return <SearchSongSkeleton key={index} />;
+                  })}
+              {searchSongs.map((song) => (
+                <SongSearchItem
+                  callback={(song) => onToggleSong(song, 'ADD')}
+                  isHeart={false}
+                  key={song.encodeId}
+                  song={song}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       {reply && (
         <div className={'relative'}>
           <p className={'text-md font-medium'}>
@@ -184,10 +281,7 @@ const ChatFooter: React.FC<IChatFooter> = ({
         <div className="flex-grow">
           <Editor
             editorLoaded={editorLoaded}
-            onChange={(text) => {
-              setText(text)
-              onTextChange(text)
-            }}
+            onChange={handleChangeText}
             handleSubmit={handleSubmit}
             value={text}
             showTopEditor={format}

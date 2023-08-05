@@ -47,7 +47,7 @@ const Control: React.FC<PropsWithChildren<IProps>> = () => {
           eventBus.emit(CHANGE_CURRENT_TIME, n[0])
         }}
       />
-      <p className={'text-[14px] min-w-[40px] font-semibold'}>{songCurrent?.duration ? convertSecondToMinute(songCurrent?.duration) : `00:00`}</p>
+      <p className={'text-[14px] min-w-[40px] font-semibold text-[#837f88]'}>{songCurrent?.duration ? convertSecondToMinute(songCurrent?.duration) : `00:00`}</p>
     </div>
   </div>
 }

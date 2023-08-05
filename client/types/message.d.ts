@@ -7,12 +7,14 @@ type MessageType = BaseType & {
   file: string;
   isEdit?: boolean;
   dateRead?: string;
+  song?: string;
 };
 
 type MessageCreateType = {
   text?: string;
   reply?: string;
   conversation: string;
-  files?: any[]
-  gifs?: string[]
+  files?: any[];
+  gifs?: string[];
+  songs?: any[]
 };

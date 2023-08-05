@@ -33,8 +33,6 @@ import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 import Portal from '../Portal';
-import { useAudio } from '@/hooks/useAudio';
-import {URL_NEW_MESSAGE_AUDIO} from "@/constants/index";
 
 interface IChat {}
 
@@ -168,8 +166,9 @@ const Chat: React.FC<IChat> = () => {
     reply,
     files,
     gifs,
+    songs,
   }: MessageCreateType) => {
-    if (!text && !files?.length && !gifs?.length) return;
+    if (!text && !files?.length && !gifs?.length && !songs?.length) return;
 
     try {
       const formData = new FormData();
@@ -186,6 +185,11 @@ const Chat: React.FC<IChat> = () => {
       if (gifs && gifs.length) {
         gifs.forEach((gif) => {
           formData.append('gifs', gif);
+        });
+      }
+      if (songs && songs.length) {
+        songs.forEach((song) => {
+          formData.append('songs', JSON.stringify(song));
         });
       }
       await sendMessage(formData);

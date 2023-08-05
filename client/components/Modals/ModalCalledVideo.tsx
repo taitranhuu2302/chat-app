@@ -31,6 +31,7 @@ const ModalCalledVideo: React.FC<IProps> = () => {
   const [conversationId, setConversationId] = useState('');
   const remoteStream = useRef<MediaStream | null>(null);
   const [isWaiting, setIsWaiting] = useState(false);
+  const [isMute, setIsMute] = useState(false);
 
   useEffect(() => {
     if (!peer || !socket) return;
@@ -180,15 +181,6 @@ const ModalCalledVideo: React.FC<IProps> = () => {
                 'https://static.vecteezy.com/system/resources/previews/005/337/799/original/icon-image-not-found-free-vector.jpg'
               }
               className="h-full w-full object-cover"></video>
-            {/*{*/}
-            {/*  !remoteStream.current ? (*/}
-            {/*    <div className='flex-center h-full bg-[#202124]'>*/}
-            {/*      <Avatar name={'Tran Huu Tai'} size={'150px'} round/>*/}
-            {/*    </div>*/}
-            {/*  ) : (*/}
-            {/*   */}
-            {/*  )*/}
-            {/*}*/}
             <div
               className={
                 'absolute left-1/2 -translate-x-1/2 bottom-5 flex items-center gap-5'

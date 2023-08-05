@@ -52,7 +52,8 @@ export class MessageService {
           const message = plainToClass(MessageDto, item, {
             excludeExtraneousValues: true,
           });
-          message.text = handleDecoding(message.text)
+          message.text = handleDecoding(message.text ?? "")
+          console.log(message);
           formattedData.push(message);
         }
 
@@ -69,7 +70,8 @@ export class MessageService {
     if (
       (!files || !files.length) &&
       !dto.text &&
-      (!dto.gifs || !dto.gifs.length)
+      (!dto.gifs || !dto.gifs.length) &&
+      (!dto.songs || !dto.songs.length)
     )
       throw new BadRequestException('Please enter content');
     const messages: MessageDto[] = [];
@@ -155,6 +157,39 @@ export class MessageService {
         } else {
           newMessage = await this.messageModel.create({
             file: gif,
+            conversation: dto.conversation,
+            sender: sub,
+          });
+        }
+
+        await newMessage.populate({
+          path: 'reply',
+          populate: {
+            path: 'sender',
+          },
+        });
+        await newMessage.populate('sender');
+        const messageMapped = plainToClass(MessageDto, newMessage, {
+          excludeExtraneousValues: true,
+        });
+        messages.push(messageMapped);
+      }
+    }
+
+    if (!!dto.songs) {
+      const songToArray = Array.isArray(dto.songs) ? dto.songs : [dto.songs];
+      for (const song of songToArray) {
+        let newMessage = null;
+        if (dto.reply) {
+          newMessage = await this.messageModel.create({
+            song: song,
+            conversation: dto.conversation,
+            sender: sub,
+            reply: dto.reply,
+          });
+        } else {
+          newMessage = await this.messageModel.create({
+            song: song,
             conversation: dto.conversation,
             sender: sub,
           });

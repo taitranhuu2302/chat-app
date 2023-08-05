@@ -55,18 +55,11 @@ export const useFavourite = () => {
     try {
       if (!isCheck.length) {
         const { id } = await addDoc(favouriteRef, payload);
-        dispatch(
-          addFavourite({
-            ...payload,
-            id,
-          })
-        );
         return;
       }
       songSnapshot.forEach((doc) => {
         deleteDoc(doc.ref);
       });
-      dispatch(removeFavourite(isCheck[0] as FavouriteType));
     } catch (e) {
       console.log(e);
     }
