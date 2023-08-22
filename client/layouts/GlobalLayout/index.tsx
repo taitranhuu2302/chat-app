@@ -35,7 +35,6 @@ const GlobalLayout: React.FC<PropsWithChildren> = ({children}) => {
       dispatch(onOpenMusic(true))
     }
   }
-  console.log('Global Layout');
 
   const isAuthRoute = useMemo(() => router.pathname.startsWith('/auth'), [router])
 

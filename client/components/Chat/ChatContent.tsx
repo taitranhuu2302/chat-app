@@ -6,6 +6,7 @@ import { useInView } from 'react-intersection-observer';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
 import MessageSkeleton from '../Skeleton/MessageSkeleton';
 import Avatar from 'react-avatar';
+import MusicChat from './MusicChat';
 
 interface IChatContent {
   messages: MessageType[];
@@ -113,6 +114,7 @@ const ChatContent: React.FC<IChatContent> = ({
 
   return (
     <Fancybox>
+      <MusicChat />
       <div ref={contentRef} className={`${styles.chatContent} scrollbar`}>
         {
           userTyping.map((u, index) => {

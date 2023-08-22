@@ -40,6 +40,21 @@ const AudioMusic = memo(function AudioMusic() {
     },
   });
 
+  const handleAudioSeeked = () => {
+    // Handle Seeked
+    console.log('seeked');
+  }
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.addEventListener('seeked', handleAudioSeeked)
+
+    return () => {
+      audio.removeEventListener('seeked', handleAudioSeeked)
+    }
+  }, [])
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;

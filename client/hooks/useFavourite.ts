@@ -1,4 +1,9 @@
-import { useCallback } from 'react';
+import { firebaseStore } from '@/config/Firebase';
+import { FAVOURITE_DB } from '@/constants/Firebase';
+import {
+  setFavourite
+} from '@/redux/features/MusicSlice';
+import { useAppDispatch } from '@/redux/hooks';
 import {
   addDoc,
   collection,
@@ -8,15 +13,9 @@ import {
   query,
   where,
 } from '@firebase/firestore';
-import { firebaseStore } from '@/config/Firebase';
-import { FAVOURITE_DB } from '@/constants/Firebase';
+import { useCallback } from 'react';
 import { useAuthContext } from '../contexts/AuthContext';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import {
-  addFavourite,
-  removeFavourite,
-  setFavourite,
-} from '@/redux/features/MusicSlice';
+import toast from 'react-hot-toast';
 
 export const useFavourite = () => {
   const { auth } = useAuthContext();
@@ -55,13 +54,16 @@ export const useFavourite = () => {
     try {
       if (!isCheck.length) {
         const { id } = await addDoc(favouriteRef, payload);
+        toast.success('The song has been added to favorites')
         return;
       }
       songSnapshot.forEach((doc) => {
         deleteDoc(doc.ref);
       });
+      toast.success('The song has been removed from favorites')
     } catch (e) {
       console.log(e);
+      toast.success('An error has occurred')
     }
   };
 

@@ -12,7 +12,7 @@ const TabContainer: React.FC<ITabContainer> = ({ children, title, headerActions 
 
   return <>
     <motion.div
-      className={`${styles.wrapper} bg-via-400 dark:bg-via-200`}>
+      className={`${styles.wrapper} bg-via-400 dark:bg-via-200 border-r dark:border-night-400`}>
       <div className={`${styles.tabHeader}`}>
         <h4 className={`${styles.tabTitle}`}>{title}</h4>
         <div>
