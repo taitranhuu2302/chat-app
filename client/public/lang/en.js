@@ -1,24 +1,24 @@
 const language = {
-  favourite: "Favourite",
-  random: "Random",
-  loop: "Loop",
-  next: "Next",
-  previous: "Previous",
-  play: "Play",
-  pause: "Pause",
-  showDetail: "Show detail",
+  favourite: 'Favourite',
+  random: 'Random',
+  loop: 'Loop',
+  next: 'Next',
+  previous: 'Previous',
+  play: 'Play',
+  pause: 'Pause',
+  showDetail: 'Show detail',
   search: 'Search',
   library: 'Library',
   charts: 'Charts',
-  newMember: "New member",
-  addNewMember: "Add new member",
+  newMember: 'New member',
+  addNewMember: 'Add new member',
   notify: 'Notifications',
   roomInformation: 'Room Information',
   attachedFile: 'Attached file',
-  membersOfRoom: "Chat members",
-  changeChatName: "Change chat name",
-  changeChatAvatar: "Change chat avatar",
-  fileImage: "File image",
+  membersOfRoom: 'Chat members',
+  changeChatName: 'Change chat name',
+  changeChatAvatar: 'Change chat avatar',
+  fileImage: 'File image',
   home: {
     tab: {
       profile: {
@@ -81,6 +81,7 @@ const language = {
       darkMode: 'Dark / Light Mode',
       logout: 'Logout',
       language: 'Change Language',
+      help: 'Help',
     },
     room: {
       header: {
@@ -91,7 +92,7 @@ const language = {
         videoCall: {
           label: 'Video Call',
           description: 'Start Video Call',
-          calling: "Calling"
+          calling: 'Calling',
         },
         profile: 'Profile',
         more: {
@@ -160,7 +161,7 @@ const language = {
   confirmDelete: 'Confirm Delete',
   descDeleteMessage: 'Are you sure you want to delete this message?',
   delete: 'Delete',
-  answering: "Answering",
+  answering: 'Answering',
 };
 
 export default language;

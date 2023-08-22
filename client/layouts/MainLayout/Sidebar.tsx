@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import styles from '@/styles/layouts/main-layout.module.scss';
 import Link from 'next/link';
 import Image from 'next/image';
-import { AiOutlineUser } from 'react-icons/ai';
+import { AiOutlineQuestionCircle, AiOutlineUser } from 'react-icons/ai';
 import { TbMessageCircle2 } from 'react-icons/tb';
 import { FiSettings, FiUsers } from 'react-icons/fi';
 import { RiContactsLine, RiNotification3Line } from 'react-icons/ri';
@@ -15,10 +15,11 @@ import { KEY_LANGUAGE, URL_NEW_MESSAGE_AUDIO } from '../../constants';
 import useTranslate from '@/hooks/useTranslate';
 import Divider from '@/components/Divider';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
-import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { SocketContext, SocketContextType } from 'contexts/SocketContext';
 import { SOCKET_EVENT } from '@/constants/Socket';
 import { useAudio } from '@/hooks/useAudio';
+import { onOpenHotkey } from '@/redux/features/HotkeySlice';
 
 interface ISidebar {}
 
@@ -28,12 +29,13 @@ const Sidebar: React.FC<ISidebar> = () => {
     query: { tab },
   } = router;
   const { onSetTheme } = useContext(DarkModeContext);
-  const t = useTranslate();
+  const t: any = useTranslate();
   const { removeAuth, auth } = useContext(AuthContext) as AuthContextType;
   const { countRequestFriend } = useAppSelector((state) => state.notify);
   const { socket } = useContext(SocketContext) as SocketContextType;
   const [chatCount, setChatCount] = useState(0);
   const { handlePlayAudio } = useAudio(URL_NEW_MESSAGE_AUDIO);
+  const dispatch = useAppDispatch();
 
   const onChangeLang = async (lang: string) => {
     await router.push(router.asPath, router.asPath, {
@@ -133,6 +135,12 @@ const Sidebar: React.FC<ISidebar> = () => {
                 size={24}
               />
             }
+          />
+          <SidebarItemLink
+            tabText={'help'}
+            onCallback={() => dispatch(onOpenHotkey(true))}
+            tooltip={t.home.sidebar.help}
+            icon={<AiOutlineQuestionCircle size={24} />}
           />
         </ul>
         <ul className={'hidden lg:flex flex-col gap-2.5 mb-5'}>
@@ -249,14 +257,16 @@ const SidebarItemLink = ({
     <li
       data-tip={tooltip}
       onClick={async () => {
-        await router.replace({
-          pathname: path
-            ? path
-            : router.pathname === '/settings'
-            ? '/'
-            : router.pathname,
-          query: { ...router.query, tab: tabText },
-        });
+        if (path) {
+          await router.replace({
+            pathname: path
+              ? path
+              : router.pathname === '/settings'
+              ? '/'
+              : router.pathname,
+            query: { ...router.query, tab: tabText },
+          });
+        }
         onCallback && onCallback();
       }}
       className={twMerge(

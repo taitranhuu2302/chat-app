@@ -5,6 +5,7 @@ import messageSlice from '@/redux/features/MessageSlice';
 import modalSlice from './features/ModalSlice';
 import conversationSlice from './features/ConversationSlice';
 import musicSlice from './features/MusicSlice';
+import hotkeySlice from "@/redux/features/HotkeySlice";
 
 export const reducers = combineReducers({
   pageLoading: pageLoadingSlice,
@@ -12,5 +13,6 @@ export const reducers = combineReducers({
   message: messageSlice,
   modal: modalSlice,
   conversation: conversationSlice,
-  music: musicSlice
+  music: musicSlice,
+  hotkey: hotkeySlice
 });

@@ -1,25 +1,24 @@
 const language = {
-  favourite: "Yêu thích",
-  random: "Ngẫu nhiên",
-  loop: "Lặp",
-  next: "Bài tiếp theo",
-  previous: "Bài trước",
-  play: "Mở nhạc",
-  pause: "Dừng",
-  showDetail: "Mở chi tiết",
-  search: 'Search',
+  favourite: 'Yêu thích',
+  random: 'Ngẫu nhiên',
+  loop: 'Lặp',
+  next: 'Bài tiếp theo',
+  previous: 'Bài trước',
+  play: 'Mở nhạc',
+  pause: 'Dừng',
+  showDetail: 'Mở chi tiết',
   search: 'Tìm kiếm',
   library: 'Thư viện',
   charts: 'Bảng xếp hạng',
-  newMember: "Thành viên mới",
-  addNewMember: "Thêm thành viên mới",
-  notify: "Thông báo",
-  roomInformation: "Thông tin phòng chat",
+  newMember: 'Thành viên mới',
+  addNewMember: 'Thêm thành viên mới',
+  notify: 'Thông báo',
+  roomInformation: 'Thông tin phòng chat',
   attachedFile: 'Tập tin đính kèm',
-  membersOfRoom: "Thành viên phòng chat",
-  changeChatName: "Đổi tên cuộc trò chuyện",
-  changeChatAvatar: "Đổi ảnh cuộc trò chuyện",
-  fileImage: "File phương tiện",
+  membersOfRoom: 'Thành viên phòng chat',
+  changeChatName: 'Đổi tên cuộc trò chuyện',
+  changeChatAvatar: 'Đổi ảnh cuộc trò chuyện',
+  fileImage: 'File phương tiện',
   home: {
     tab: {
       profile: {
@@ -33,7 +32,7 @@ const language = {
             name: 'Họ và tên',
             email: 'E-mail',
             location: 'Nơi ở',
-            phone: "Số điện thoại",
+            phone: 'Số điện thoại',
           },
         },
       },
@@ -82,6 +81,7 @@ const language = {
       darkMode: 'Chế độ sáng tối',
       logout: 'Đăng xuất',
       language: 'Thay đổi ngôn ngữ',
+      help: 'Trợ giúp',
     },
     room: {
       header: {
@@ -92,7 +92,7 @@ const language = {
         videoCall: {
           label: 'Cuộc gọi video',
           description: 'Bắt đầu cuộc gọi video',
-          calling: "Đang gọi"
+          calling: 'Đang gọi',
         },
         profile: 'Thông tin',
         more: {
@@ -155,13 +155,13 @@ const language = {
   close: 'Đóng',
   requestFriend: 'Yêu cầu kết bạn',
   messageRejectRequestFriend: 'Bạn muốn từ chối yêu cầu kết bạn ?',
-  messageAcceptRequestSuccess: "Chấp nhận yêu cầu kết bạn thành công",
-  friend: "Bạn bè",
-  messageCancelFriend: "Bạn muốn huỷ kết bạn ?",
-  confirmDelete: "Xác nhận Xóa",
-  descDeleteMessage: "Bạn có chắc chắn muốn xóa tin nhắn này?",
-  delete: "Xóa",
-  answering: "Đang trả lời"
+  messageAcceptRequestSuccess: 'Chấp nhận yêu cầu kết bạn thành công',
+  friend: 'Bạn bè',
+  messageCancelFriend: 'Bạn muốn huỷ kết bạn ?',
+  confirmDelete: 'Xác nhận Xóa',
+  descDeleteMessage: 'Bạn có chắc chắn muốn xóa tin nhắn này?',
+  delete: 'Xóa',
+  answering: 'Đang trả lời',
 };
 
 export default language;
