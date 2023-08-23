@@ -60,14 +60,25 @@ const musicSlice = createSlice({
   name: 'musicSlice',
   initialState,
   reducers: {
-    onOpenMusic: (state, { payload }: PayloadAction<boolean>) => {
+    onOpenMusic: (state, { payload }: PayloadAction<boolean | undefined>) => {
+      if (typeof payload === 'undefined') {
+        state.open = !state.open;
+        return;
+      }
       state.open = payload;
     },
     setSongCurrent: (state, { payload }: PayloadAction<SongInfoType>) => {
       state.songCurrent = payload;
       setConfigMusic({ songCurrent: payload });
     },
-    setVolume: (state, { payload }: PayloadAction<number>) => {
+    setVolume: (state, { payload }: PayloadAction<number | undefined>) => {
+      if (typeof payload === 'undefined') {
+        state.volume = state.volume === 0 ? 0.5 : 0;
+        setConfigMusic({ volume: state.volume });
+        return;
+      }
+      
+      if (payload > 1 || payload < 0) return;
       state.volume = payload;
       setConfigMusic({ volume: payload });
     },

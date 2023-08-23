@@ -139,7 +139,7 @@ const Sidebar: React.FC<ISidebar> = () => {
           <SidebarItemLink
             tabText={'help'}
             onCallback={() => dispatch(onOpenHotkey(true))}
-            tooltip={t.home.sidebar.help}
+            tooltip={`${t.home.sidebar.help} (Ctrl + H)`}
             icon={<AiOutlineQuestionCircle size={24} />}
           />
         </ul>
@@ -257,16 +257,14 @@ const SidebarItemLink = ({
     <li
       data-tip={tooltip}
       onClick={async () => {
-        if (path) {
-          await router.replace({
-            pathname: path
-              ? path
-              : router.pathname === '/settings'
-              ? '/'
-              : router.pathname,
-            query: { ...router.query, tab: tabText },
-          });
-        }
+        await router.replace({
+          pathname: path
+            ? path
+            : router.pathname === '/settings'
+            ? '/'
+            : router.pathname,
+          query: { ...router.query, tab: tabText },
+        });
         onCallback && onCallback();
       }}
       className={twMerge(

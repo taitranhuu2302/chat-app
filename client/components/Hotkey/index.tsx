@@ -5,13 +5,9 @@ import styles from '@/styles/components/hotkey.module.scss';
 import { IoClose } from 'react-icons/io5';
 import { onOpenHotkey } from '@/redux/features/HotkeySlice';
 import {useOnClickOutside} from "usehooks-ts";
+import {HOT_KEYS} from "@/constants/Hotkey";
 
 interface IProps {}
-
-type HotkeyType = {
-  name: string;
-  keys: string[];
-};
 
 const Hotkey: React.FC<PropsWithChildren<IProps>> = () => {
   const { open } = useAppSelector((state) => state.hotkey);
@@ -40,7 +36,7 @@ const Hotkey: React.FC<PropsWithChildren<IProps>> = () => {
               </button>
             </div>
             <div className={styles.content}>
-              {hotkeys.map((item, index) => (
+              {HOT_KEYS.map((item, index) => (
                 <HotkeyItem key={index} hotkey={item} />
               ))}
             </div>
@@ -60,7 +56,7 @@ const HotkeyItem: React.FC<IHotkeyItem> = ({ hotkey }) => {
     <div className={styles.contentItem}>
       <p className={'text-sm font-semibold'}>{hotkey.name}</p>
       <div className={'flex items-center gap-1'}>
-        {hotkey.keys.map((item, index) => {
+        {hotkey.keymaps.map((item, index) => {
           if (index === 0) {
             return (
               <Fragment key={index}>
@@ -79,54 +75,6 @@ const HotkeyItem: React.FC<IHotkeyItem> = ({ hotkey }) => {
   );
 };
 
-const hotkeys: HotkeyType[] = [
-  {
-    name: 'Open popup music',
-    keys: ['Ctrl', 'm'],
-  },
-  {
-    name: 'Play song',
-    keys: ['Ctrl', 'p'],
-  },
-  {
-    name: 'Pause song',
-    keys: ['Ctrl', 'Shift', 'p'],
-  },
-  {
-    name: 'Next song',
-    keys: ['Ctrl', '▶︎'],
-  },
-  {
-    name: 'Previous song',
-    keys: ['Ctrl', '◀︎'],
-  },
-  {
-    name: 'Increase volume',
-    keys: ['Ctrl', '▲'],
-  },
-  {
-    name: 'Decrease volume',
-    keys: ['Ctrl', '▼'],
-  },
-  {
-    name: 'Toggle mute',
-    keys: ['Ctrl', 'Alt', 'm'],
-  },
-  {
-    name: 'Tab 1',
-    keys: ['Ctrl', 'Shift', '1'],
-  },
-  {
-    name: 'Tab 2',
-    keys: ['Ctrl', 'Shift', '2'],
-  },
-  {
-    name: 'Tab 3',
-    keys: ['Ctrl', 'Shift', '3'],
-  },
-  {
-    name: 'Tab 4',
-    keys: ['Ctrl', 'Shift', '4'],
-  },
-];
+
+
 export default Hotkey;
