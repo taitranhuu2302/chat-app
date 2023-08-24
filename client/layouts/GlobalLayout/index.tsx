@@ -58,42 +58,52 @@ const GlobalLayout: React.FC<PropsWithChildren> = ({ children }) => {
   );
 
   const handleHotkey = useCallback(async (event: KeyboardEvent) => {
-    event.preventDefault();
     const key = event.key;
     const ctrl = event.ctrlKey;
 
     switch (true) {
       case ctrl && checkKey(key, 'h'):
+        event.preventDefault()
         dispatch(onOpenHotkey());
         break;
       case ctrl && checkKey(key, 'o'):
+        event.preventDefault()
         dispatch(onOpenMusic());
         break;
       case ctrl && checkKey(key, 'p'):
+        event.preventDefault()
         dispatch(setIsPlaying(null));
         break;
       case ctrl && checkKey(key, 'ArrowRight'):
+        event.preventDefault()
         dispatch(setSongChange('Next'));
         break;
       case ctrl && checkKey(key, 'ArrowLeft'):
+        event.preventDefault()
         dispatch(setSongChange('Previous'));
         break;
       case ctrl && checkKey(key, 'm'):
+        event.preventDefault()
         dispatch(setVolume());
         break;
       case ctrl && checkKey(key, '1'):
+        event.preventDefault()
         await onChangeTab('profile')
         break;
       case ctrl && checkKey(key, '2'):
+        event.preventDefault()
         await onChangeTab('chat')
         break;
       case ctrl && checkKey(key, '3'):
+        event.preventDefault()
         await onChangeTab('pending')
         break;
       case ctrl && checkKey(key, '4'):
+        event.preventDefault()
         await onChangeTab('contact')
         break;
       case ctrl && checkKey(key, '5'):
+        event.preventDefault()
         await onChangeTab('setting', '/settings')
         break;
       default:

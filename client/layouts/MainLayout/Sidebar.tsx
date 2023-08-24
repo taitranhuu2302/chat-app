@@ -137,7 +137,6 @@ const Sidebar: React.FC<ISidebar> = () => {
             }
           />
           <SidebarItemLink
-            tabText={'help'}
             onCallback={() => dispatch(onOpenHotkey(true))}
             tooltip={`${t.home.sidebar.help} (Ctrl + H)`}
             icon={<AiOutlineQuestionCircle size={24} />}
@@ -263,7 +262,7 @@ const SidebarItemLink = ({
             : router.pathname === '/settings'
             ? '/'
             : router.pathname,
-          query: { ...router.query, tab: tabText },
+          query: { ...router.query, tab: tabText ? tabText : router.query.tab },
         });
         onCallback && onCallback();
       }}

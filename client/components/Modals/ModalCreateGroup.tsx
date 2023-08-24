@@ -13,6 +13,8 @@ import { useCreateConversation } from '@/service/ConversationService';
 import { getErrorResponse } from '@/utils/ErrorUtils';
 import { useQueryClient } from 'react-query';
 import { API } from '@/constants/Api';
+import {useAppDispatch} from "@/redux/hooks";
+import {onDisabledHotkey} from "@/redux/features/HotkeySlice";
 
 interface IModalCreateGroup {
 
@@ -72,6 +74,7 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
   const { mutateAsync: createConversation, isLoading: createLoading } = useCreateConversation({ options: {} })
   const queryClient = useQueryClient()
   const [isGetFriends, setIsGetFriends] = useState(false)
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!isGetFriends) {
@@ -129,7 +132,7 @@ const ModalCreateGroup: React.FC<IModalCreateGroup> = () => {
           <form className={'flex flex-col gap-2.5 h-full'} onSubmit={handleSubmit}>
             <div className={'flex flex-col gap-2.5'}>
               <label htmlFor='group-name' className={'text-md'}>{t.home.tab.group.createGroup.groupName.label}</label>
-              <input value={groupName} onChange={(e) => setGroupName(e.target.value)} type='text' id={'group-name'} placeholder={t.home.tab.group.createGroup.groupName.hint} className={'outline-none border dark:bg-via-300 py-1.5 px-2.5 rounded'} />
+              <input onBlur={() => dispatch(onDisabledHotkey(false))} onFocus={() => dispatch(onDisabledHotkey(true))} value={groupName} onChange={(e) => setGroupName(e.target.value)} type='text' id={'group-name'} placeholder={t.home.tab.group.createGroup.groupName.hint} className={'outline-none border dark:bg-via-300 py-1.5 px-2.5 rounded'} />
             </div>
             <div className={'flex flex-col gap-2.5'}>
               <label htmlFor='group-members' className={'text-md'}>{t.home.tab.group.createGroup.groupMember.label}</label>

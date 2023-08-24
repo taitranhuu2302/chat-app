@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {useAppDispatch} from "@/redux/hooks";
+import {onDisabledHotkey} from "@/redux/features/HotkeySlice";
 
 interface IProps {
   onChange?: (data: string) => void;
@@ -26,6 +28,7 @@ const Editor: React.FC<IProps> = ({
   const editorRef = useRef<any>(null);
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [isFocus, setIsFocus] = useState(false);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (editorRef.current && Object.keys(editorRef.current).length > 0) return;
@@ -70,10 +73,12 @@ const Editor: React.FC<IProps> = ({
             editor={ClassicEditor}
             onFocus={() => {
               setIsFocus(true);
+              dispatch(onDisabledHotkey(true))
             }}
             placeholder={'Some thing'}
             onBlur={() => {
               setIsFocus(false);
+              dispatch(onDisabledHotkey(false))
             }}
             data={value}
             onChange={(event: ChangeEvent<unknown>, editor: any) => {
