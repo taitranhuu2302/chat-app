@@ -1,4 +1,9 @@
 const language = {
+  helpMessageSendSong: "Chức năng gửi bài hát cho bạn bè",
+  usageSong: "Để gửi một bài hát cho bạn bè, hãy sử dụng cú pháp @music/tên-bài-hát.",
+  searchSong: "Khi nhập @music/ và sau đó nhập tên bài hát, ứng dụng sẽ tự động tìm kiếm bài hát tương ứng.",
+  selectSong: "Sau khi tìm kiếm thành công, bạn có thể chọn bài hát từ kết quả tìm kiếm và gửi cho bạn bè của mình.",
+  receiveMessageSong: "Bạn bè của bạn sẽ nhận được tin nhắn chứa bài hát và có thể nghe trực tiếp từ tin nhắn đó.",
   favourite: 'Yêu thích',
   random: 'Ngẫu nhiên',
   loop: 'Lặp',

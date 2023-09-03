@@ -1,4 +1,9 @@
 const language = {
+  helpMessageSendSong: "Send Song to Friends Feature",
+  usageSong: "To send a song to your friends, use the syntax @music/song-name.",
+  searchSong: "When you type @music/ and then enter the song name, the app will automatically search for the corresponding song.",
+  selectSong: "After a successful search, you can choose a song from the search results and send it to your friends.",
+  receiveMessageSong: "Your friends will receive a message containing the song and can listen to it directly from that message.",
   favourite: 'Favourite',
   random: 'Random',
   loop: 'Loop',
