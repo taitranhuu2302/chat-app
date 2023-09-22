@@ -124,7 +124,6 @@ export class SocketGateway
 
   @SubscribeMessage(SOCKET_EVENT.VIDEO.USER_DISCONNECTED)
   async handleVideoDisconnected(@MessageBody() data: any) {
-    console.log(data);
     this.server.to(data.conversationId).emit(SOCKET_EVENT.VIDEO.DISCONNECTED, data)
   }
 }

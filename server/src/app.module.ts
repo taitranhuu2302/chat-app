@@ -12,6 +12,7 @@ import { NotifyModule } from './notify/notify.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
 import { PlaylistModule } from './playlist/playlist.module';
+import { ReactionsModule } from './reactions/reactions.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PlaylistModule } from './playlist/playlist.module';
     ConversationModule,
     MessageModule,
     PlaylistModule,
+    ReactionsModule,
   ],
 })
 export class AppModule {}

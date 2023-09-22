@@ -53,5 +53,10 @@ export const API = {
     GET_BY_ID: `get-by-id/:id`,
     DELETE: `delete/:id`,
     DELETE_SONG: `delete/:playlistId/song/:songId`,
+  },
+  REACTIONS: {
+    INDEX: `${PREFIX}/reactions`,
+    UPSERT: `upsert`,
+    UN_REACTION: `un-reaction/:messageId`,
   }
 };

@@ -7,7 +7,7 @@ import { HydratedDocument, Schema } from 'mongoose';
 import { BaseEntity } from 'src/shared/base/base.entity';
 import { Conversation } from '../conversation/conversation.model';
 import { User } from '../user/user.model';
-import { Optional } from '@nestjs/common';
+import {Reaction} from "../reactions/reactions.model";
 
 export type MessageDocument = HydratedDocument<Message>;
 
@@ -35,6 +35,8 @@ export class Message extends BaseEntity {
   sender: User | string;
   @Prop({ default: MessageType.DEFAULT })
   messageType: MessageType;
+  @Prop({type: [{ type: Schema.Types.ObjectId, ref: 'Reaction' }]})
+  reactions: Reaction[];
   @Prop()
   file: string;
   @Prop()

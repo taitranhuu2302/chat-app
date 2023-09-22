@@ -43,6 +43,7 @@ export class MessageService {
         .sort({ createdAt: -1 })
         .populate({ path: 'sender' })
         .populate({ path: 'conversation' })
+        .populate({ path: 'reactions', populate: { path: 'user' } })
         .populate({ path: 'reply', populate: { path: 'sender' } }),
       options,
       async (data) => {
@@ -53,7 +54,6 @@ export class MessageService {
             excludeExtraneousValues: true,
           });
           message.text = handleDecoding(message.text ?? "")
-          console.log(message);
           formattedData.push(message);
         }
 

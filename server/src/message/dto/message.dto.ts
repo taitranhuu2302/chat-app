@@ -4,6 +4,7 @@ import { Expose, Transform, Type } from 'class-transformer';
 import { ConversationDto } from '../../conversation/dto/conversation.dto';
 import { UserDto } from '../../user/dto/user.dto';
 import {BaseMapEntity} from "../../shared/base/base-map.entity";
+import { ReactionDto } from 'src/reactions/dto/reaction.dto';
 
 export class MessageDto extends BaseMapEntity{
   @Expose()
@@ -24,6 +25,10 @@ export class MessageDto extends BaseMapEntity{
   @Transform(({ value }) => value || null)
   @Type(() => UserDto)
   sender: User | string;
+  @Expose()
+  @Transform(({ value }) => value || null)
+  @Type(() => ReactionDto)
+  reactions: ReactionDto[];
   @Expose()
   @Transform(({ value }) => value || null)
   messageType: MessageType;
