@@ -114,7 +114,7 @@ const ChatContent: React.FC<IChatContent> = ({
 
   return (
     <Fancybox>
-      <MusicChat />
+      {/*<MusicChat />*/}
       <div ref={contentRef} className={`${styles.chatContent} scrollbar`}>
         {
           userTyping.map((u, index) => {

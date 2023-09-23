@@ -1,14 +1,7 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Avatar from 'react-avatar';
 import {
   BsFillFileTextFill,
-  BsFillPlayFill,
   BsReplyFill,
   BsThreeDotsVertical,
 } from 'react-icons/bs';
@@ -19,36 +12,17 @@ import { twMerge } from 'tailwind-merge';
 import useTranslate from '@/hooks/useTranslate';
 import ConfirmDelete from '@/components/Dialog/ConfirmDelete';
 import { useDeleteMessageApi } from '@/service/MessageService';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { useAppDispatch } from '@/redux/hooks';
 import { onPageLoading } from '@/redux/features/PageLoadingSlice';
 import { getErrorResponse } from '@/utils/ErrorUtils';
 import toast from 'react-hot-toast';
 import { setReplyMessage } from '@/redux/features/MessageSlice';
 import styles from '@/styles/components/chat.module.scss';
 import VideoPlayer from './VideoPlayer';
-import ButtonHeart from '@/components/MP3/ButtonHeart';
-import { AiFillDelete } from 'react-icons/ai';
-import { useGetSong } from '@/service/MusicService';
-import {
-  setCurrentTime,
-  setIsLoop,
-  setIsPlaying,
-  setIsRandom,
-  setSongChange,
-} from '@/redux/features/MusicSlice';
-import { FiPauseCircle } from 'react-icons/fi';
-import {
-  IoPauseCircleOutline,
-  IoPlayCircleOutline,
-  IoShuffleOutline,
-} from 'react-icons/io5';
-import { MdSkipNext, MdSkipPrevious } from 'react-icons/md';
-import { RxLoop } from 'react-icons/rx';
-import { convertSecondToMinute } from '@/utils/TimerUtils';
-import Slider from '@/components/MP3/Slider';
 import eventBus from '@/config/EventBus';
-import { CHANGE_CURRENT_TIME } from '@/constants/Music';
-import SongMessage from "@/components/Chat/SongMessage";
+import SongMessage from '@/components/Chat/SongMessage';
+import { EDITOR_FOCUS } from '@/constants/Chat';
+import Reactions from '@/components/Chat/Reactions';
 
 interface IMessage {
   isOwner?: boolean;
@@ -160,7 +134,11 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
         {message.messageType === 'DEFAULT' && (
           <div
             ref={ref}
-            className={twMerge(`chat ${isOwner ? 'chat-end' : 'chat-start'}`)}>
+            className={twMerge(
+              `chat ${styles.chatMessage} ${
+                isOwner ? 'chat-end' : 'chat-start'
+              }`
+            )}>
             <div className="chat-image avatar">
               <Avatar
                 size={'40px'}
@@ -241,32 +219,40 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
               )}
               {songMessage && <SongMessage song={songMessage} />}
               <div
-                className={`absolute dropdown ${
-                  isFirst ? 'dropdown-bottom' : 'dropdown-top'
-                } ${
+                className={`absolute  ${styles.chatActions} ${
                   isOwner
-                    ? 'left-[-15px] dropdown-left'
-                    : 'right-[-15px] dropdown-right'
-                } top-0`}>
-                <button tabIndex={0}>
-                  <BsThreeDotsVertical size={15} className={'text-primary'} />
-                </button>
-                <ul
-                  tabIndex={0}
-                  className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52 z-10">
-                  <li>
-                    <a
-                      onClick={() => {
-                        dispatch(setReplyMessage(message));
-                      }}
-                      className={
-                        'flex items-center justify-between text-light-1100 dark:text-night-1100'
-                      }>
-                      <span>Reply</span>
-                      <BsReplyFill size={20} />
-                    </a>
-                  </li>
-                  {/* {isOwner && (
+                    ? 'left-[-45px] dropdown-left'
+                    : 'right-[-45px] dropdown-right'
+                } top-0 flex items-center gap-1`}>
+                <div
+                  className={`dropdown ${
+                    isLastSame ? 'dropdown-bottom' : 'dropdown-top'
+                  }`}>
+                  <div className={'flex items-center gap-2.5'}>
+                    <button tabIndex={0}>
+                      <BsThreeDotsVertical
+                        size={15}
+                        className={'text-primary'}
+                      />
+                    </button>
+                  </div>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu p-2 shadow bg-light dark:bg-via-300 rounded-box w-52 z-10">
+                    <li>
+                      <a
+                        onClick={() => {
+                          dispatch(setReplyMessage(message));
+                          eventBus.emit(EDITOR_FOCUS, true);
+                        }}
+                        className={
+                          'flex items-center justify-between text-light-1100 dark:text-night-1100'
+                        }>
+                        <span>Reply</span>
+                        <BsReplyFill size={20} />
+                      </a>
+                    </li>
+                    {/* {isOwner && (
                     <li>
                       <a
                         onClick={() => setOpenDelete(true)}
@@ -278,7 +264,9 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
                       </a>
                     </li>
                   )} */}
-                </ul>
+                  </ul>
+                </div>
+                <Reactions message={message}/>
               </div>
             </div>
           </div>
@@ -300,7 +288,6 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
 interface ISongMessage {
   song: SongInfoType;
 }
-
 
 Message.displayName = 'Message';
 
