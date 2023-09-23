@@ -23,7 +23,7 @@ export class ReactionsService {
     const existingReaction = await this.reactionModel.findOne({
       user: sub,
       message: message._id,
-    });
+    }).populate('user');
   
     if (existingReaction) {
       existingReaction.reactionType = dto.reactionType;
@@ -35,10 +35,13 @@ export class ReactionsService {
         message: message._id, 
         reactionType: dto.reactionType,
       });
-  
+
+      
       message.reactions.push(newReaction); 
-      await message.save(); 
-  
+      await message.save();
+
+      await newReaction.populate('user')
+      
       return newReaction;
     }
   }

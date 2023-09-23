@@ -23,6 +23,8 @@ import eventBus from '@/config/EventBus';
 import SongMessage from '@/components/Chat/SongMessage';
 import { EDITOR_FOCUS } from '@/constants/Chat';
 import Reactions from '@/components/Chat/Reactions';
+import { reactionIcons } from '../../constants/Chat';
+import { formatListReactions } from '@/utils/ArrayUtils';
 
 interface IMessage {
   isOwner?: boolean;
@@ -53,10 +55,19 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
     const [openDelete, setOpenDelete] = useState(false);
     const dispatch = useAppDispatch();
     const songMessage = message.song ? JSON.parse(message.song) : null;
+    const [reactions, setReactions] = useState<ReactionType[]>([])
 
     useEffect(() => {
       dispatch(onPageLoading(deleteMessageLoading));
     }, [deleteMessageLoading]);
+
+    useEffect(() => {
+      setReactions(message.reactions)
+    }, [message])
+
+    const reactionsCount = useMemo(() => {
+      return formatListReactions(reactions)
+    }, [reactions])
 
     const renderFile = useMemo(() => {
       if (!message.file || getFileType(message.file) === 'unknown') return null;
@@ -126,6 +137,19 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
       }
     }, [message]);
 
+    const onCallbackReactions = (data: ReactionType) => {
+      const userIndex = reactions.findIndex(item => item.user._id === data.user._id);
+    
+      if (userIndex !== -1) {
+        const updatedReactions = [...reactions]; 
+        updatedReactions[userIndex] = data; 
+        setReactions(updatedReactions); 
+      } else {
+        setReactions(prevReactions => [...prevReactions, data]); 
+      }
+    };
+    
+
     return (
       <>
         {message.messageType === 'NOTIFY' && (
@@ -135,8 +159,7 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
           <div
             ref={ref}
             className={twMerge(
-              `chat ${styles.chatMessage} ${
-                isOwner ? 'chat-end' : 'chat-start'
+              `chat relative ${styles.chatMessage} ${isOwner ? 'chat-end' : 'chat-start'
               }`
             )}>
             <div className="chat-image avatar">
@@ -149,9 +172,8 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
             </div>
             {isLastSame && (
               <div
-                className={`chat-header mb-1 gap-2.5 flex items-center ${
-                  isOwner ? 'flex-row-reverse' : ''
-                }`}>
+                className={`chat-header mb-1 gap-2.5 flex items-center ${isOwner ? 'flex-row-reverse' : ''
+                  }`}>
                 <span
                   className={
                     'font-semibold'
@@ -160,15 +182,28 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
             )}
             <div
               className={twMerge(
-                `chat-bubble ${
-                  isOwner
-                    ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
-                    : 'bg-primary text-light'
+                `chat-bubble ${isOwner
+                  ? 'bg-via-500 dark:bg-via-300 text-light-1100 dark:text-night-1100'
+                  : 'bg-primary text-light'
                 } relative max-w-[50%]`,
                 message.file && 'bg-transparent p-0',
                 messageReplyActive?._id === message._id && 'ring-offset-1 ring',
                 songMessage && 'bg-[#34224f] min-w-[25%]'
               )}>
+              {!!reactionsCount && !!reactionsCount.length && (
+                <div className={twMerge('absolute -bottom-2 flex items-center gap-1', isOwner ? 'left-4' : 'right-4 flex-row-reverse')}>
+                  {reactionsCount.map((reaction, index) => {
+                    return (
+                      <div key={`${message._id}-react-${index}`} className={twMerge('bg-white dark:bg-slate-500 shadow p-1 rounded-full flex items-center gap-1 text-white')}>
+                        <picture>
+                          <img src={reactionIcons.find(item => item.name === reaction.type)?.icon || ""} alt="" width={12} height={12} className='min-w-[12px] max-w-[12px]' />
+                        </picture>
+                        <span className='text-xs'>{reaction.count}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
               {message.reply && (
                 <>
                   <div
@@ -176,9 +211,8 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
                       scrollToMessageReply &&
                       scrollToMessageReply(message.reply!)
                     }
-                    className={`${styles.messageReply} cursor-pointer m-1 ${
-                      isOwner ? `${styles.isOwner}` : ''
-                    }`}>
+                    className={`${styles.messageReply} cursor-pointer m-1 ${isOwner ? `${styles.isOwner}` : ''
+                      }`}>
                     <p className={`font-semibold`}>
                       {message.reply?.sender?.firstName}{' '}
                       {message.reply?.sender?.lastName}
@@ -197,9 +231,8 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
               )}
               {message.text && (
                 <div
-                  className={`tooltip un-reset ${
-                    isOwner ? 'tooltip-left' : 'tooltip-right'
-                  }`}
+                  className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
+                    }`}
                   data-tip={moment(message.updatedAt)
                     .locale('en')
                     .format('LLL')}
@@ -208,9 +241,8 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
               )}
               {message.file && (
                 <div
-                  className={`tooltip un-reset ${
-                    isOwner ? 'tooltip-left' : 'tooltip-right'
-                  }`}
+                  className={`tooltip un-reset ${isOwner ? 'tooltip-left' : 'tooltip-right'
+                    }`}
                   data-tip={moment(message.updatedAt)
                     .locale('en')
                     .format('LLL')}>
@@ -219,15 +251,13 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
               )}
               {songMessage && <SongMessage song={songMessage} />}
               <div
-                className={`absolute  ${styles.chatActions} ${
-                  isOwner
-                    ? 'left-[-45px] dropdown-left'
-                    : 'right-[-45px] dropdown-right'
-                } top-0 flex items-center gap-1`}>
+                className={`absolute ${styles.chatActions} ${isOwner
+                  ? 'left-[-45px] dropdown-left'
+                  : 'right-[-45px] dropdown-right'
+                  } top-0 flex items-center gap-1`}>
                 <div
-                  className={`dropdown ${
-                    isLastSame ? 'dropdown-bottom' : 'dropdown-top'
-                  }`}>
+                  className={`dropdown ${isLastSame ? 'dropdown-bottom' : 'dropdown-top'
+                    }`}>
                   <div className={'flex items-center gap-2.5'}>
                     <button tabIndex={0}>
                       <BsThreeDotsVertical
@@ -266,7 +296,9 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
                   )} */}
                   </ul>
                 </div>
-                <Reactions message={message}/>
+                <Reactions message={message}
+                  onCallback={onCallbackReactions}
+                />
               </div>
             </div>
           </div>

@@ -53,9 +53,12 @@ export class MessageService {
           const message = plainToClass(MessageDto, item, {
             excludeExtraneousValues: true,
           });
+          
           message.text = handleDecoding(message.text ?? "")
           formattedData.push(message);
         }
+
+        
 
         return formattedData;
       },

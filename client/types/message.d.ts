@@ -8,6 +8,7 @@ type MessageType = BaseType & {
   isEdit?: boolean;
   dateRead?: string;
   song?: string;
+  reactions: ReactionType[]
 };
 
 type MessageCreateType = {
