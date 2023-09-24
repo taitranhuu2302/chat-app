@@ -194,7 +194,7 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
                 <div className={twMerge('absolute -bottom-2 flex items-center gap-1', isOwner ? 'left-4' : 'right-4 flex-row-reverse')}>
                   {reactionsCount.map((reaction, index) => {
                     return (
-                      <div key={`${message._id}-react-${index}`} className={twMerge('bg-white dark:bg-slate-500 shadow p-1 rounded-full flex items-center gap-1 text-white')}>
+                      <div key={`${message._id}-react-${index}`} className={twMerge('bg-white dark:bg-slate-500 shadow p-1 rounded-full flex items-center gap-1 text-black dark:text-white')}>
                         <picture>
                           <img src={reactionIcons.find(item => item.name === reaction.type)?.icon || ""} alt="" width={12} height={12} className='min-w-[12px] max-w-[12px]' />
                         </picture>
@@ -296,8 +296,10 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
                   )} */}
                   </ul>
                 </div>
-                <Reactions message={message}
+                <Reactions 
+                  message={message}
                   onCallback={onCallbackReactions}
+                  isOwner={isOwner}
                 />
               </div>
             </div>
