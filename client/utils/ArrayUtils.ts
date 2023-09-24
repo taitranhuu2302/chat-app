@@ -21,7 +21,7 @@ export const flatMapObjectInfinite = (data: any): any[] =>
   data.pages.flatMap((page: any) => page.data.results);
 
 
-export const formatListReactions = (data: ReactionType[]) => {
+export const formatListReactions = (data: ReactionType[]): ReactionCountType[] => {
   const reactionMap = new Map();
   data.forEach(reaction => {
     const reactionType = reaction.reactionType;

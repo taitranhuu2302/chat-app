@@ -34,6 +34,8 @@ const Reactions: React.FC<PropsWithChildren<IProps>> = ({ message, onCallback, i
     } catch (e: any) {
       const errors = getErrorResponse(e.message);
       toast.error(errors[0]);
+    } finally {
+      setIsOpen(false)
     }
   };
   

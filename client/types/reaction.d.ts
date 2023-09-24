@@ -11,4 +11,4 @@ type ReactionCreateType = {
   reactionType: string
 }
 
-type ReactionCountType = { users: {_id: string, name: string}, count: number, type: string }
+type ReactionCountType = { users: {_id: string, name: string}[], count: number, type: string }

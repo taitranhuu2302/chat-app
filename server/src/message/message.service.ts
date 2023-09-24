@@ -55,6 +55,9 @@ export class MessageService {
           });
           
           message.text = handleDecoding(message.text ?? "")
+          if (message.reply && typeof message.reply !== 'string' && !!message.reply.text) {
+            message.reply.text = handleDecoding(message.reply.text ?? "")
+          }
           formattedData.push(message);
         }
 
@@ -113,6 +116,9 @@ export class MessageService {
         excludeExtraneousValues: true,
       });
       mapped.text = handleDecoding(mapped.text)
+      if (mapped.reply && typeof mapped.reply !== 'string' && !!mapped.reply.text) {
+        mapped.reply.text = handleDecoding(mapped.reply.text ?? "")
+      }
       messages.push(mapped);
     }
 
@@ -143,6 +149,9 @@ export class MessageService {
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });
+        if (messageMapped.reply && typeof messageMapped.reply !== 'string' && !!messageMapped.reply.text) {
+          messageMapped.reply.text = handleDecoding(messageMapped.reply.text ?? "")
+        }
         messages.push(messageMapped);
       }
     }
@@ -175,6 +184,9 @@ export class MessageService {
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });
+        if (messageMapped.reply && typeof messageMapped.reply !== 'string' && !!messageMapped.reply.text) {
+          messageMapped.reply.text = handleDecoding(messageMapped.reply.text ?? "")
+        }
         messages.push(messageMapped);
       }
     }
@@ -208,6 +220,9 @@ export class MessageService {
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });
+        if (messageMapped.reply && typeof messageMapped.reply !== 'string' && !!messageMapped.reply.text) {
+          messageMapped.reply.text = handleDecoding(messageMapped.reply.text ?? "")
+        }
         messages.push(messageMapped);
       }
     }

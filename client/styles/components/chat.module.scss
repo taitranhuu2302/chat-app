@@ -76,6 +76,21 @@
       @apply invisible opacity-0 transition-all duration-300;
     }
   }
+
+  .reactionMore {
+    @apply relative;
+
+    &:hover {
+      .reactionDropdown {
+        @apply flex;
+      }
+    }
+
+    .reactionDropdown {
+      @apply absolute bottom-full w-[130px] rounded-md p-3 text-white text-sm flex-col gap-1 z-[100] hidden;
+      background-color: rgba($color: #000000, $alpha: .8);
+    }
+  }
 }
 
 .item {

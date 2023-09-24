@@ -1,30 +1,30 @@
+import Reactions from '@/components/Chat/Reactions';
+import SongMessage from '@/components/Chat/SongMessage';
+import ConfirmDelete from '@/components/Dialog/ConfirmDelete';
+import eventBus from '@/config/EventBus';
+import { EDITOR_FOCUS } from '@/constants/Chat';
+import useTranslate from '@/hooks/useTranslate';
+import { setReplyMessage } from '@/redux/features/MessageSlice';
+import { onPageLoading } from '@/redux/features/PageLoadingSlice';
+import { useAppDispatch } from '@/redux/hooks';
+import { useDeleteMessageApi } from '@/service/MessageService';
+import styles from '@/styles/components/chat.module.scss';
+import { formatListReactions } from '@/utils/ArrayUtils';
+import { getErrorResponse } from '@/utils/ErrorUtils';
+import { getFileType } from '@/utils/FileUtils';
+import moment from 'moment';
+import 'moment/locale/vi';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Avatar from 'react-avatar';
+import toast from 'react-hot-toast';
 import {
   BsFillFileTextFill,
   BsReplyFill,
   BsThreeDotsVertical,
 } from 'react-icons/bs';
-import moment from 'moment';
-import 'moment/locale/vi';
-import { getFileType } from '@/utils/FileUtils';
 import { twMerge } from 'tailwind-merge';
-import useTranslate from '@/hooks/useTranslate';
-import ConfirmDelete from '@/components/Dialog/ConfirmDelete';
-import { useDeleteMessageApi } from '@/service/MessageService';
-import { useAppDispatch } from '@/redux/hooks';
-import { onPageLoading } from '@/redux/features/PageLoadingSlice';
-import { getErrorResponse } from '@/utils/ErrorUtils';
-import toast from 'react-hot-toast';
-import { setReplyMessage } from '@/redux/features/MessageSlice';
-import styles from '@/styles/components/chat.module.scss';
-import VideoPlayer from './VideoPlayer';
-import eventBus from '@/config/EventBus';
-import SongMessage from '@/components/Chat/SongMessage';
-import { EDITOR_FOCUS } from '@/constants/Chat';
-import Reactions from '@/components/Chat/Reactions';
 import { reactionIcons } from '../../constants/Chat';
-import { formatListReactions } from '@/utils/ArrayUtils';
+import VideoPlayer from './VideoPlayer';
 
 interface IMessage {
   isOwner?: boolean;
@@ -139,16 +139,16 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
 
     const onCallbackReactions = (data: ReactionType) => {
       const userIndex = reactions.findIndex(item => item.user._id === data.user._id);
-    
+
       if (userIndex !== -1) {
-        const updatedReactions = [...reactions]; 
-        updatedReactions[userIndex] = data; 
-        setReactions(updatedReactions); 
+        const updatedReactions = [...reactions];
+        updatedReactions[userIndex] = data;
+        setReactions(updatedReactions);
       } else {
-        setReactions(prevReactions => [...prevReactions, data]); 
+        setReactions(prevReactions => [...prevReactions, data]);
       }
     };
-    
+
 
     return (
       <>
@@ -191,14 +191,21 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
                 songMessage && 'bg-[#34224f] min-w-[25%]'
               )}>
               {!!reactionsCount && !!reactionsCount.length && (
-                <div className={twMerge('absolute -bottom-2 flex items-center gap-1', isOwner ? 'left-4' : 'right-4 flex-row-reverse')}>
+                <div className={twMerge('absolute z-10 -bottom-2 flex items-center gap-1', isOwner ? 'left-4' : 'right-4 flex-row-reverse')}>
                   {reactionsCount.map((reaction, index) => {
                     return (
-                      <div key={`${message._id}-react-${index}`} className={twMerge('bg-white dark:bg-slate-500 shadow p-1 rounded-full flex items-center gap-1 text-black dark:text-white')}>
-                        <picture>
-                          <img src={reactionIcons.find(item => item.name === reaction.type)?.icon || ""} alt="" width={12} height={12} className='min-w-[12px] max-w-[12px]' />
-                        </picture>
-                        <span className='text-xs'>{reaction.count}</span>
+                      <div key={`${message._id}-react-${index}`} className={`${styles.reactionMore}`}>
+                        <div className={twMerge('bg-white dark:bg-slate-500 relative shadow p-1 rounded-full flex items-center gap-1 text-black dark:text-white')}>
+                          <picture>
+                            <img src={reactionIcons.find(item => item.name === reaction.type)?.icon || ""} alt="" width={12} height={12} className='min-w-[12px] max-w-[12px]' />
+                          </picture>
+                          <span className='text-xs'>{reaction.count}</span>
+                        </div>
+                        <div className={`${styles.reactionDropdown} ${isOwner ? 'right-0' : 'left-0'}`}>
+                          {reaction.users.map((item, index) => (
+                            <p key={index}>{item.name}</p>
+                          ))}
+                        </div>
                       </div>
                     )
                   })}
@@ -296,7 +303,7 @@ const Message = React.forwardRef<HTMLDivElement, IMessage>(
                   )} */}
                   </ul>
                 </div>
-                <Reactions 
+                <Reactions
                   message={message}
                   onCallback={onCallbackReactions}
                   isOwner={isOwner}
