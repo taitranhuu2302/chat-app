@@ -2,16 +2,55 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-html, body { 
+html, body {
   scroll-behavior: smooth
+}
+
+/*Ripple*/
+.ripple {
+  width: 10px;
+  height: 10px;
+  opacity: 0;
+  transform: scale(0);
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  position: fixed;
+}
+
+html.dark {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+html.dark .ripple {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.animate-ripple {
+  animation: ripple-mo 1s cubic-bezier(0, 0, 0.2, 1);
+  z-index: 1000;
+}
+
+@keyframes ripple-mo {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(10);
+    opacity: 0;
+  }
 }
 
 .modal.modal-override {
   width: 100%;
   height: 100%;
+  display: none;
 
   &.active {
     opacity: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     visibility: visible;
     pointer-events: auto;
     cursor: default;
@@ -73,6 +112,7 @@ html, body {
 
 .select-custom {
   padding: 6px 0;
+
   .select__menu {
     @apply dark:bg-[#36404A];
   }
@@ -81,7 +121,6 @@ html, body {
 .btn-custom {
   @apply bg-primary text-light w-full py-2 rounded-md mt-5 hover:opacity-95 disabled:opacity-50;
 }
-
 
 /* width */
 ::-webkit-scrollbar {
@@ -130,7 +169,7 @@ html, body {
     @apply rounded-lg;
   }
 
-  .ck .ck-content  {
+  .ck .ck-content {
     max-height: 200px;
   }
 
@@ -456,5 +495,115 @@ html, body {
         @apply rounded-lg hover:bg-gray-300 dark:hover:text-black cursor-pointer font-semibold;
       }
     }
+  }
+}
+
+.mp3 {
+  @apply text-white;
+
+  .text-caption {
+    @apply text-[12px] text-[#FFFFFF80];
+  }
+
+  .item-hover {
+    @apply hover:text-[#8b45ca];
+  }
+
+  .item-active {
+    @apply text-[#8b45ca];
+  }
+
+  .color-opacity-ct {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .bg-opacity-ct {
+    background: rgba(255, 255, 255, 0.1);
+
+    .bg-opacity-ct--active {
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .07);
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.active-soft {
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+}
+
+.hidden-soft {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.scroll-lyric {
+  max-height: 500px;
+  overflow: hidden auto;
+  position: relative;
+  mask-image: linear-gradient(180deg, rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0.8) 10%, #fff 25%, #fff 75%,
+          rgba(255, 255, 255, 0.8) 90%, rgba(255, 255, 255, 0));
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lyric-item {
+    color: white;
+    font-size: 35px;
+    padding: 10px 0;
+    font-weight: bold;
+    letter-spacing: -1px;
+
+    &.is-active {
+      color: #ffed00;
+    }
+
+    &.is-over {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+@keyframes rotateLoading {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotateLoading {
+  animation: rotateLoading 5s normal infinite linear;
+  transition: animation 5s;
+}
+
+.waviy {
+  position: relative;
+  -webkit-box-reflect: below -20px linear-gradient(transparent, rgba(0, 0, 0, .2));
+  @apply tracking-wide;
+}
+
+.waviy span {
+  position: relative;
+  display: inline-block;
+  color: #fff;
+  animation: waviy 2s infinite;
+  animation-delay: calc(.1s * var(--i));
+}
+
+@keyframes waviy {
+  0%, 40%, 100% {
+    transform: translateY(0)
+  }
+  20% {
+    transform: translateY(-10px)
   }
 }

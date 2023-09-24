@@ -16,7 +16,7 @@ export const ALLOWED_TYPES = [
 
 export function getFileType(url: string): string {
 
-  const extension = url.substring(url.lastIndexOf('.')).toLowerCase();
+  const extension = url?.substring(url.lastIndexOf('.')).toLowerCase();
 
   if (
     extension === '.jpg' ||

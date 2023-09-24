@@ -30,6 +30,7 @@ import { SocketService } from '../socket/socket.service';
 import { RedisService } from '../redis/redis.service';
 import { SOCKET_EVENT } from '../shared/constants/socket.constant';
 import { ConversationRemoveMemberDto } from './dto/conversation-remove-member.dto';
+import { handleDecoding } from 'src/shared/helper/cryptography';
 
 @Injectable()
 export class ConversationService {
@@ -48,7 +49,7 @@ export class ConversationService {
     return await this.messageModel.find({
       text: null,
       conversation: conversationId,
-    })
+    });
   }
 
   async findAll(sub: string, options: PaginationOptions) {
@@ -81,6 +82,9 @@ export class ConversationService {
             ),
             { excludeExtraneousValues: true },
           );
+          if (!!latestMessage?.text) {
+            latestMessage.text = handleDecoding(latestMessage.text ?? '');
+          }
 
           if (item.conversationType === ConversationType.PRIVATE) {
             const userOther = conversation.members.find((m) => {

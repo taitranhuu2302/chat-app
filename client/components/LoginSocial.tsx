@@ -20,7 +20,7 @@ const LoginSocial: React.FC<IProps> = () => {
         type="button"
         onClick={() => handleLoginGoogle()}
         className={
-          'w-full hover:bg-gray-100 py-2 border flex items-center justify-center gap-2.5 rounded-full'
+          'w-full hover:bg-gray-100 dark:hover:bg-gray-600 py-2 border flex items-center justify-center gap-2.5 rounded-full'
         }>
         <FcGoogle size={25} />
         {t.auth.loginGoogle}

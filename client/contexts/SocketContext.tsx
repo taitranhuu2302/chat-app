@@ -20,7 +20,10 @@ export type SocketContextType = {
   socket: Socket | null;
 };
 
+
 export const SocketContext = createContext<SocketContextType | null>(null);
+
+export const useSocketContext = () => useContext(SocketContext) as SocketContextType;
 
 const SocketProvider = ({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<Socket | null>(null);

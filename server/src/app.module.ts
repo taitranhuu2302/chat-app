@@ -11,6 +11,8 @@ import { RedisModule } from './redis/redis.module';
 import { NotifyModule } from './notify/notify.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
+import { PlaylistModule } from './playlist/playlist.module';
+import { ReactionsModule } from './reactions/reactions.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { MessageModule } from './message/message.module';
     NotifyModule,
     ConversationModule,
     MessageModule,
+    PlaylistModule,
+    ReactionsModule,
   ],
 })
 export class AppModule {}

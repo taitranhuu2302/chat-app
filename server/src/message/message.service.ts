@@ -18,6 +18,7 @@ import {
   Conversation,
   ConversationDocument,
 } from '../conversation/conversation.model';
+import { handleDecoding, handleEncoding } from 'src/shared/helper/cryptography';
 
 @Injectable()
 export class MessageService {
@@ -42,6 +43,7 @@ export class MessageService {
         .sort({ createdAt: -1 })
         .populate({ path: 'sender' })
         .populate({ path: 'conversation' })
+        .populate({ path: 'reactions', populate: { path: 'user' } })
         .populate({ path: 'reply', populate: { path: 'sender' } }),
       options,
       async (data) => {
@@ -51,8 +53,15 @@ export class MessageService {
           const message = plainToClass(MessageDto, item, {
             excludeExtraneousValues: true,
           });
+          
+          message.text = handleDecoding(message.text ?? "")
+          if (message.reply && typeof message.reply !== 'string' && !!message.reply.text) {
+            message.reply.text = handleDecoding(message.reply.text ?? "")
+          }
           formattedData.push(message);
         }
+
+        
 
         return formattedData;
       },
@@ -67,7 +76,8 @@ export class MessageService {
     if (
       (!files || !files.length) &&
       !dto.text &&
-      (!dto.gifs || !dto.gifs.length)
+      (!dto.gifs || !dto.gifs.length) &&
+      (!dto.songs || !dto.songs.length)
     )
       throw new BadRequestException('Please enter content');
     const messages: MessageDto[] = [];
@@ -80,16 +90,17 @@ export class MessageService {
 
     if (dto.text) {
       let message = null;
+      const text = handleEncoding(dto.text)
       if (dto.reply) {
         message = await this.messageModel.create({
-          text: dto.text,
+          text: text,
           conversation: dto.conversation,
           sender: sub,
           reply: dto.reply,
         });
       } else {
         message = await this.messageModel.create({
-          text: dto.text,
+          text: text,
           conversation: dto.conversation,
           sender: sub,
         });
@@ -104,6 +115,10 @@ export class MessageService {
       const mapped = plainToClass(MessageDto, message, {
         excludeExtraneousValues: true,
       });
+      mapped.text = handleDecoding(mapped.text)
+      if (mapped.reply && typeof mapped.reply !== 'string' && !!mapped.reply.text) {
+        mapped.reply.text = handleDecoding(mapped.reply.text ?? "")
+      }
       messages.push(mapped);
     }
 
@@ -134,6 +149,9 @@ export class MessageService {
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });
+        if (messageMapped.reply && typeof messageMapped.reply !== 'string' && !!messageMapped.reply.text) {
+          messageMapped.reply.text = handleDecoding(messageMapped.reply.text ?? "")
+        }
         messages.push(messageMapped);
       }
     }
@@ -166,6 +184,45 @@ export class MessageService {
         const messageMapped = plainToClass(MessageDto, newMessage, {
           excludeExtraneousValues: true,
         });
+        if (messageMapped.reply && typeof messageMapped.reply !== 'string' && !!messageMapped.reply.text) {
+          messageMapped.reply.text = handleDecoding(messageMapped.reply.text ?? "")
+        }
+        messages.push(messageMapped);
+      }
+    }
+
+    if (!!dto.songs) {
+      const songToArray = Array.isArray(dto.songs) ? dto.songs : [dto.songs];
+      for (const song of songToArray) {
+        let newMessage = null;
+        if (dto.reply) {
+          newMessage = await this.messageModel.create({
+            song: song,
+            conversation: dto.conversation,
+            sender: sub,
+            reply: dto.reply,
+          });
+        } else {
+          newMessage = await this.messageModel.create({
+            song: song,
+            conversation: dto.conversation,
+            sender: sub,
+          });
+        }
+
+        await newMessage.populate({
+          path: 'reply',
+          populate: {
+            path: 'sender',
+          },
+        });
+        await newMessage.populate('sender');
+        const messageMapped = plainToClass(MessageDto, newMessage, {
+          excludeExtraneousValues: true,
+        });
+        if (messageMapped.reply && typeof messageMapped.reply !== 'string' && !!messageMapped.reply.text) {
+          messageMapped.reply.text = handleDecoding(messageMapped.reply.text ?? "")
+        }
         messages.push(messageMapped);
       }
     }

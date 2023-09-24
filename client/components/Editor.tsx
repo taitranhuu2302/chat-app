@@ -5,6 +5,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useAppDispatch } from '@/redux/hooks';
+import { onDisabledHotkey } from '@/redux/features/HotkeySlice';
+import eventBus from '@/config/EventBus';
+import { EDITOR_FOCUS } from '@/constants/Chat';
 
 interface IProps {
   onChange?: (data: string) => void;
@@ -23,13 +27,16 @@ const Editor: React.FC<IProps> = ({
   showTopEditor,
   handleSubmit,
 }) => {
-  const editorRef = useRef<any>();
+  const editorRef = useRef<any>(null);
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [isFocus, setIsFocus] = useState(false);
+  const dispatch = useAppDispatch();
+  const ref = useRef<any>();
 
   useEffect(() => {
+    if (editorRef.current && Object.keys(editorRef.current).length > 0) return;
     editorRef.current = {
-      CKEditor: require('@ckeditor/ckeditor5-react').CKEditor, // v3+
+      CKEditor: require('@ckeditor/ckeditor5-react').CKEditor,
       ClassicEditor: require('@ckeditor/ckeditor5-build-classic'),
     };
 
@@ -37,6 +44,16 @@ const Editor: React.FC<IProps> = ({
       editorRef.current = {};
     };
   }, []);
+
+  useEffect(() => {
+    eventBus.on(EDITOR_FOCUS, () => {
+      if (!ref) return;
+      ref.current.focus()
+    });
+    return () => {
+      eventBus.off(EDITOR_FOCUS);
+    };
+  }, [ref]);
 
   const handleEnter = (event: KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -67,12 +84,18 @@ const Editor: React.FC<IProps> = ({
           <CKEditor
             name={name}
             editor={ClassicEditor}
-            onFocus={() => {
+            onReady={(e: any) => {
+              e.focus();
+              ref.current = e;
+            }}
+            onFocus={(e: any) => {
               setIsFocus(true);
+              dispatch(onDisabledHotkey(true));
             }}
             placeholder={'Some thing'}
             onBlur={() => {
               setIsFocus(false);
+              dispatch(onDisabledHotkey(false));
             }}
             data={value}
             onChange={(event: ChangeEvent<unknown>, editor: any) => {

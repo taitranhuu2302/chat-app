@@ -3,7 +3,6 @@ import React, {
   SyntheticEvent,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import MainLayout from '@/layouts/MainLayout';
@@ -12,7 +11,7 @@ import styles from '@/styles/pages/settings.module.scss';
 import { AiFillFacebook, AiFillGithub } from 'react-icons/ai';
 import useTranslate from '@/hooks/useTranslate';
 import { AuthContext, AuthContextType } from 'contexts/AuthContext';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   useChangeAvatarApi,
   useChangePasswordApi,

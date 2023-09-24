@@ -1,0 +1,53 @@
+.mediaItem {
+  @apply flex py-3 pl-2.5 pr-5 hover:bg-[#2f2739] transition-all duration-200 rounded items-center;
+
+  &.active {
+    @apply bg-[#2f2739];
+  }
+  
+  .mediaItemCount {
+    -webkit-text-stroke: 1px #bebbc1;
+    min-width: 65px;
+    opacity: .7;
+    font-size: 35px;
+    font-weight: 900;
+    @apply tracking-wide;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    font-family: 'Roboto', sans-serif;
+    color: rgba(74, 144, 226, 0);
+
+    &.level1 {
+      -webkit-text-stroke: 1px #4a90e2;
+    }
+
+    &.level2 {
+      -webkit-text-stroke: 1px #50e0c0;
+    }
+
+    &.level3 {
+      -webkit-text-stroke: 1px #dd4e4f;
+    }
+  }
+}
+
+.btnHeart {
+  padding: 10px;
+  margin: 0 2px;
+  border-radius: 999px;
+  text-align: center;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: hsla(0, 0%, 100%, .1);
+  }
+}
+
+.textCaption {
+  @apply text-[13px] text-[#FFFFFF80];
+}

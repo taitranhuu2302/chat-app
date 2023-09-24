@@ -9,6 +9,8 @@ import useTranslate from '@/hooks/useTranslate';
 import { IoIosArrowBack } from 'react-icons/io';
 import { useRouter } from 'next/router';
 import Skeleton from 'react-loading-skeleton';
+import { useAppDispatch } from '@/redux/hooks';
+import { setModalVideoCall } from '@/redux/features/ModalSlice';
 
 interface IChatHeader {
   onToggleSidebar: () => void;
@@ -23,6 +25,7 @@ const ChatHeader: React.FC<IChatHeader> = ({
 }) => {
   const t = useTranslate();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   return (
     <div
@@ -58,12 +61,18 @@ const ChatHeader: React.FC<IChatHeader> = ({
         )}
       </div>
       <div className={styles.chatHeaderRight}>
-        <label
+        <button
           data-tip={t.home.room.header.videoCall.label}
           className={'tooltip tooltip-bottom cursor-pointer'}
-          htmlFor={'modal-call-video'}>
+          onClick={() =>
+            dispatch(
+              setModalVideoCall({
+                isOpen: true,
+              })
+            )
+          }>
           <BsCameraVideo size={22} />
-        </label>
+        </button>
         <button
           data-tip={t.home.room.header.profile}
           className={'tooltip tooltip-bottom'}

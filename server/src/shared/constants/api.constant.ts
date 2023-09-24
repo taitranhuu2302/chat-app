@@ -46,4 +46,17 @@ export const API = {
     UPDATE: `update/:id`,
     MESSAGE_RECALL: `message-recall/:id`,
   },
+  PLAYLIST: {
+    INDEX: `${PREFIX}/playlist`,
+    CREATE: `create`,
+    GET_BY_USER: `get-by-user`,
+    GET_BY_ID: `get-by-id/:id`,
+    DELETE: `delete/:id`,
+    DELETE_SONG: `delete/:playlistId/song/:songId`,
+  },
+  REACTIONS: {
+    INDEX: `${PREFIX}/reactions`,
+    UPSERT: `upsert`,
+    UN_REACTION: `un-reaction/:messageId`,
+  }
 };

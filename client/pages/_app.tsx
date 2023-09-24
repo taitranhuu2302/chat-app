@@ -1,18 +1,24 @@
-import '@/styles/globals.scss';
+import { store } from '@/redux/store';
 import '@/styles/commons.scss';
 import '@/styles/font.scss';
-import 'react-loading-skeleton/dist/skeleton.css'
-import type { AppProps } from 'next/app';
-import { Provider } from 'react-redux';
-import { store } from '@/redux/store';
-import { ThemeProvider } from 'next-themes';
-import DarkModeProvider from '../contexts/DarkModeProvider';
-import Head from 'next/head';
+import '@/styles/globals.scss';
+import 'swiper/css';
+import 'react-loading-skeleton/dist/skeleton.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ThemeProvider } from 'next-themes';
+import type { AppProps } from 'next/app';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
 import { Toaster } from 'react-hot-toast';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { Provider } from 'react-redux';
 import AuthProvider from '../contexts/AuthContext';
-import SocketProvider from "../contexts/SocketContext";
+import DarkModeProvider from '../contexts/DarkModeProvider';
+import SocketProvider from '../contexts/SocketContext';
+import GlobalLayout from '@/layouts/GlobalLayout';
+import { useEffect } from 'react';
+
+const PeerProvider = dynamic(() => import("contexts/PeerContext"), { ssr: false })
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,10 +30,27 @@ const queryClient = new QueryClient({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+
+  useEffect(() => {
+    (async () => {
+      if (navigator.permissions) {
+        // @ts-ignore
+        const permissionStatus = await navigator.permissions.query({name: 'camera'});
+        if (permissionStatus.state !== 'granted') {
+          navigator.mediaDevices.getUserMedia({video: true, audio: true}).then((stream) => {
+            console.log('camera');
+          }).catch(() => {
+            console.log('no camera');
+          })
+        }
+      }
+    })()
+  }, [])
+
   return (
     <>
       <Head>
-        <title>Chat App</title>
+        <title>MeloChat</title>
       </Head>
       <ThemeProvider attribute={'class'} defaultTheme={'light'}>
         <QueryClientProvider client={queryClient}>
@@ -36,7 +59,11 @@ export default function App({ Component, pageProps }: AppProps) {
               <AuthProvider>
                 <DarkModeProvider>
                   <SocketProvider>
-                    <Component {...pageProps} />
+                    <PeerProvider>
+                      <GlobalLayout>
+                        <Component {...pageProps} />
+                      </GlobalLayout>
+                    </PeerProvider>
                   </SocketProvider>
                 </DarkModeProvider>
               </AuthProvider>

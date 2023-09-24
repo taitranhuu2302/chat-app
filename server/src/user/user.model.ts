@@ -5,7 +5,7 @@ import {
 } from '@nestjs/mongoose';
 import { BaseEntity } from '../shared/base/base.entity';
 import { HydratedDocument, Schema } from 'mongoose';
-import { Exclude, Expose } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { Conversation } from 'src/conversation/conversation.model';
 
 export type UserDocument = HydratedDocument<User>;

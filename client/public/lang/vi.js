@@ -1,14 +1,29 @@
 const language = {
-  newMember: "Thành viên mới",
-  addNewMember: "Thêm thành viên mới",
-  notify: "Thông báo",
-  roomInformation: "Thông tin phòng chat",
+  helpMessageSendSong: "Chức năng gửi bài hát cho bạn bè",
+  usageSong: "Để gửi một bài hát cho bạn bè, hãy sử dụng cú pháp @music/tên-bài-hát.",
+  searchSong: "Khi nhập @music/ và sau đó nhập tên bài hát, ứng dụng sẽ tự động tìm kiếm bài hát tương ứng.",
+  selectSong: "Sau khi tìm kiếm thành công, bạn có thể chọn bài hát từ kết quả tìm kiếm và gửi cho bạn bè của mình.",
+  receiveMessageSong: "Bạn bè của bạn sẽ nhận được tin nhắn chứa bài hát và có thể nghe trực tiếp từ tin nhắn đó.",
+  favourite: 'Yêu thích',
+  random: 'Ngẫu nhiên',
+  loop: 'Lặp',
+  next: 'Bài tiếp theo',
+  previous: 'Bài trước',
+  play: 'Mở nhạc',
+  pause: 'Dừng',
+  showDetail: 'Mở chi tiết',
+  search: 'Tìm kiếm',
+  library: 'Thư viện',
+  charts: 'Bảng xếp hạng',
+  newMember: 'Thành viên mới',
+  addNewMember: 'Thêm thành viên mới',
+  notify: 'Thông báo',
+  roomInformation: 'Thông tin phòng chat',
   attachedFile: 'Tập tin đính kèm',
-  membersOfRoom: "Thành viên phòng chat",
-  changeChatName: "Đổi tên cuộc trò chuyện",
-  changeChatAvatar: "Đổi ảnh cuộc trò chuyện",
-  addNewMember: "Thêm thành viên mới",
-  fileImage: "File phương tiện",
+  membersOfRoom: 'Thành viên phòng chat',
+  changeChatName: 'Đổi tên cuộc trò chuyện',
+  changeChatAvatar: 'Đổi ảnh cuộc trò chuyện',
+  fileImage: 'File phương tiện',
   home: {
     tab: {
       profile: {
@@ -22,7 +37,7 @@ const language = {
             name: 'Họ và tên',
             email: 'E-mail',
             location: 'Nơi ở',
-            phone: "Số điện thoại",
+            phone: 'Số điện thoại',
           },
         },
       },
@@ -71,6 +86,7 @@ const language = {
       darkMode: 'Chế độ sáng tối',
       logout: 'Đăng xuất',
       language: 'Thay đổi ngôn ngữ',
+      help: 'Trợ giúp',
     },
     room: {
       header: {
@@ -81,6 +97,7 @@ const language = {
         videoCall: {
           label: 'Cuộc gọi video',
           description: 'Bắt đầu cuộc gọi video',
+          calling: 'Đang gọi',
         },
         profile: 'Thông tin',
         more: {
@@ -97,7 +114,7 @@ const language = {
         attachedImage: 'Hình ảnh kèm theo',
       },
     },
-    welcome: 'Chào mừng bạn đến với ứng dụng trò chuyện',
+    welcome: 'Chào mừng bạn đến với MeloChat',
   },
   auth: {
     title: 'Chat app',
@@ -143,13 +160,13 @@ const language = {
   close: 'Đóng',
   requestFriend: 'Yêu cầu kết bạn',
   messageRejectRequestFriend: 'Bạn muốn từ chối yêu cầu kết bạn ?',
-  messageAcceptRequestSuccess: "Chấp nhận yêu cầu kết bạn thành công",
-  friend: "Bạn bè",
-  messageCancelFriend: "Bạn muốn huỷ kết bạn ?",
-  confirmDelete: "Xác nhận Xóa",
-  descDeleteMessage: "Bạn có chắc chắn muốn xóa tin nhắn này?",
-  delete: "Xóa",
-  answering: "Đang trả lời"
+  messageAcceptRequestSuccess: 'Chấp nhận yêu cầu kết bạn thành công',
+  friend: 'Bạn bè',
+  messageCancelFriend: 'Bạn muốn huỷ kết bạn ?',
+  confirmDelete: 'Xác nhận Xóa',
+  descDeleteMessage: 'Bạn có chắc chắn muốn xóa tin nhắn này?',
+  delete: 'Xóa',
+  answering: 'Đang trả lời',
 };
 
 export default language;

@@ -1,14 +1,29 @@
 const language = {
-  newMember: "New member",
-  addNewMember: "Add new member",
+  helpMessageSendSong: "Send Song to Friends Feature",
+  usageSong: "To send a song to your friends, use the syntax @music/song-name.",
+  searchSong: "When you type @music/ and then enter the song name, the app will automatically search for the corresponding song.",
+  selectSong: "After a successful search, you can choose a song from the search results and send it to your friends.",
+  receiveMessageSong: "Your friends will receive a message containing the song and can listen to it directly from that message.",
+  favourite: 'Favourite',
+  random: 'Random',
+  loop: 'Loop',
+  next: 'Next',
+  previous: 'Previous',
+  play: 'Play',
+  pause: 'Pause',
+  showDetail: 'Show detail',
+  search: 'Search',
+  library: 'Library',
+  charts: 'Charts',
+  newMember: 'New member',
+  addNewMember: 'Add new member',
   notify: 'Notifications',
   roomInformation: 'Room Information',
   attachedFile: 'Attached file',
-  membersOfRoom: "Chat members",
-  changeChatName: "Change chat name",
-  changeChatAvatar: "Change chat avatar",
-  addNewMember: "Add new members",
-  fileImage: "File image",
+  membersOfRoom: 'Chat members',
+  changeChatName: 'Change chat name',
+  changeChatAvatar: 'Change chat avatar',
+  fileImage: 'File image',
   home: {
     tab: {
       profile: {
@@ -71,6 +86,7 @@ const language = {
       darkMode: 'Dark / Light Mode',
       logout: 'Logout',
       language: 'Change Language',
+      help: 'Help',
     },
     room: {
       header: {
@@ -81,6 +97,7 @@ const language = {
         videoCall: {
           label: 'Video Call',
           description: 'Start Video Call',
+          calling: 'Calling',
         },
         profile: 'Profile',
         more: {
@@ -97,18 +114,18 @@ const language = {
         attachedImage: 'Images',
       },
     },
-    welcome: 'Welcome to chat app',
+    welcome: 'Welcome to MeloChat',
   },
   auth: {
-    title: 'Chat app',
+    title: 'MeloChat',
     signIn: {
       label: 'Sign In',
-      description: 'Sign in to continue to chat app',
+      description: 'Sign in to continue to MeloChat',
       subDescription: `Don't have an account ?`,
     },
     signUp: {
       label: 'Sign Up',
-      description: 'Sign up to continue to chat app',
+      description: 'Sign up to continue to MeloChat',
       subDescription: `Already have an account ?`,
     },
     rememberMe: 'Remember Me',
@@ -149,7 +166,7 @@ const language = {
   confirmDelete: 'Confirm Delete',
   descDeleteMessage: 'Are you sure you want to delete this message?',
   delete: 'Delete',
-  answering: "Answering",
+  answering: 'Answering',
 };
 
 export default language;

@@ -196,7 +196,7 @@ const ModalSearchUser: React.FC<Props> = () => {
           }
       }} id="modal-search-user" className="modal-toggle" />
       <div className="modal">
-        <div className="modal-box max-w-[900px]">
+        <div className="modal-box max-w-[900px] dark:bg-via-600">
           <Input
             placeholder={t.home.tab.contact.searchHint}
             value={keywords}

@@ -1,5 +1,7 @@
 import React, { useId } from 'react';
 import { twMerge } from 'tailwind-merge';
+import {useAppDispatch} from "@/redux/hooks";
+import {onDisabledHotkey} from "@/redux/features/HotkeySlice";
 
 interface IInput {
   placeholder?: string;
@@ -25,6 +27,8 @@ const Input: React.FC<IInput> = ({
   type = "text"
 }) => {
   const id = useId();
+  const dispatch = useAppDispatch()
+  
   return (
     <>
       <div className={'flex flex-col gap-1'}>
