@@ -2,7 +2,6 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { formatLimitText } from '@/utils/StringUtils';
 import ButtonHeart from '@/components/MP3/ButtonHeart';
 import { BsPauseCircle, BsPlayCircle } from 'react-icons/bs';
-import TextBouncing from '@/components/TextBouncing';
 import { twMerge } from 'tailwind-merge';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { setIsPlaying, setSongCurrent } from '@/redux/features/MusicSlice';

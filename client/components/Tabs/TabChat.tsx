@@ -1,22 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react';
-import TabContainer from '@/components/Tabs/TabContainer';
 import Input from '@/components/Input';
-import { IoSearchOutline } from 'react-icons/io5';
-import Avatar from 'react-avatar';
-import { useRouter } from 'next/router';
-import useTranslate from '@/hooks/useTranslate';
 import ModalCreateGroup from '@/components/Modals/ModalCreateGroup';
+import TabContainer from '@/components/Tabs/TabContainer';
+import { SOCKET_EVENT } from '@/constants/Socket';
+import useTranslate from '@/hooks/useTranslate';
 import { useGetConversationByUser } from '@/service/ConversationService';
 import { flatMapObjectInfinite } from '@/utils/ArrayUtils';
-import moment from 'moment';
-import Skeleton from 'react-loading-skeleton';
-import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
-import { SOCKET_EVENT } from '@/constants/Socket';
-import { useInView } from 'react-intersection-observer';
 import { AuthContext, AuthContextType } from 'contexts/AuthContext';
+import moment from 'moment';
+import { useRouter } from 'next/router';
+import React, { useContext, useEffect, useMemo, useState, useTransition } from 'react';
+import Avatar from 'react-avatar';
+import { IoSearchOutline } from 'react-icons/io5';
+import { useInView } from 'react-intersection-observer';
+import Skeleton from 'react-loading-skeleton';
 import { twMerge } from 'tailwind-merge';
-import { useAudio } from '@/hooks/useAudio';
-import { URL_NEW_MESSAGE_AUDIO } from '@/constants/index';
+import { SocketContext, SocketContextType } from '../../contexts/SocketContext';
 
 interface ITabChat {}
 
@@ -25,6 +23,7 @@ const TabChat: React.FC<ITabChat> = () => {
   const { ref: loadingRef, inView } = useInView();
   const [conversations, setConversations] = useState<ConversationType[]>([]);
   const { socket } = useContext(SocketContext) as SocketContextType;
+  const [search, setSearch] = useState("")
   const {
     isLoading: isLoadingConversations,
     hasNextPage,
@@ -56,6 +55,19 @@ const TabChat: React.FC<ITabChat> = () => {
     }
   }, [inView, loadingRef]);
 
+  const handleSearch = (value: string) => {
+    setSearch(value)
+  }
+
+  const conversationFilter = useMemo(() => {
+    if (search) {
+      return conversations.filter((item) => {
+        return item.conversationName.toLowerCase().includes(search.toLowerCase());
+      })
+    }
+    return conversations;
+  }, [conversations, search])
+
   return (
     <>
       <TabContainer
@@ -69,6 +81,8 @@ const TabChat: React.FC<ITabChat> = () => {
           className={'mt-5'}
           placeholder={t.home.tab.chat.searchHint}
           iconStart={<IoSearchOutline size={20} />}
+          value={search}
+          onChange={handleSearch}
         />
         <div className={'py-5 flex flex-col flex-grow'}>
           <p className={'py-2.5 text-lg flex-shrink font-semibold'}>
@@ -90,7 +104,7 @@ const TabChat: React.FC<ITabChat> = () => {
                       </div>
                     </div>
                   ))
-              : conversations.map((c) => (
+              : conversationFilter?.map((c) => (
                   <TabChatItem key={c._id} conversation={c} />
                 ))}
             {hasNextPage && (

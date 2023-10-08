@@ -56,7 +56,7 @@ const LoginPage: React.FC<ILoginPage> = () => {
       <div className={'w-ful h-full flex-center flex-col'}>
         <div className={'flex items-end gap-2.5'}>
           <Image src={'/logo.svg'} alt={'Logo'} width={30} height={30} />
-          <p className={'font-semibold text-xl'}>Chat app</p>
+          <p className={'font-semibold text-xl'}>MeloChat</p>
         </div>
         <p className={'mt-10 text-lg font-semibold'}>{t.auth.signIn.label}</p>
         <p className={'text-sm mt-1'}>{t.auth.signIn.description}</p>
