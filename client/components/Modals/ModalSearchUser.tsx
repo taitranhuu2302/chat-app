@@ -86,20 +86,7 @@ const ModalSearchUser: React.FC<Props> = () => {
     (currentUser: CurrentUser, userId: string) => {
       if (currentUser.isFriend) {
         return (
-          <button
-            onClick={() =>
-              cancelFriend({
-                friendId: userId,
-              })
-            }
-            disabled={cancelFriendLoading}
-            className="btn btn-sm btn-outline btn-error">
-            {cancelFriendLoading ? (
-              <IconLoading color="#DC3545" size="20px" />
-            ) : (
-              'Cancel Friend'
-            )}
-          </button>
+          <></>
         );
       }
 
