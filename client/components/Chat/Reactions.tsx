@@ -62,7 +62,7 @@ const Reactions: React.FC<PropsWithChildren<IProps>> = ({ message, onCallback, i
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className={twMerge('absolute bottom-full z-[100] flex items-center py-2 px-3 flex-nowrap menu menu-horizontal bg-white shadow-md rounded-box mt-6 w-fit', isOwner ? 'right-0' : 'left-0')}>
+            className={twMerge('absolute bottom-full z-[100] flex items-center py-2 px-3 flex-nowrap menu menu-horizontal bg-white shadow-md rounded-box mt-6 w-max', isOwner ? 'right-0' : 'left-0')}>
             {reactionIcons.map((item, index) => {
               return (
                 <li
