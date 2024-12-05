@@ -43,19 +43,23 @@ services:
       - "9000:9000"
     restart: unless-stopped
     command: --port 9000 --path /
-  # chat-client:
-  #   build:
-  #     context: ./client
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./client:/app
-  # chat-server:
-  #   build:
-  #     context: ./server
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5000:5000"
-  #   volumes:
-  #     - ./server:/app
+  chat-client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    depends_on:
+      - chat-server
+    ports:
+      - "4000:4000"
+  chat-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=mongodb://root:password@mongo:27017/chat-app?authSource=admin
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+      - redis

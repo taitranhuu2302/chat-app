@@ -13,7 +13,7 @@ const TextBouncing: React.FC<PropsWithChildren<IProps>> = ({ text , className}) 
     <>
       <div className={twMerge('waviy', className)}>
         {characters.map((char, index) => (
-          <span key={index} style={{ '--i': index + 1 }}>
+          <span key={index} style={{ '--i': index + 1 } as any}>
             {char}
           </span>
         ))}
